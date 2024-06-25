@@ -162,5 +162,38 @@ class RoleService {
             return response;
         }
     }
+    async UpdateRole(id: string, data: IRoleCreate) {
+        try {
+            const { name, permission } = data;
+            const roleId = new mongoose.Types.ObjectId(id);
+            const role = await RoleModel.findByIdAndUpdate(roleId, { name }, { new: true });
+            if (role) {
+                const validPermissions = await PermissionModel.find({
+                    _id: { $in: permission }
+                })
+                // assigning permissions with the role
+                const rolePermissions = validPermissions.map(permission => ({
+                    role_id: role._id,
+                    permission_id: permission._id
+                }));
+                await RoleHasPermission.deleteMany({ role_id: role._id });
+                await RoleHasPermission.insertMany(rolePermissions);
+                response.message = "Role updated successfully with permissions";
+                response.data = {};
+                response.success = true;
+                return response;
+            }else{
+                response.message = "Role not found";
+                response.success = false;
+                response.data = {};
+                return response;
+            }
+        } catch (error) {
+            response.message = "Failed to update role";
+            response.success = false;
+            response.data = {};
+            return response;
+        }
+    }
 }
 export default new RoleService
