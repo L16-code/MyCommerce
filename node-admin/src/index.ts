@@ -3,6 +3,7 @@ import envConfig from "./config/envConfig";
 import connectDB from "./db/dbConnect";
 import PermissionRouter from "./features/permissions/routes";
 import RoleRouter from "./features/roles/routes";
+import UserRouter from "./features/users/routes";
 // import AuthRouter from "./features/auth/Routes";
 // import cors from "cors"
 const app= express();
@@ -17,6 +18,8 @@ connectDB()
 
 app.use("/permission",PermissionRouter );
 app.use("/roles",RoleRouter );
+app.use("/user",UserRouter );
+
 
 app.listen(port,()=>{
     console.log("server is running on port http://localhost:"+port);

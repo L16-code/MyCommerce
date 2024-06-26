@@ -1,11 +1,18 @@
 import {Request,Response} from "express";
+import UserService from "./service"
 
-export const UserRegister = async (req:Request, res:Response) => {
+export const UserCreate = async (req:Request, res:Response) => {
     try {
-        const { username, email, password, dob, gender } = req.body;
-        const registerData = { username, email, password, dob, gender };
-        // const result = await UserService.userRegister(registerData)
-        // res.status(201).json(result)
+        const result = await UserService.UserCreate(req.body)
+        res.status(201).json(result)
+    } catch (error) {
+        res.status(400).json(error)
+    }
+};
+export const UserLogin = async (req:Request, res:Response) => {
+    try {
+        const result = await UserService.UserLogin(req.body)
+        res.status(201).json(result)
     } catch (error) {
         res.status(400).json(error)
     }
