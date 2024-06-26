@@ -3,11 +3,11 @@ import { Route, Routes } from 'react-router-dom';
 // import Home from '../components/home/Home';
 import routes from './routes';
 // import PrivateRoutes from './PrivateRoutes';
-// import Login from '../components/auth/Login';
 import { WithHeader } from './withHeader';
 import Dashboard from '../components/dashboard/dashboard';
 import CreateUsers from '../components/dashboard/users/CreateUsers';
 import ShowUsers from '../components/dashboard/users/ShowUsers';
+import Login from '../components/dashboard/auth/Login';
 // import profile from '../components/profile/Profile';
 // import Register from '../components/auth/Register';
 // import { RootState } from '../state_Management/store/store';
@@ -28,6 +28,10 @@ const PublicRoutes: React.FC = () => {
                 <Route
                     path={routes.HOME}
                     element={<WithHeader component={Dashboard} route={routes.HOME} isAuthenticated={isAuthenticated} />}
+                />
+                <Route
+                    path={routes.LOGIN}
+                    element={<WithHeader component={Login} route={routes.LOGIN} isAuthenticated={isAuthenticated} />}
                 />
                 <Route
                     path={routes.USERS_ADD}

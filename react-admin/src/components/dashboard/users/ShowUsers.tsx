@@ -1,10 +1,10 @@
-import Sidebar from "../sidebar";
+// import Sidebar from "../sidebar";
 import Navbar from "../navbar";
 
 const ShowUsers = () => {
     return (
         <div className="wrapper">
-            <Sidebar />
+            {/* <Sidebar /> */}
             <div className="main">
                 <Navbar />
             </div>
