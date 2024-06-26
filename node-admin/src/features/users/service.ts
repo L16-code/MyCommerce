@@ -91,7 +91,7 @@ class UserService {
                         foreignField: "role_id",
                         as: "role_permissions"
                     }
-                },
+                },     
                 {
                     $unwind: {
                         path: "$role_permissions",
@@ -149,10 +149,10 @@ class UserService {
                 user: {
                     _id: user._id,
                     username: user.username,
-                    email: user.email
+                    email: user.email,
+                    token:token
                 },
                 role: rolePermissions[0],
-                token
             };
             return response;
             
@@ -163,5 +163,47 @@ class UserService {
             return response;
         }
     }
+    async UserUpdate(id: string, data: IuserData) {
+        try {
+            const { username, password, email, dob, gender, role_id } = data;
+            const hashedPassword = await bcrypt.hash(password, 10);
+    
+            const updatedUser = await UserModel.findOneAndUpdate(
+                { _id: id },
+                {
+                    username,
+                    email,
+                    password: hashedPassword,
+                    dob,
+                    gender
+                },
+                { new: true } // To return the updated document
+            );
+    
+            const roleId = new mongoose.Types.ObjectId(role_id); // Converting the string into ObjectId
+    
+            if (updatedUser) {
+                await UserHasRoleModel.updateOne(
+                    { user_id: updatedUser._id },
+                    { role_id: roleId },
+                    { upsert: true } // To create a new document if none exists
+                );
+                response.success = true;
+                response.message = "User updated successfully";
+                response.data = updatedUser;
+            } else {
+                response.success = false;
+                response.message = "User not found";
+                response.data = '';
+            }
+            return response;
+        } catch (error) {
+            response.success = false;
+            response.message = "There is a problem with the server. Please contact the developer.";
+            response.data = error;
+            return response;
+        }
+    }
+    
 }
 export default new UserService
