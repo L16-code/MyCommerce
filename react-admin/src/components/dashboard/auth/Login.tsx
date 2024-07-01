@@ -7,8 +7,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
 import routes from "../../../routes/routes";
 import { useDispatch } from "react-redux";
-import { login, token } from "../../../state_management/actions/rootReducer";
+import { login, permission, token, user_role } from "../../../state_management/actions/rootReducer";
 import { userData } from "../../../interfaces/authInterface";
+import '../../../../public/adminKit/js/app.js'
+import { Permission } from "../roles/RoleInterface.js";
+
 interface FormData {
     email: string;
     password: string;
@@ -26,13 +29,9 @@ const Login: React.FC = () => {
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
         resolver: yupResolver(schema)
     });
-
     const onSubmit: SubmitHandler<FormData> = data => {
-        // console.log('Form submitted successfully:', data);
         axios.post('http://localhost:5000/user/user-login', data).then(res => {
-            // const token_data=res.data.data;
-            // console.log(token_data)
-            console.log(res.data)
+            // console.log(res.data)
             if (res.data.success === true) {
                 const TOKEN = res.data.data.user.token;
                 const UserData: userData =
@@ -41,9 +40,21 @@ const Login: React.FC = () => {
                     username: res.data.data.user.username,
                     email: res.data.data.user.email
                 }
-                // console.log(TOKEN)
+                const ROLE={
+                    id: res.data.data.role._id,
+                    name: res.data.data.role.name,
+                }
+                // console.log(res.data.data.role.permissions)
+                const PERMISSION=res.data.data.role.permissions.map((items:Permission)=>{
+                    return {
+                        id:items._id,
+                        name: items.name
+                    }
+                })
                 dispatch(token(TOKEN));
                 dispatch(login(UserData))
+                dispatch(user_role(ROLE))
+                dispatch(permission(PERMISSION))
                 toast.success('LoggIn Successfull'), {
                     position: "top-center",
                     autoClose: 2000,

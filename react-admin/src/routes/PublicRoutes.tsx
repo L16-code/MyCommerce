@@ -1,28 +1,21 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-// import Home from '../components/home/Home';
 import routes from './routes';
-// import PrivateRoutes from './PrivateRoutes';
 import { WithHeader } from './withHeader';
 import Dashboard from '../components/dashboard/dashboard';
 import CreateUsers from '../components/dashboard/users/CreateUsers';
 import ShowUsers from '../components/dashboard/users/ShowUsers';
 import Login from '../components/dashboard/auth/Login';
 import ShowRoles from '../components/dashboard/roles/ShowRoles';
-// import profile from '../components/profile/Profile';
-// import Register from '../components/auth/Register';
-// import { RootState } from '../state_Management/store/store';
-// import { useSelector } from 'react-redux';
-
-
+import { useSelector } from 'react-redux';
+import { RootState } from '../state_management/store/store';
+import PrivateRoute from './PrivateRoutes';
+import permissions from './Permissions';
+import AddRoles from '../components/dashboard/roles/AddRoles';
 
 const PublicRoutes: React.FC = () => {
-    // const isAuthenticated = useSelector((state: RootState) => state.root.isAuthenticated);
-    const isAuthenticated = true;
-    // const disptach = useDispatch()
-    // const LogoutHandler = () => {
-    //   disptach(logOutAction())
-    // }
+    const isAuthenticated = useSelector((state: RootState) => state.root.isAuthenticated);
+
     return (
         <div>
             <Routes>
@@ -34,38 +27,42 @@ const PublicRoutes: React.FC = () => {
                     path={routes.LOGIN}
                     element={<WithHeader component={Login} route={routes.LOGIN} isAuthenticated={isAuthenticated} />}
                 />
+                {/* USERS ROUTES */}
                 <Route
-                    path={routes.USERS_ADD}
-                    element={<WithHeader component={CreateUsers} route={routes.USERS_ADD} isAuthenticated={isAuthenticated} />}
-                />
+                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.users.CREATE_USER} />}
+                >
+                    <Route
+                        path={routes.USERS_ADD}
+                        element={<WithHeader component={CreateUsers} route={routes.USERS_ADD} isAuthenticated={isAuthenticated} />}
+                    />
+                </Route>
                 <Route
-                    path={routes.USERS}
-                    element={<WithHeader component={ShowUsers} route={routes.USERS} isAuthenticated={isAuthenticated} />}
-                />
+                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.users.VIEW_USER} />}
+                >
+                    <Route
+                        path={routes.USERS}
+                        element={<WithHeader component={ShowUsers} route={routes.USERS} isAuthenticated={isAuthenticated} />}
+                    />
+                </Route>
+                {/* END USERS ROUTES */}
+                {/* ROLES ROUTES */}
                 <Route
-                    path={routes.ROLES}
-                    element={<WithHeader component={ShowRoles} route={routes.ROLES} isAuthenticated={isAuthenticated} />}
-                />
-                {/* <Route
-                    element={<PrivateRoutes isAuthenticated={isAuthenticated} />}
-                > */}
-                {/* <Route
-                        path={routes.MYORDERS}
-                        element={<WithHeader component={MyOrders} route={routes.MYORDERS} isAuthenticated={isAuthenticated} />}
-                    /> */}
-                {/* <Route
-                        path={routes.MYPROFILE}
-                        element={<WithHeader component={profile} route={routes.MYPROFILE} isAuthenticated={isAuthenticated} />}
-                    /> */}
-                {/* </Route> */}
-                {/* <Route
-          path={routes.MYORDERS}
-          element={<WithHeader component={MyOrders} route={routes.MYORDERS} isAuthenticated={isAuthenticated} onLogout={LogoutHandler } />}
-        />
-        <Route
-          path={routes.MYPROFILE}
-          element={<WithHeader component={profile} route={routes.MYPROFILE} isAuthenticated={isAuthenticated} onLogout={LogoutHandler } />}
-        /> */}
+                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.roles.VIEW_ROLE} />}
+                >
+                    <Route
+                        path={routes.ROLES}
+                        element={<WithHeader component={ShowRoles} route={routes.ROLES} isAuthenticated={isAuthenticated} />}
+                    />
+                </Route>
+                <Route
+                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.users.VIEW_USER} />}
+                >
+                    <Route
+                        path={routes.ROLES_ADD}
+                        element={<WithHeader component={AddRoles} route={routes.ROLES_ADD} isAuthenticated={isAuthenticated} />}
+                    />
+                </Route>
+                {/* END ROLES ROUTES */}
             </Routes>
         </div>
     );

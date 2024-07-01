@@ -5,8 +5,12 @@ import axios from "axios";
 import { Role } from './RoleInterface';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../state_management/store/store';
+import '../../../../public/adminKit/js/app.js'
+import { useNavigate } from 'react-router-dom';
+import routes from '../../../routes/routes.js';
 
 const ShowRoles: React.FC = () => {
+    const navigate =useNavigate();
     const [roles, setRoles] = useState<Role[]>([]); // Define state with Role type
 
     const TOKEN =useSelector((state: RootState) => state.root.token);
@@ -15,8 +19,6 @@ const ShowRoles: React.FC = () => {
         const AuthStr = 'Bearer '.concat(TOKEN);
         try {
             const res = await axios.get('http://localhost:5000/roles/get-all-roles', { headers: { Authorization: AuthStr } });
-            // const role_data=res.data.data.sort((a: { _id: number; },b: { _id: number; })=>a._id-b._id)
-            console.log(res.data.data)
             setRoles(res.data.data); // Set fetched roles data to state
         } catch (error) {
             console.error('Error fetching roles:', error);
@@ -50,8 +52,10 @@ const ShowRoles: React.FC = () => {
                                                         borderRadius: "5px",
                                                         border: "1px solid #000",
                                                         color: "#000",
-                                                        backgroundColor: "green",
-                                                    }}>Add Role</button>
+                                                        backgroundColor: "#17a2b8",
+                                                    }}
+                                                    onClick={()=>{ navigate(routes.ROLES_ADD)}}
+                                                    >Add Role</button>
                                                 </div>
                                                 <div className="table-responsive">
                                                     <table className="table table-hover my-0">
@@ -69,14 +73,14 @@ const ShowRoles: React.FC = () => {
                                                                     <td>{role.name}</td>
                                                                     <td>
                                                                         {role.permissions.map(permission => (
-                                                                            <span key={permission._id} className="badge bg-success" style={{ margin:"2px"}}>
+                                                                            <span key={permission._id} className="badge bg-info" style={{ margin:"2px"}}>
                                                                                 {permission.name}
                                                                             </span>
                                                                         ))}
                                                                     </td>
                                                                     <td>
                                                                         {role.users.map(user => (
-                                                                            <span key={user._id} className="badge bg-warning" style={{ margin:"2px"}}>
+                                                                            <span key={user._id} className="badge bg-success" style={{ margin:"2px"}}>
                                                                                 {user.username}
                                                                             </span>
                                                                         ))}

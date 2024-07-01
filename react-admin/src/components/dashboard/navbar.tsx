@@ -1,5 +1,12 @@
-// import '../../../public/adminKit/js/app.js'
+import { useDispatch } from 'react-redux'
+import '../../../public/adminKit/js/app.js'
+import { logout } from '../../state_management/actions/rootReducer.js';
+import { useNavigate } from 'react-router-dom';
+import routes from '../../routes/routes.js';
+
 const navbar = () => {
+    const disptach=useDispatch();
+    const navigate=useNavigate();
     return (
         <nav className="navbar navbar-expand navbar-light navbar-bg">
             <a className="sidebar-toggle js-sidebar-toggle">
@@ -223,7 +230,9 @@ const navbar = () => {
                                 Center
                             </a>
                             <div className="dropdown-divider" />
-                            <a className="dropdown-item" href="#">
+                            <a className="dropdown-item" onClick={()=>{
+                                disptach(logout()) 
+                                navigate(routes.LOGIN)}}>
                                 Log out
                             </a>
                         </div>
