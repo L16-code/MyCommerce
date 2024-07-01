@@ -1,9 +1,12 @@
 // import {User} from 'feather-icons'
-import { FaUsers,FaUser } from "react-icons/fa"
+import { FaUsers ,FaSuitcaseRolling,FaUserClock  } from "react-icons/fa"
+import { useNavigate } from "react-router-dom";
+import routes from "../../routes/routes";
 interface SidebarProps{
     isAuthenticated: boolean;
 }
 const sidebar: React.FC<SidebarProps> = () => {
+    const navigate = useNavigate()
     return (
         <nav id="sidebar" className="sidebar js-sidebar">
             <div className="sidebar-content js-simplebar">
@@ -12,13 +15,15 @@ const sidebar: React.FC<SidebarProps> = () => {
                 </a>
                 <ul className="sidebar-nav">
                     <li className="sidebar-header">Pages</li>
-                    <li className="sidebar-item active">
-                        <a className="sidebar-link" href="index.html">
-                            <i className="align-middle" data-feather="sliders" />{}
+                    <li className="sidebar-item ">
+                        <a className="sidebar-link" onClick={()=>{
+                                navigate(routes.HOME)
+                            }}>
+                            <i className="align-middle" data-feather="sliders" />{<span>{ <FaUserClock />}</span>}
                             <span className="align-middle">Dashboard</span>
                         </a>
                     </li>
-                    <li className="sidebar-item">
+                    {/* <li className="sidebar-item">
                         <a className="sidebar-link" href="pages-profile.html">
                             <i className="align-middle" data-feather="user" />{<span>{ <FaUser />}</span>}
                             <span className="align-middle">Profile</span>
@@ -35,15 +40,26 @@ const sidebar: React.FC<SidebarProps> = () => {
                             <i className="align-middle" data-feather="user-plus" />{" "}
                             <span className="align-middle">Sign Up</span>
                         </a>
-                    </li>
-                    <li className="sidebar-item">
-                        <a className="sidebar-link" href="pages-blank.html">
+                    </li> */}
+                    <li className="sidebar-item active" >
+                        <a className="sidebar-link"  onClick={()=>{
+                                navigate(routes.USERS)
+                            }}>
                             <i className="align-middle" data-feather="book" />{<span>{ <FaUsers />}</span>}
                             <span className="align-middle">Users</span>
                             {/* <User className="align-middle" size={16} /> */}
                         </a>
                     </li>
-                    <li className="sidebar-header">Tools &amp; Components</li>
+                    <li className="sidebar-item " >
+                        <a className="sidebar-link"  onClick={()=>{
+                                navigate(routes.ROLES)
+                            }}>
+                            <i className="align-middle" data-feather="book" />{<span>{ <FaSuitcaseRolling />}</span>}
+                            <span className="align-middle">Roles</span>
+                            {/* <User className="align-middle" size={16} /> */}
+                        </a>
+                    </li>
+                    {/* <li className="sidebar-header">Tools &amp; Components</li>
                     <li className="sidebar-item">
                         <a className="sidebar-link" href="ui-buttons.html">
                             <i className="align-middle" data-feather="square" />{" "}
@@ -86,9 +102,9 @@ const sidebar: React.FC<SidebarProps> = () => {
                             <i className="align-middle" data-feather="map" />{" "}
                             <span className="align-middle">Maps</span>
                         </a>
-                    </li>
+                    </li> */}
                 </ul>
-                <div className="sidebar-cta">
+                {/* <div className="sidebar-cta">
                     <div className="sidebar-cta-content">
                         <strong className="d-inline-block mb-2">Upgrade to Pro</strong>
                         <div className="mb-3 text-sm">
@@ -100,7 +116,7 @@ const sidebar: React.FC<SidebarProps> = () => {
                             </a>
                         </div>
                     </div>
-                </div>
+                </div> */}
             </div>
         </nav>
 

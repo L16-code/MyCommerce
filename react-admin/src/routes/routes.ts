@@ -5,12 +5,12 @@ const routes = {
     REGISTER: "/register",
     MYPROFILE: '/profile',
     USERS: '/users',
-    USERS_ADD: '/user_add'
+    USERS_ADD: '/user_add',
+    ROLES:'/roles',
 }
 
 
 export const beforeLoginRoutes = [
-    routes.HOME,
     routes.LOGIN,
 ]
 export const AfterLoginRoutes = [
@@ -18,6 +18,7 @@ export const AfterLoginRoutes = [
     routes.MYPROFILE,
     routes.USERS,
     routes.USERS_ADD,
+    routes.ROLES,
 ]
 
 export default routes;

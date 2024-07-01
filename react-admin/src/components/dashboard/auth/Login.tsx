@@ -1,13 +1,22 @@
 // import React, { useState, ChangeEvent, FormEvent } from "react";
 import * as Yup from "yup";
 import { useForm, SubmitHandler } from "react-hook-form";
+import axios from "axios";
+import { Bounce, toast } from "react-toastify";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useNavigate } from "react-router-dom";
+import routes from "../../../routes/routes";
+import { useDispatch } from "react-redux";
+import { login, token } from "../../../state_management/actions/rootReducer";
+import { userData } from "../../../interfaces/authInterface";
 interface FormData {
     email: string;
     password: string;
 }
 
 const Login: React.FC = () => {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     const schema = Yup.object().shape({
         email: Yup.string().email('Invalid email').required('Email is required'),
         password: Yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
@@ -19,8 +28,50 @@ const Login: React.FC = () => {
     });
 
     const onSubmit: SubmitHandler<FormData> = data => {
-        // Proceed with form submission
-        console.log('Form submitted successfully:', data);
+        // console.log('Form submitted successfully:', data);
+        axios.post('http://localhost:5000/user/user-login', data).then(res => {
+            // const token_data=res.data.data;
+            // console.log(token_data)
+            console.log(res.data)
+            if (res.data.success === true) {
+                const TOKEN = res.data.data.user.token;
+                const UserData: userData =
+                {
+                    id: res.data.data.user.id,
+                    username: res.data.data.user.username,
+                    email: res.data.data.user.email
+                }
+                // console.log(TOKEN)
+                dispatch(token(TOKEN));
+                dispatch(login(UserData))
+                toast.success('LoggIn Successfull'), {
+                    position: "top-center",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                }
+                // dispatch(token(res.data.data.token))
+                // dispatch(login(res.data.data.user))
+                navigate(routes.HOME)
+            } else {
+                toast.error(res.data.message), {
+                    position: "top-center",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    // transition: Bounce,
+                }
+            }
+        })
     };
     return (
         <main className="d-flex w-100" style={{ width: "100%" }}>
@@ -62,7 +113,7 @@ const Login: React.FC = () => {
                                                         id="customControlInline"
                                                         type="checkbox"
                                                         className="form-check-input"
-                                                        // {...register("rememberMe")}
+                                                    // {...register("rememberMe")}
                                                     />
                                                     <label
                                                         className="form-check-label text-small"

@@ -69,18 +69,57 @@ class RoleService {
                     }
                 },
                 {
+                    $lookup: {
+                        from: "userhasroles",
+                        localField: "_id",
+                        foreignField: "role_id",
+                        as: "role_users"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$role_users",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "users",
+                        localField: "role_users.user_id",
+                        foreignField: "_id",
+                        as: "user_details"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$user_details",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
                     $group: {
                         _id: "$_id",
                         name: { $first: "$name" },
                         permissions: {
-                            $push: {
+                            $addToSet: {
                                 _id: "$permission_details._id",
                                 name: "$permission_details.name"
+                            }
+                        },
+                        users: {
+                            $addToSet: {
+                                _id: "$user_details._id",
+                                email: "$user_details.email",
+                                username: "$user_details.username"
                             }
                         }
                     }
                 },
+                {
+                    $sort:{_id:1}
+                }
             ]);
+    
             response.message = "Roles fetched successfully";
             response.data = roles;
             response.success = true;

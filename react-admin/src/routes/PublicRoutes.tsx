@@ -8,6 +8,7 @@ import Dashboard from '../components/dashboard/dashboard';
 import CreateUsers from '../components/dashboard/users/CreateUsers';
 import ShowUsers from '../components/dashboard/users/ShowUsers';
 import Login from '../components/dashboard/auth/Login';
+import ShowRoles from '../components/dashboard/roles/ShowRoles';
 // import profile from '../components/profile/Profile';
 // import Register from '../components/auth/Register';
 // import { RootState } from '../state_Management/store/store';
@@ -40,6 +41,10 @@ const PublicRoutes: React.FC = () => {
                 <Route
                     path={routes.USERS}
                     element={<WithHeader component={ShowUsers} route={routes.USERS} isAuthenticated={isAuthenticated} />}
+                />
+                <Route
+                    path={routes.ROLES}
+                    element={<WithHeader component={ShowRoles} route={routes.ROLES} isAuthenticated={isAuthenticated} />}
                 />
                 {/* <Route
                     element={<PrivateRoutes isAuthenticated={isAuthenticated} />}
