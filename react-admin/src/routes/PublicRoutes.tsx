@@ -20,9 +20,14 @@ const PublicRoutes: React.FC = () => {
         <div>
             <Routes>
                 <Route
-                    path={routes.HOME}
-                    element={<WithHeader component={Dashboard} route={routes.HOME} isAuthenticated={isAuthenticated} />}
-                />
+                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.users.CREATE_USER.name} />}
+                >
+                    <Route
+                        path={routes.HOME}
+                        element={<WithHeader component={Dashboard} route={routes.HOME} isAuthenticated={isAuthenticated} />}
+                    />
+                </Route>
+
                 <Route
                     path={routes.LOGIN}
                     element={<WithHeader component={Login} route={routes.LOGIN} isAuthenticated={isAuthenticated} />}

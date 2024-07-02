@@ -6,6 +6,7 @@ export interface IUserSchema {
     email: string;
     dob: string;
     gender: string;
+    status: string;
     createdAt: string;
 }
 const userSchema = new mongoose.Schema({
@@ -30,6 +31,10 @@ const userSchema = new mongoose.Schema({
     gender: {
         type: String,
         required: true
+    },
+    status: {
+        type: String,
+        default: 'active'
     },
     createdAt: {
         type: Date,

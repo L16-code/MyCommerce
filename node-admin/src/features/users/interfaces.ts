@@ -5,6 +5,7 @@ export interface IuserData{
     dob:string,
     gender:string,
     role_id:string
+    status:string
 }
 export interface IuserLoginData{
     email:string,

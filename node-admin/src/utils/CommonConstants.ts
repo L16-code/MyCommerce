@@ -5,3 +5,4 @@ export const UPDATE_ROLE_PERMISSIONS = ["roles-update"];
 // USER PERMISSIONS
 export const CREATE_USER_PERMISSIONS = ["user-create"];
 export const UPDATE_USER_PERMISSIONS = ["user-update"];
+export const GET_USER_PERMISSIONS = ["user-read"];

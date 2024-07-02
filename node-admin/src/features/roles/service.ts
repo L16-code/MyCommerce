@@ -234,5 +234,19 @@ class RoleService {
             return response;
         }
     }
+    async GetAllRolesWithId(){
+        try {
+            const roles = await RoleModel.find({},{_id:1,name:1});
+            response.message = "Roles fetched successfully";
+            response.data = roles;
+            response.success = true;
+            return response;
+        } catch (error) {
+            response.message = "Failed to fetch roles";
+            response.success = false;
+            response.data = {};
+            return response;
+        }
+    }
 }
 export default new RoleService

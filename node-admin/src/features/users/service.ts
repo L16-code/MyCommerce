@@ -15,7 +15,7 @@ const response: {
 class UserService {
     async UserCreate(userdata: IuserData){
         try {
-            const { username, password, email, dob, gender,role_id } = userdata;
+            const { username, password, email, dob, gender,role_id ,status} = userdata;
             const existingUser = await UserModel.findOne({ $or: [{ username }, { email }] }); // checks if user already exists or not by email or username beacause both are unique
             if (existingUser) {
                 response.success = false;
@@ -29,6 +29,7 @@ class UserService {
                 password: hashedPassword,
                 dob,
                 gender,
+                status
             });
             const userSaved = await user.save();
             const roleId = new mongoose.Types.ObjectId(role_id);// converting the string into object id
@@ -57,6 +58,12 @@ class UserService {
         try {
             const { email, password } = data;
             const user = await UserModel.findOne({ email });
+            if (user && user.status === 'inactive') {
+                response.success = false;
+                response.message = "User is inactive";
+                response.data = '';
+                return response;
+            }
             if (!user) {
                 response.success = false;
                 response.message = "User not found";
@@ -204,6 +211,90 @@ class UserService {
             return response;
         }
     }
-    
+    async UserRead(id:string){
+        try {
+            const excludeId = new mongoose.Types.ObjectId('667b9e8904fdce67c119c046');
+            const loggedInUserId = new mongoose.Types.ObjectId(id);
+            const users = await UserModel.aggregate([
+                {
+                    $match: {
+                        _id: { $nin: [excludeId, loggedInUserId] }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userhasroles",
+                        localField: "_id",
+                        foreignField: "user_id",
+                        as: "user_role"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$user_role",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "roles",
+                        localField: "user_role.role_id",
+                        foreignField: "_id",
+                        as: "role"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$role",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        username: 1,
+                        email: 1,
+                        dob: 1,
+                        gender: 1,
+                        status: 1,
+                        role:"$role.name"
+                        
+                    }
+                }
+            ])
+            response.success = true;
+            response.message = "Users fetched successfully";
+            response.data = users;
+            return response;
+        } catch (error) {
+            response.success = false;
+            response.message = "There is a problem with the server. Please contact the developer.";
+            response.data = error;
+            return response;
+        }
+    }
+    async UserStatusUpdate(id:string){
+        try {
+            const userid = new mongoose.Types.ObjectId(id);
+            const user = await UserModel.findById(userid);
+            if (user) {
+                const newStatus = user.status === 'active' ? 'inactive' : 'active';
+                const updatedUser = await UserModel.findByIdAndUpdate(
+                    userid,
+                    { status: newStatus }
+                );
+                response.success = true;
+                response.message = "User status updated successfully";
+                response.data = updatedUser;
+            } else {
+                response.message = "User not found";
+            }
+            return response;
+        } catch (error) {
+            response.message = "There is a problem with the server. Please contact the developer.";
+            response.data = error;
+            return response;
+        }
+    }
 }
 export default new UserService

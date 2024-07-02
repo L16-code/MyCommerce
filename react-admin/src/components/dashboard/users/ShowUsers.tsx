@@ -1,8 +1,39 @@
 import Sidebar from "../sidebar";
 import Navbar from "../navbar";
-// import '../../../../public/adminKit/js/app.js'
+import { useNavigate } from "react-router-dom";
+import routes from "../../../routes/routes";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../state_management/store/store";
+import { GetUserData } from "./UserInterface";
 
 const ShowUsers = () => {
+    const navigate = useNavigate()
+    const [users, setUsers] = useState<GetUserData[]>([]); // Define state with user type
+    const TOKEN = useSelector((state: RootState) => state.root.token);
+    const AuthStr = 'Bearer '.concat(TOKEN);
+    const statusChange = (data: string) => {
+        console.log(data);
+        const check = confirm('Are you sure you want to change status')
+        if (check) {
+            axios.post('http://localhost:5000/user/user-status-update', {id:data}, { headers: { Authorization: AuthStr } })
+                .then(res => {
+                    console.log(res.data.data)
+                    GetUser()
+                })
+        }
+    }
+    const GetUser = () => {
+        axios.get('http://localhost:5000/user/user-read', { headers: { Authorization: AuthStr } })
+            .then(res => {
+                setUsers(res.data.data)
+                console.log(res.data.data)
+            })
+    }
+    useEffect(() => {
+        GetUser()
+    }, [])
     return (
         <div className="wrapper">
             <Sidebar isAuthenticated={true} />
@@ -18,16 +49,18 @@ const ShowUsers = () => {
                                         <h5 className="card-title mb-0">User View</h5>
                                     </div>
                                     <div className="card-body">
-                                        <div className="col-12 col-md-6 col-xxl-3 d-flex order-1 order-xxl-1" style={{width:"100%"}}>
+                                        <div className="col-12 col-md-6 col-xxl-3 d-flex order-1 order-xxl-1" style={{ width: "100%" }}>
                                             <div className="card flex-fill">
                                                 <div className="card-header">
                                                     <button style={{
-                                                        padding:"5px",
-                                                        borderRadius:"5px",
-                                                        border:"1px solid #000",
-                                                        color:"#000",
-                                                        backgroundColor:"green",
-                                                    }}>Add User</button>
+                                                        padding: "5px",
+                                                        borderRadius: "5px",
+                                                        border: "1px solid #000",
+                                                        color: "#000",
+                                                        backgroundColor: "green",
+                                                    }}
+                                                        onClick={() => { navigate(routes.USERS_ADD) }}
+                                                    >Add User</button>
                                                 </div>
                                                 <div className="table-responsive">
                                                     <table className="table table-hover my-0">
@@ -38,56 +71,46 @@ const ShowUsers = () => {
                                                                 <th className="d-none d-xl-table-cell">Dob</th>
                                                                 <th>Gender</th>
                                                                 <th>Role</th>
+                                                                <th>Status</th>
                                                                 <th className="d-none d-md-table-cell">Action</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <tr>
-                                                                <td className="d-none d-xl-table-cell">Project Apollo</td>
-                                                                <td className="d-none d-xl-table-cell">01/01/2023</td>
-                                                                <td className="d-none d-xl-table-cell">31/06/2023</td>
-                                                                <td className="d-none d-xl-table-cell">31/06/2023</td>
-                                                                <td><span className="badge bg-success">Male</span></td>
-                                                                <td className="d-none d-md-table-cell">
-                                                                    <button style={{
-                                                                        padding:"5px",
-                                                                        borderRadius:"5px",
-                                                                        border:"1px solid #000",
-                                                                        color:"#000",
-                                                                        backgroundColor:"green",
+                                                            {users.map(user => (
+                                                                <tr key={user._id}>
+                                                                    <td>{user.username}</td>
+                                                                    <td >{user.email}</td>
+                                                                    <td >{user.dob}</td>
+                                                                    <td>{user.gender}</td>
+                                                                    <td>{user.role}</td>
+                                                                    <td style={{ cursor: "pointer" }} onClick={() => {
+                                                                        statusChange(user._id as string)
+                                                                    }}>{
+                                                                            user.status === "active" ?
+                                                                                <span className="badge bg-success">Active</span>
+                                                                                :
+                                                                                <span className="badge bg-danger">Inactive</span>
+
+                                                                        }
+                                                                    </td>
+                                                                    <td className="d-none d-md-table-cell"><button style={{
+                                                                        padding: "5px",
+                                                                        borderRadius: "5px",
+                                                                        border: "1px solid #000",
+                                                                        color: "#000",
+                                                                        backgroundColor: "green",
                                                                     }}>Edit</button>
-                                                                    <button style={{
-                                                                        marginLeft:"5px",
-                                                                        padding:"5px",
-                                                                        borderRadius:"5px",
-                                                                        border:"1px solid #000",
-                                                                        color:"#000",
-                                                                        backgroundColor:"red",
-                                                                    }}>Delete</button>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Project Fireball</td>
-                                                                <td className="d-none d-xl-table-cell">01/01/2023</td>
-                                                                <td className="d-none d-xl-table-cell">31/06/2023</td>
-                                                                <td className="d-none d-xl-table-cell">31/06/2023</td>
-                                                                <td><span className="badge bg-warning">Female</span></td>
-                                                                <td className="d-none d-md-table-cell"><button style={{
-                                                                        padding:"5px",
-                                                                        borderRadius:"5px",
-                                                                        border:"1px solid #000",
-                                                                        color:"#000",
-                                                                        backgroundColor:"green",
-                                                                    }}>Edit</button>
-                                                                    <button style={{
-                                                                        marginLeft:"5px",
-                                                                        padding:"5px",
-                                                                        borderRadius:"5px",
-                                                                        border:"1px solid #000",
-                                                                        color:"#000",
-                                                                        backgroundColor:"red",
-                                                                    }}>Delete</button></td>
-                                                            </tr>
+
+                                                                        <button style={{
+                                                                            marginLeft: "5px",
+                                                                            padding: "5px",
+                                                                            borderRadius: "5px",
+                                                                            border: "1px solid #000",
+                                                                            color: "#000",
+                                                                            backgroundColor: "red",
+                                                                        }}>Delete</button></td>
+                                                                </tr>
+                                                            ))}
                                                         </tbody>
                                                     </table>
                                                 </div>
