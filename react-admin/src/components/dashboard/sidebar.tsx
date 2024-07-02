@@ -26,10 +26,10 @@ const sidebar: React.FC<SidebarProps> = () => {
                 </a>
                 <ul className="sidebar-nav">
                     <li className="sidebar-header">Pages</li>
-                    <li className="sidebar-item ">
-                        <a className="sidebar-link" onClick={() => {
+                    <li className="sidebar-item " onClick={() => {
                             navigate(routes.HOME)
                         }}>
+                        <a className="sidebar-link" >
                             <i className="align-middle" />{<span>{<FaUserClock />}</span>}
                             <span className="align-middle">Dashboard</span>
                         </a>
@@ -38,10 +38,10 @@ const sidebar: React.FC<SidebarProps> = () => {
                     {/* User Module */}
                     {
                         PermissionString.includes("user") &&
-                        <li className="sidebar-item active" >
-                            <a className="sidebar-link" onClick={() => {
-                                navigate(routes.USERS)
-                            }}>
+                        <li className="sidebar-item" onClick={() => {
+                            navigate(routes.USERS)
+                        }} >
+                            <a className="sidebar-link" >
                                 <i className="align-middle" />{<span>{<FaUsers />}</span>}
                                 <span className="align-middle">Users</span>
                             </a>
@@ -51,10 +51,10 @@ const sidebar: React.FC<SidebarProps> = () => {
 
                     {
                         PermissionString.includes("roles") &&
-                        <li className="sidebar-item " >
-                            <a className="sidebar-link" onClick={() => {
-                                navigate(routes.ROLES)
-                            }}>
+                        <li className="sidebar-item " onClick={() => {
+                            navigate(routes.ROLES)
+                        }}>
+                            <a className="sidebar-link" >
                                 <i className="align-middle" />{<span>{<FaSuitcaseRolling />}</span>}
                                 <span className="align-middle">Roles</span>
                             </a>
@@ -64,10 +64,10 @@ const sidebar: React.FC<SidebarProps> = () => {
 
                     {
                         PermissionString.includes("employee") &&
-                        <li className="sidebar-item " >
-                            <a className="sidebar-link" onClick={() => {
-                                navigate(routes.ROLES)
-                            }}>
+                        <li className="sidebar-item " onClick={() => {
+                            navigate(routes.ROLES)
+                        }}>
+                            <a className="sidebar-link" >
                                 <i className="align-middle" />{<span>{<FaSuitcaseRolling />}</span>}
                                 <span className="align-middle">Employees</span>
                             </a>

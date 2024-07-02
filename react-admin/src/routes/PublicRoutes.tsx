@@ -29,7 +29,7 @@ const PublicRoutes: React.FC = () => {
                 />
                 {/* USERS ROUTES */}
                 <Route
-                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.users.CREATE_USER} />}
+                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.users.CREATE_USER.name} />}
                 >
                     <Route
                         path={routes.USERS_ADD}
@@ -37,7 +37,7 @@ const PublicRoutes: React.FC = () => {
                     />
                 </Route>
                 <Route
-                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.users.VIEW_USER} />}
+                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.users.VIEW_USER.name} />}
                 >
                     <Route
                         path={routes.USERS}
@@ -47,7 +47,7 @@ const PublicRoutes: React.FC = () => {
                 {/* END USERS ROUTES */}
                 {/* ROLES ROUTES */}
                 <Route
-                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.roles.VIEW_ROLE} />}
+                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.roles.VIEW_ROLE.name} />}
                 >
                     <Route
                         path={routes.ROLES}
@@ -55,7 +55,7 @@ const PublicRoutes: React.FC = () => {
                     />
                 </Route>
                 <Route
-                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.users.VIEW_USER} />}
+                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.users.VIEW_USER.name} />}
                 >
                     <Route
                         path={routes.ROLES_ADD}
