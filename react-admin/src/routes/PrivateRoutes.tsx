@@ -22,7 +22,7 @@ const PrivateRoutes: React.FC<ProtectedRoutesProps> = ({ isAuthenticated, childr
     };
     if (!isAuthenticated || !TOKEN || isTokenExpired(TOKEN)) {
         dispatch(logout());
-        return <Navigate to="/login" />;
+        return <Navigate to="/admin/login" />;
     }
     let PermissionString = "";
     userPermissions.forEach((items: any) => {
@@ -31,7 +31,7 @@ const PrivateRoutes: React.FC<ProtectedRoutesProps> = ({ isAuthenticated, childr
         });
     });
     if(!PermissionString.includes(requiredPermissions)){
-        return <Navigate to="/login" />;
+        return <Navigate to="/admin/login" />;
     }
 
     return children ? <>{children}</> : <Outlet />;

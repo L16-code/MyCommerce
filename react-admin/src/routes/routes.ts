@@ -1,4 +1,8 @@
 const routes = {
+    USER_HOME:'/',
+    USER_LOGIN:'/login',
+
+
 
     HOME: '/admin/dashboard',
     LOGIN: '/admin/login',
@@ -27,7 +31,13 @@ export const AfterLoginRoutes = [
     routes.PRODUCT_CATEGORY,
     routes.PRODUCTS,
     routes.PRODUCTS_ADD,
+]
+export const BeforeUserLoginRoutes = [
+    routes.USER_LOGIN
+]
 
+export const afterUserLoginRoutes = [
+    routes.USER_HOME
 ]
 
 export default routes;
