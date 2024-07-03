@@ -1,5 +1,6 @@
 // import {User} from 'feather-icons'
-import { FaUsers, FaSuitcaseRolling, FaUserClock } from "react-icons/fa"
+import { FaUsers, FaSuitcaseRolling, FaUserClock,FaCartArrowDown  } from "react-icons/fa"
+import { FaCartShopping } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import routes from "../../routes/routes";
 import '../../../public/adminKit/js/app.js'
@@ -73,6 +74,24 @@ const sidebar: React.FC<SidebarProps> = () => {
                             </a>
                         </li>
                     }
+                    {/* ECOMMERCE MODULES */}
+                    <li className="sidebar-header">Ecommerce</li>
+                    <li className="sidebar-item " onClick={() => {
+                            navigate(routes.PRODUCT_CATEGORY)
+                        }}>
+                        <a className="sidebar-link" >
+                            <i className="align-middle" />{<span>{<FaCartArrowDown />}</span>}
+                            <span className="align-middle">Products-category</span>
+                        </a>
+                    </li>
+                    <li className="sidebar-item " onClick={() => {
+                            navigate(routes.HOME)
+                        }}>
+                        <a className="sidebar-link" >
+                            <i className="align-middle" />{<span>{<FaCartShopping  />}</span>}
+                            <span className="align-middle">Products</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </nav>

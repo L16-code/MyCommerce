@@ -35,6 +35,24 @@ const permissions = {
             name: 'roles-delete',
             id: '66839a7ffe48bdf3e210ade3'
         }
+    },
+    products:{
+        CREATE_PRODUCT: {
+            name: 'products-create',
+            id: '6684e16eb3a7dc6d3b761e37'
+        },
+        VIEW_PRODUCT: {
+            name: 'products-read',
+            id: '6684e17ab3a7dc6d3b761e39'
+        },
+        EDIT_PRODUCT: {
+            name: 'products-update',
+            id: '6684e183b3a7dc6d3b761e3b'
+        },
+        DELETE_PRODUCT: {
+            name: 'products-delete',
+            id: '6684e18fb3a7dc6d3b761e3d'
+        }
     }
 };
 

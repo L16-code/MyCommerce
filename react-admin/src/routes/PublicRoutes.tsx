@@ -12,6 +12,7 @@ import { RootState } from '../state_management/store/store';
 import PrivateRoute from './PrivateRoutes';
 import permissions from './Permissions';
 import AddRoles from '../components/dashboard/roles/AddRoles';
+import ShowProductCategory from '../components/dashboard/product-category/ShowProductCategory';
 
 const PublicRoutes: React.FC = () => {
     const isAuthenticated = useSelector((state: RootState) => state.root.isAuthenticated);
@@ -60,7 +61,7 @@ const PublicRoutes: React.FC = () => {
                     />
                 </Route>
                 <Route
-                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.users.VIEW_USER.name} />}
+                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.roles.CREATE_ROLE.name} />}
                 >
                     <Route
                         path={routes.ROLES_ADD}
@@ -68,6 +69,16 @@ const PublicRoutes: React.FC = () => {
                     />
                 </Route>
                 {/* END ROLES ROUTES */}
+                {/* PRODUCTS ROUTES */}
+                <Route
+                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.products.VIEW_PRODUCT.name} />}
+                >
+                    <Route
+                        path={routes.PRODUCT_CATEGORY}
+                        element={<WithHeader component={ShowProductCategory} route={routes.PRODUCT_CATEGORY} isAuthenticated={isAuthenticated} />}
+                    />
+                </Route>
+                {/* END PRODUCTS ROUTES */}
             </Routes>
         </div>
     );

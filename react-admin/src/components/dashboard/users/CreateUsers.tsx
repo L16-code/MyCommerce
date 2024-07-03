@@ -19,11 +19,11 @@ const schema = yup.object().shape({
     dob: yup.date().required('Date of Birth is required'),
     gender: yup.string().oneOf(['Male', 'Female'], 'Invalid gender').required('Gender is required'),
     role_id: yup.string().required('Role is required'),
-    status:yup.string().oneOf(['active', 'inactive'], 'Invalid status').required('status is required'),
+    status: yup.string().oneOf(['active', 'inactive'], 'Invalid status').required('status is required'),
 });
 
 const CreateUsers = () => {
-    const navigate=useNavigate()
+    const navigate = useNavigate()
     const TOKEN = useSelector((state: RootState) => state.root.token);
     const AuthStr = 'Bearer '.concat(TOKEN);
     const [role, setRole] = useState([]);
@@ -34,34 +34,34 @@ const CreateUsers = () => {
     const onSubmit = (data: postUserData) => {
         console.log(data);
         axios.post('http://localhost:5000/user/user-create', data, { headers: { Authorization: AuthStr } })
-        .then(res => {
-            if(res.data.success===true) {
-                toast.success('Role Added Successfully'), {
-                    position: "top-center",
-                    autoClose: 1000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
+            .then(res => {
+                if (res.data.success === true) {
+                    toast.success('Role Added Successfully'), {
+                        position: "top-center",
+                        autoClose: 1000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: false,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    }
+                    navigate(routes.USERS)
+                } else {
+                    toast.error('Failed to Add Role'), {
+                        position: "top-center",
+                        autoClose: 1000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: false,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    }
                 }
-                navigate(routes.USERS)
-            }else{
-                toast.error('Failed to Add Role'), {
-                    position: "top-center",
-                    autoClose: 1000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                }
-            }
-        })
+            })
     };
     //  geeting role through api
     const fetchRole = async () => {
@@ -87,7 +87,15 @@ const CreateUsers = () => {
                             <div className="col-12">
                                 <div className="card">
                                     <div className="card-header">
-                                        <h5 className="card-title mb-0">Users Add</h5>
+                                        <button style={{
+                                            padding: "5px",
+                                            borderRadius: "5px",
+                                            border: "1px solid #000",
+                                            color: "#000",
+                                            backgroundColor: "red",
+                                        }}
+                                            onClick={() => { navigate(routes.USERS) }}
+                                        >Back</button>
                                     </div>
                                     <div className="card-body">
                                         <form onSubmit={handleSubmit(onSubmit)}>

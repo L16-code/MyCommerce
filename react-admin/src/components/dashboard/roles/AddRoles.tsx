@@ -114,7 +114,15 @@ const AddRoles: React.FC = () => {
                             <div className="col-12">
                                 <div className="card">
                                     <div className="card-header">
-                                        <h5 className="card-title mb-0">Roles Add</h5>
+                                    <button style={{
+                                                        padding: "5px",
+                                                        borderRadius: "5px",
+                                                        border: "1px solid #000",
+                                                        color: "#000",
+                                                        backgroundColor: "red",
+                                                    }}
+                                                        onClick={() => { navigate(routes.ROLES) }}
+                                                    >Back</button>
                                     </div>
                                     <div className="card-body">
                                         <form onSubmit={handleSubmit(handleSubmitForm)}>
@@ -131,6 +139,8 @@ const AddRoles: React.FC = () => {
                                             <div className="form-group mt-3">
                                                 <label>Permissions</label>
                                                 <hr />
+                                                <hr />
+
                                                 {Object.keys(permissions).map(category => (
                                                     <div key={category} className="mt-2">
                                                         <div>

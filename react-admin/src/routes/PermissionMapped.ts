@@ -6,6 +6,10 @@ const PermissionMapped={
     'user-create':'667a8562c1d466461c553f39',
     'user-read':'667a8579c1d466461c553f3b',
     'user-update':'667a857fc1d466461c553f3d',
-    'user-delete':'667a8584c1d466461c553f3f'
+    'user-delete':'667a8584c1d466461c553f3f',
+    'products-create':'6684e16eb3a7dc6d3b761e37',
+    'products-read':'6684e17ab3a7dc6d3b761e39',
+    'products-update':'6684e183b3a7dc6d3b761e3b',
+    'products-delete':'6684e18fb3a7dc6d3b761e3d'
 }
 export default PermissionMapped

@@ -8,6 +8,7 @@ const routes = {
     USERS_ADD: '/user_add',
     ROLES:'/roles',
     ROLES_ADD: '/roles_add',
+    PRODUCT_CATEGORY: '/product_category',
 }
 
 
@@ -21,6 +22,7 @@ export const AfterLoginRoutes = [
     routes.USERS_ADD,
     routes.ROLES,
     routes.ROLES_ADD,
+    routes.PRODUCT_CATEGORY,
 
 ]
 

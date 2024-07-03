@@ -37,7 +37,6 @@ export const UserRead = async (req:CustomRequest, res:Response) => {
 };
 export const UserStatusUpdate = async (req:CustomRequest, res:Response) => {
     try {
-        // console.log(req.body,"hsjdas")
         const result = await UserService.UserStatusUpdate(req.body)
         res.status(201).json(result)
     } catch (error) {

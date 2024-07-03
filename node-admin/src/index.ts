@@ -6,6 +6,7 @@ import RoleRouter from "./features/roles/routes";
 import UserRouter from "./features/users/routes";
 // import AuthRouter from "./features/auth/Routes";
 import cors from "cors"
+import ProductCategoryRouter from "./features/products-category/routes";
 const app= express();
 app.use(express.json());
 const env =envConfig();
@@ -19,6 +20,7 @@ app.use(cors({
 app.use("/permission",PermissionRouter );
 app.use("/roles",RoleRouter );
 app.use("/user",UserRouter );
+app.use("/product-category",ProductCategoryRouter);
 
 
 app.listen(port,()=>{
