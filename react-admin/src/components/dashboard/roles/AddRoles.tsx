@@ -14,6 +14,7 @@ import routes from '../../../routes/routes';
 const permissions: { [key: string]: string[] } = {
     user: ['user-create', 'user-read', 'user-update', 'user-delete'],
     roles: ['roles-create', 'roles-read', 'roles-update', 'roles-delete'],
+    products: ['products-create', 'products-read', 'products-update', 'products-delete'],
 };
 
 const schema = yup.object().shape({
@@ -27,6 +28,10 @@ const schema = yup.object().shape({
         'roles-read': yup.boolean(),
         'roles-update': yup.boolean(),
         'roles-delete': yup.boolean(),
+        'products-create': yup.boolean(),
+        'products-read': yup.boolean(),
+        'products-update': yup.boolean(),
+        'products-delete': yup.boolean(),
     }),
 });
 

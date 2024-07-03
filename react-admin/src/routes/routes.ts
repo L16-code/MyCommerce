@@ -1,14 +1,16 @@
 const routes = {
 
-    HOME: '/dashboard',
-    LOGIN: '/login',
-    REGISTER: "/register",
-    MYPROFILE: '/profile',
-    USERS: '/users',
-    USERS_ADD: '/user_add',
-    ROLES:'/roles',
-    ROLES_ADD: '/roles_add',
-    PRODUCT_CATEGORY: '/product_category',
+    HOME: '/admin/dashboard',
+    LOGIN: '/admin/login',
+    REGISTER: "/admin/register",
+    MYPROFILE: '/admin/profile',
+    USERS: '/admin/users',
+    USERS_ADD: '/admin/user_add',
+    ROLES:'/admin/roles',
+    ROLES_ADD: '/admin/roles_add',
+    PRODUCT_CATEGORY: '/admin/product_category',
+    PRODUCTS: '/admin/products',
+    PRODUCTS_ADD: '/admin/products_add',
 }
 
 
@@ -23,6 +25,8 @@ export const AfterLoginRoutes = [
     routes.ROLES,
     routes.ROLES_ADD,
     routes.PRODUCT_CATEGORY,
+    routes.PRODUCTS,
+    routes.PRODUCTS_ADD,
 
 ]
 

@@ -26,6 +26,47 @@ class ProductService {
             response.success = false;
             response.data = {};
         }
+        return response;
+    }
+    async ReadProduct(){
+        try {
+            const result = await ProductModal.aggregate([
+                {
+                    $lookup: {
+                        from: "products_catgeories",
+                        localField: "category_id",
+                        foreignField: "_id",
+                        as: "category"
+                    }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        name: 1,
+                        price: 1,
+                        quantity: 1,
+                        description: 1,
+                        image: 1,
+                        status:1,
+                        category:{$first:"$category.name"}
+                    }
+                }
+            ]);
+            if (result) {
+                response.success = true;
+                response.message = "Product fetched successfully";
+                response.data = result;
+            } else {
+                response.success = false;
+                response.message = "Product can not fetched";
+                response.data = '';
+            }
+        } catch (error) {
+            response.success = false;
+            response.message = "An error occurred while fetching the product";
+            response.data = '';
+        }
+        return response;
     }
 }
 export default new ProductService

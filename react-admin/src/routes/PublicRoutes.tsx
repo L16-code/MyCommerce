@@ -13,6 +13,8 @@ import PrivateRoute from './PrivateRoutes';
 import permissions from './Permissions';
 import AddRoles from '../components/dashboard/roles/AddRoles';
 import ShowProductCategory from '../components/dashboard/product-category/ShowProductCategory';
+import ShowProduct from '../components/dashboard/product/ShowProduct';
+import AddProducts from '../components/dashboard/product/AddProducts';
 
 const PublicRoutes: React.FC = () => {
     const isAuthenticated = useSelector((state: RootState) => state.root.isAuthenticated);
@@ -76,6 +78,22 @@ const PublicRoutes: React.FC = () => {
                     <Route
                         path={routes.PRODUCT_CATEGORY}
                         element={<WithHeader component={ShowProductCategory} route={routes.PRODUCT_CATEGORY} isAuthenticated={isAuthenticated} />}
+                    />
+                </Route>
+                <Route
+                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.products.VIEW_PRODUCT.name} />}
+                >
+                    <Route
+                        path={routes.PRODUCTS}
+                        element={<WithHeader component={ShowProduct} route={routes.PRODUCTS} isAuthenticated={isAuthenticated} />}
+                    />
+                </Route>
+                <Route
+                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.products.CREATE_PRODUCT.name} />}
+                >
+                    <Route
+                        path={routes.PRODUCTS_ADD}
+                        element={<WithHeader component={AddProducts} route={routes.PRODUCTS_ADD} isAuthenticated={isAuthenticated} />}
                     />
                 </Route>
                 {/* END PRODUCTS ROUTES */}
