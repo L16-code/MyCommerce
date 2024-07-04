@@ -15,7 +15,6 @@ import AddRoles from '../components/dashboard/roles/AddRoles';
 import ShowProductCategory from '../components/dashboard/product-category/ShowProductCategory';
 import ShowProduct from '../components/dashboard/product/ShowProduct';
 import AddProducts from '../components/dashboard/product/AddProducts';
-import Home from '../components/user/Home';
 
 const PublicRoutes: React.FC = () => {
     const isAuthenticated = useSelector((state: RootState) => state.root.isAuthenticated);
@@ -31,7 +30,10 @@ const PublicRoutes: React.FC = () => {
                         element={<WithHeader component={Dashboard} route={routes.HOME} isAuthenticated={isAuthenticated} />}
                     />
                 </Route>
-
+                <Route
+                    path={routes.ROOT}
+                    element={<WithHeader component={Login} route={routes.ROOT} isAuthenticated={isAuthenticated} />}
+                />
                 <Route
                     path={routes.LOGIN}
                     element={<WithHeader component={Login} route={routes.LOGIN} isAuthenticated={isAuthenticated} />}
@@ -99,13 +101,6 @@ const PublicRoutes: React.FC = () => {
                 </Route>
                 {/* END PRODUCTS ROUTES */}
 
-                
-                {/* START END-USERPANEL ROUTES */}
-                <Route
-                    path={routes.USER_HOME}
-                    element={<WithHeader component={Home} route={routes.USER_HOME} isAuthenticated={isAuthenticated} />}
-                />
-                {/* END  END-USERPANEL ROUTES */}
             </Routes>
 
 
