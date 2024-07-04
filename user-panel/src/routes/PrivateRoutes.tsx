@@ -7,7 +7,7 @@ import { ProtectedRoutesProps, TokenPayload, } from '../interfaces/authInterface
 
 const PrivateRoutes: React.FC<ProtectedRoutesProps> = ({ isAuthenticated, children }) => {
     const dispatch = useDispatch();
-    const TOKEN = useSelector((state: RootState) => state.root.token);
+    const TOKEN = useSelector((state: RootState) => state.root.user?.token);
 
     const isTokenExpired = (token: string) => {
         try {
