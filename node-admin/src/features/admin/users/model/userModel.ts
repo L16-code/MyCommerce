@@ -7,6 +7,7 @@ export interface IUserSchema {
     dob: string;
     gender: string;
     status: string;
+    actionType: string;
     createdAt: string;
 }
 const userSchema = new mongoose.Schema({
@@ -17,7 +18,7 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true
+        default:null,
     },
     email: {
         type: String,
@@ -26,15 +27,20 @@ const userSchema = new mongoose.Schema({
     },
     dob: {
         type: String,
-        required: true
+        default:null,
     },
     gender: {
         type: String,
-        required: true
+        default:null
     },
     status: {
         type: String,
         default: 'active'
+    },
+    actionType: {
+        type: String,
+        enum: ['admin', 'user'],
+        default: 'user'
     },
     createdAt: {
         type: Date,

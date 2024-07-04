@@ -1,7 +1,5 @@
 import React from 'react';
-// import Header from '../components/header/Header';
-// import ProtectedRoutes from './ProtectedRoutes';
-// import Sidebar from "../components/dashboard/sidebar";
+import Navbar from '../components/user/Navbar';
 
 interface WithHeaderProps {
     component: React.ComponentType;
@@ -10,14 +8,12 @@ interface WithHeaderProps {
 }
 
 export const WithHeader: React.FC<WithHeaderProps> = (props) => {
-    const { component: Component,route, isAuthenticated, ...rest } = props;
+    const { component: Component, route, isAuthenticated, ...rest } = props;
 
     return (
         <>
-            {/* <Sidebar isAuthenticated={isAuthenticated} /> */}
-            {/* <ProtectedRoutes isAuthenticated={isAuthenticated}> */}
-                <Component {...rest} />
-            {/* </ProtectedRoutes> */}
+            <Navbar />
+            <Component {...rest} />
         </>
     );
 };

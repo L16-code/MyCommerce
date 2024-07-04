@@ -4,7 +4,6 @@ import { FirstState,userData } from "../../interfaces/authInterface";
 const initialState:FirstState={
     isAuthenticated: false,
     user: null,
-    token: ''
 }
 const rootSlice = createSlice({
     name: "root",
@@ -17,13 +16,9 @@ const rootSlice = createSlice({
         logout: (state) => {
             state.isAuthenticated = false;
             state.user = null;
-            state.token='';
-        },
-        token:(state,action: PayloadAction<string>)=>{
-            state.token=action.payload;
         }
     },
 })
-export const { login, logout, token} = rootSlice.actions;
+export const { login, logout} = rootSlice.actions;
 
 export default rootSlice.reducer

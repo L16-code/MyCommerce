@@ -5,7 +5,7 @@ import { UserHasRoleModel } from "./model/userHasRoles";
 import mongoose from "mongoose";
 import jwt from 'jsonwebtoken';
 import { ObjectId } from "mongoose";
-import EnvConfig from "../../config/envConfig";
+import EnvConfig from "../../../config/envConfig";
 import { RoleModel } from "../roles/model/roleModel";
 const response: {
     message: string;
@@ -29,7 +29,8 @@ class UserService {
                 password: hashedPassword,
                 dob,
                 gender,
-                status
+                status,
+                actionType:'admin'
             });
             const userSaved = await user.save();
             const roleId = new mongoose.Types.ObjectId(role_id);// converting the string into object id
@@ -64,12 +65,19 @@ class UserService {
                 response.data = '';
                 return response;
             }
+            if(user && user.actionType === 'user'){
+                response.success = false;
+                response.message = "User is not authorized to login";
+                response.data = '';
+                return response;
+            }
             if (!user) {
                 response.success = false;
                 response.message = "User not found";
                 response.data = '';
                 return response;
             }
+            // comparing its password
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
                 response.success = false;
@@ -172,7 +180,7 @@ class UserService {
     }
     async UserUpdate(id: string, data: IuserData) {
         try {
-            const { username, password, email, dob, gender, role_id } = data;
+            const { username, password, email, dob, gender, role_id,actionType } = data;
             const hashedPassword = await bcrypt.hash(password, 10);
     
             const updatedUser = await UserModel.findOneAndUpdate(
@@ -182,7 +190,8 @@ class UserService {
                     email,
                     password: hashedPassword,
                     dob,
-                    gender
+                    gender,
+                    actionType
                 },
                 { new: true } // To return the updated document
             );

@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import envConfig from '../config/envConfig';
-import { UserHasRoleModel } from '../features/users/model/userHasRoles';
-import { RoleModel } from '../features/roles/model/roleModel';
+import { UserHasRoleModel } from '../features/admin/users/model/userHasRoles';
+import { RoleModel } from '../features/admin/roles/model/roleModel';
 
 export interface CustomRequest extends Request {
     userEmail?: string | JwtPayload;

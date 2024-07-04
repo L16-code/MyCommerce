@@ -1,8 +1,8 @@
 import  express from "express"
-import HandleErrors from "../../middleware/handleErrors"
+import HandleErrors from "../../../middleware/handleErrors"
 import { CreateRole, GetAllRoles, GetAllRolesWithId, GetRoleById, UpdateRole } from "./controllers"
-import { verifyToken, checkPermission } from "../../middleware/authMiddleware";
-import { CREATE_ROLE_PERMISSIONS, GET_ROLE_PERMISSIONS, UPDATE_ROLE_PERMISSIONS } from "../../utils/CommonConstants";
+import { verifyToken, checkPermission } from "../../../middleware/authMiddleware";
+import { CREATE_ROLE_PERMISSIONS, GET_ROLE_PERMISSIONS, UPDATE_ROLE_PERMISSIONS } from "../../../utils/CommonConstants";
 const RoleRouter=express.Router()
 
 

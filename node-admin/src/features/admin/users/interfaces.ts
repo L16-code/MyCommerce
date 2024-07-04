@@ -6,6 +6,7 @@ export interface IuserData{
     gender:string,
     role_id:string
     status:string
+    actionType?:string
 }
 export interface IuserLoginData{
     email:string,

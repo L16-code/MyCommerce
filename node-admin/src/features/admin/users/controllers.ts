@@ -1,6 +1,6 @@
 import {Request,Response} from "express";
 import UserService from "./service"
-import { CustomRequest } from "../../middleware/authMiddleware";
+import { CustomRequest } from "../../../middleware/authMiddleware";
 
 export const UserCreate = async (req:Request, res:Response) => {
     try {
