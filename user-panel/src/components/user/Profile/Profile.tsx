@@ -31,7 +31,7 @@ const Profile = () => {
         try {
             console.log(data);
             const AuthStr = 'Bearer '.concat(user?.token as string);
-            const res = await axios.put("http://localhost:5000/profile", data, { headers: { Authorization: AuthStr } });
+            const res = await axios.put(`http://localhost:5000/update-profile/${user?.id}`, data, { headers: { Authorization: AuthStr } });
 
             if (res.data.success === true) {
                 toast.success('Profile Updated Successfully', {
@@ -77,7 +77,7 @@ const Profile = () => {
     const fetchProfileData = async () => {
         try {
             const AuthStr = 'Bearer '.concat(user?.token as string);
-            const res = await axios.get("http://localhost:5000/profile", { headers: { Authorization: AuthStr } });
+            const res = await axios.get(`http://localhost:5000/get-profile/${user?.id}`, { headers: { Authorization: AuthStr } });
             const data = res.data.data;
             setProfileData(data);
             reset(data);
@@ -133,6 +133,7 @@ const Profile = () => {
                             <input
                                 {...register('email')}
                                 id="email"
+                                readOnly
                                 style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
                             />
                             {errors.email && <p style={{ color: 'red', marginTop: '5px' }}>{errors.email.message}</p>}

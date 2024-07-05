@@ -4,3 +4,13 @@ export interface ProfileData {
     dob: string;
     gender: string;
   }
+  export interface ProductsData{
+    _id:string;
+    name: string;
+    price: number;
+    category: string;
+    quantity: number;
+    image: string;
+    description: string;
+    
+  }

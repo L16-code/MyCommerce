@@ -9,6 +9,7 @@ import Home from '../components/user/Home';
 import Login from '../components/user/auth/Login';
 import Register from '../components/user/auth/Register';
 import Profile from '../components/user/Profile/Profile';
+import Cart from '../components/user/cart/Cart';
 
 const PublicRoutes: React.FC = () => {
     const isAuthenticated = useSelector((state: RootState) => state.root.isAuthenticated);
@@ -32,6 +33,10 @@ const PublicRoutes: React.FC = () => {
                 <Route
                     path={routes.PROFILE}
                     element={<WithHeader component={Profile} route={routes.PROFILE} isAuthenticated={isAuthenticated} />}
+                />
+                <Route
+                    path={routes.CART}
+                    element={<WithHeader component={Cart} route={routes.CART} isAuthenticated={isAuthenticated} />}
                 />
                 {/* END  END-USERPANEL ROUTES */}
             </Routes>

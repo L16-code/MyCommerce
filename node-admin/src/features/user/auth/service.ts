@@ -78,7 +78,7 @@ class UserPanelService{
                 console.log(newUser)
                 const savedUser = await newUser.save();
                 console.log(savedUser)
-                const Newtoken = jwt.sign({ userEmail: savedUser.email, userId:savedUser._id}, process.env.JWT_SECRET || SecretKey, {
+                const Newtoken = jwt.sign({ userEmail: savedUser.email, UserId:savedUser._id}, process.env.JWT_SECRET || SecretKey, {
                     expiresIn: '1h',
                 });
                 response.success = true;
@@ -106,7 +106,7 @@ class UserPanelService{
                     const env = EnvConfig();
                     const SecretKey = env.secretKey;
                     // generate the jwt token
-                    const token = jwt.sign({ userEmail: user.email, userId:user._id }, process.env.JWT_SECRET || SecretKey, {
+                    const token = jwt.sign({ userEmail: user.email, UserId:user._id }, process.env.JWT_SECRET || SecretKey, {
                         expiresIn: '1h',
                     });
                     response.success = true;
@@ -140,7 +140,7 @@ class UserPanelService{
                 const email = decodedData.email
                 const user = await UserModel.findOne({ email });
                 if (user) {
-                    const token = jwt.sign({ userEmail: user.email, userId: user._id }, process.env.JWT_SECRET || SecretKey, {
+                    const token = jwt.sign({ userEmail: user.email, UserId: user._id }, process.env.JWT_SECRET || SecretKey, {
                         expiresIn: '1h',
                     });
                     response.success = true;
@@ -162,6 +162,32 @@ class UserPanelService{
             }
 
         }
+        return response;
+    }
+    async GetProfile(id: string) {
+        const user = await UserModel.findById(id,{_id:1,username:1,dob:1,gender:1,email:1});
+        if (user) {
+            response.success = true;
+            response.message = "User profile fetched successfully";
+            response.data = user;
+        } else {
+            response.success = false;
+            response.message = "User not found";
+            response.data = null;
+        }
+        return response;
+    }
+    async UpdateProfile(id: string, updatedData: IProfileData) {
+            const user = await UserModel.findByIdAndUpdate(id, updatedData, { new: true });
+            if (user) {
+                response.success = true;
+                response.message = "User profile updated successfully";
+                response.data = user;
+            } else {
+                response.success = false;
+                response.message = "User not found";
+                response.data = null;
+            }
         return response;
     }
 }
