@@ -5,6 +5,7 @@ const routes = {
     PROFILE:'/profile',
     MYORDERS:'/myorders',
     CART:'/cart',
+    CHECKOUT:'/checkout',
 }
 
 

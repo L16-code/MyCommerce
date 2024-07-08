@@ -48,7 +48,7 @@ const Home = () => {
             {/* <Navbar /> */}
             <div style={{ display: 'flex', flexDirection: "column", justifyContent: 'center', alignItems: 'center' }}>
                 <h1 style={{ margin: "2rem", fontWeight: "bold" }}>Shopping Hub</h1>
-                <div style={{ width: '80%', padding: '20px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: "aliceblue", display: "flex", flexWrap: "wrap", gap: "2rem", marginTop: "2rem" }}>
+                <div style={{ width: '80%', padding: '20px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: "aliceblue", display: "flex", flexWrap: "wrap", gap: "4rem", marginTop: "2rem" }}>
                     {
                         productData.map((product) => {
                             return (

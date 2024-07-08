@@ -27,7 +27,7 @@ const CartSchema = new mongoose.Schema({
     },
     status:{
         type: String,
-        enum: ['0', '1'],  // 0 means the product is in the cart 1  means that the product has been ordered
+        enum: ['Pending', 'Purchased','Deleted'],  // 0 means the product is in the cart 1  means that the product has been ordered
         required: true
     },
     createdAt: {

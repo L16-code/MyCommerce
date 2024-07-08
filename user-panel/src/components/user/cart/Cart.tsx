@@ -1,10 +1,10 @@
 import axios from "axios";
 import {  useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Bounce, toast } from "react-toastify";
 import { RootState } from "../../../state_management/store/store";
 import { useEffect, useState } from "react";
 import { ICartData } from "./CartInterface";
+import routes from "../../../routes/routes";
 
 const Cart = () => {
     const navigate = useNavigate();
@@ -46,38 +46,6 @@ const Cart = () => {
         }
     };
 
-    const BuyHandler = () => {
-        const check = confirm("Are you sure you want to Buy this item?");
-        if (check) {
-            toast.success('Hurray !! The Item is Placed', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
-            // dispatch(placeOrder(new_arr))
-            navigate("/myorders");
-            // dispatch(clearCart())
-        } else {
-            toast.error('Sorry!! The Item is not Placed', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
-        }
-    };
-
     let TotalValue = CartData.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
     return (
@@ -111,7 +79,7 @@ const Cart = () => {
                             </div>
                             <div className="cart-summary">
                                 <h2>Total: ${TotalValue.toFixed(2)}</h2>
-                                <button onClick={BuyHandler} style={{ backgroundColor: "green", margin: "2rem" }}>Buy</button>
+                                <button onClick={()=>{navigate(routes.CHECKOUT)}} style={{ backgroundColor: "green", margin: "2rem" }}>Proceed To Checkout</button>
                                 <button onClick={() => { }}>Clear Cart</button>
                             </div>
                         </>

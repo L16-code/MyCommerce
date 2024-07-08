@@ -1,13 +1,22 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { RootState } from '../state_management/store/store';
 import { logout } from '../state_management/actions/rootReducer';
 import { ProtectedRoutesProps, TokenPayload, } from '../interfaces/authInterface';
+import { useEffect } from 'react';
 
 const PrivateRoutes: React.FC<ProtectedRoutesProps> = ({ isAuthenticated, children }) => {
     const dispatch = useDispatch();
     const TOKEN = useSelector((state: RootState) => state.root.user?.token);
+    useEffect(() => {
+        if (TOKEN) {
+            if (isTokenExpired(TOKEN as string)) {
+                dispatch(logout());
+                <Navigate to="/login" />;
+            }
+        }
+    }, [TOKEN]);
 
     const isTokenExpired = (token: string) => {
         try {

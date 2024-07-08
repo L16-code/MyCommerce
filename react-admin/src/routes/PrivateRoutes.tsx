@@ -4,12 +4,20 @@ import {jwtDecode} from 'jwt-decode';
 import { RootState } from '../state_management/store/store';
 import { logout } from '../state_management/actions/rootReducer';
 import { ProtectedRoutesProps, TokenPayload, permissionData } from '../interfaces/authInterface';
+import { useEffect } from 'react';
 
 const PrivateRoutes: React.FC<ProtectedRoutesProps> = ({ isAuthenticated, children, requiredPermissions }) => {
     const dispatch = useDispatch();
     const TOKEN = useSelector((state: RootState) => state.root.token);
     const userPermissions = useSelector((state: RootState) => state.root.permission);
-
+    useEffect(() => {
+        if (TOKEN) {
+            if (isTokenExpired(TOKEN as string)) {
+                dispatch(logout());
+                <Navigate to="/login" />;
+            }
+        }
+    }, [TOKEN]);
     const isTokenExpired = (token: string) => {
         try {
             const decoded: TokenPayload = jwtDecode(token);
