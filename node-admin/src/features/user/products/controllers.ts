@@ -72,3 +72,12 @@ export const AddAddress = async (req:CustomRequest, res:Response) => {
         res.status(400).json(error)
     }
 };
+export const GetAllOrder = async (req:CustomRequest, res:Response) => {
+    try {
+        const id=req.UserId
+        const result = await UserProducts.GetAllOrder(id as string)
+        res.status(201).json(result)
+    } catch (error) {
+        res.status(400).json(error)
+    }
+};

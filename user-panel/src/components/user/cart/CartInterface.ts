@@ -21,3 +21,18 @@ export interface AddAddressData{
     city:string;
     house_no:string
 }
+export interface GetOrderData{
+    _id: string;
+    product:ProductArrayOfOrder[];
+    address: string;
+    total_price: number;
+    status: string;
+    createdAt: string;
+}
+export interface ProductArrayOfOrder{
+    product_id: string;
+    quantity: number;
+    price: number;
+    name: string;
+    image: string;
+}

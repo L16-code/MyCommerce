@@ -55,61 +55,113 @@ class UserProducts {
     }
     async AddCart(data: IAddCartData) {
         const { product_id, user_id } = data
-        const product = await ProductModal.findById(product_id);
-        if (!product) {
-            throw new Error('Product not found');
-        }
-        const productPrice = product.price;
-        const checkProduct = await CartModel.findOne({ product_id, user_id });
-        if (checkProduct) {
-            if (checkProduct.status === 'Pending') {
-                // Increment the quantity and update the total price
-                checkProduct.quantity += 1;
-                checkProduct.total_price = checkProduct.quantity * productPrice;
-                await checkProduct.save();
-                response.success = true;
-                response.message = "Product added to cart successfully";
-                response.data = null;
-            } else if (checkProduct.status === 'Purchased') {
-                // Update the status to '0', set quantity to 1, and update the total price
-                const newCart = new CartModel({
-                    product_id,
-                    user_id,
-                    quantity: 1,
-                    total_price: productPrice,
-                    status: 'Pending'
-                });
-                await newCart.save();
-                response.success = true;
-                response.message = "Product added to cart successfully";
-                response.data = null;
-            } else if (checkProduct.status === 'deleted') {
-                const newCart = new CartModel({
-                    product_id,
-                    user_id,
-                    quantity: 1,
-                    total_price: productPrice,
-                    status: 'Pending'
-                });
-                await newCart.save();
-                response.success = true;
-                response.message = "Product added to cart successfully";
+        // const product = await ProductModal.findById(product_id);
+        // if (!product) {
+        //     throw new Error('Product not found');
+        // }
+        // const productPrice = product.price;
+        // const checkProduct = await CartModel.findOne({ product_id, user_id });
+        // if (checkProduct) {
+        //     if (checkProduct.status === 'Pending') {
+        //         // Increment the quantity and update the total price
+        //         checkProduct.quantity += 1;
+        //         checkProduct.total_price = checkProduct.quantity * productPrice;
+        //         await checkProduct.save();
+        //         response.success = true;
+        //         response.message = "Product added to cart successfully";
+        //         response.data = null;
+        //     } else if (checkProduct.status === 'Purchased') {
+        //         // Update the status to '0', set quantity to 1, and update the total price
+        //         const newCart = new CartModel({
+        //             product_id,
+        //             user_id,
+        //             quantity: 1,
+        //             total_price: productPrice,
+        //             status: 'Pending'
+        //         });
+        //         await newCart.save();
+        //         response.success = true;
+        //         response.message = "Product added to cart successfully";
+        //         response.data = null;
+        //     } else if (checkProduct.status === 'deleted') {
+        //         const newCart = new CartModel({
+        //             product_id,
+        //             user_id,
+        //             quantity: 1,
+        //             total_price: productPrice,
+        //             status: 'Pending'
+        //         });
+        //         await newCart.save();
+        //         response.success = true;
+        //         response.message = "Product added to cart successfully";
+        //     }
+        // } else {
+        //     // Create a new cart item
+        //     const newCart = new CartModel({
+        //         product_id,
+        //         user_id,
+        //         quantity: 1,
+        //         total_price: productPrice,
+        //         status: 'Pending'
+        //     });
+        //     await newCart.save();
+        //     response.success = true;
+        //     response.message = "Product added to cart successfully";
+        //     response.data = null;
+        // }
+        // return response
+        try {
+            const product = await ProductModal.findById(product_id);
+            if (!product) {
+                response.message = 'Product not found';
+                return response;
             }
-        } else {
-            // Create a new cart item
-            const newCart = new CartModel({
-                product_id,
-                user_id,
-                quantity: 1,
-                total_price: productPrice,
-                status: 'Pending'
-            });
-            await newCart.save();
-            response.success = true;
-            response.message = "Product added to cart successfully";
-            response.data = null;
+
+            const productPrice = product.price;
+            let cartItem = await CartModel.findOne({ product_id, user_id, status: 'Pending' });
+
+            if (cartItem) {
+                // Increment the quantity and update the total price
+                cartItem.quantity += 1;
+                cartItem.total_price = cartItem.quantity * productPrice;
+                await cartItem.save();
+                response.success = true;
+                response.message = "Product added to cart successfully";
+            } else {
+                cartItem = await CartModel.findOne({ product_id, user_id, status: 'Purchased' });
+
+                if (cartItem) {
+                    // Create a new cart item with status 'Pending'
+                    const newCart = new CartModel({
+                        product_id,
+                        user_id,
+                        quantity: 1,
+                        total_price: productPrice,
+                        status: 'Pending'
+                    });
+                    await newCart.save();
+                    response.success = true;
+                    response.message = "Product added to cart successfully";
+                } else {
+                    // Create a new cart item
+                    const newCart = new CartModel({
+                        product_id,
+                        user_id,
+                        quantity: 1,
+                        total_price: productPrice,
+                        status: 'Pending'
+                    });
+                    await newCart.save();
+                    response.success = true;
+                    response.message = "Product added to cart successfully";
+                }
+            }
+
+        } catch (error: any) {
+            response.message = error.message || 'An error occurred';
         }
-        return response
+
+        return response;
     }
     async GetCart(user_id: string) {
         try {
@@ -199,37 +251,70 @@ class UserProducts {
                         user_id: new mongoose.Types.ObjectId(user_id),
                         status: "Pending"
                     }
-                }, 
+                },
                 {
                     $project: {
-                        _id: 1
+                        _id: 1,
+                        product_id: 1,
+                        quantity: 1
                     }
                 }
             ]);
-            const cart_ids= cartItems.map((cartItem=>{
+
+            const cart_ids = cartItems.map((cartItem => {
                 return cartItem._id.toString()
             }))
-            const newOrder = new OrdersModel({
-                user_id,
-                total_price,
-                status: "Pending",
-                cart_id: cart_ids
-            });
-            await newOrder.save();
-            await CartModel.updateMany(
-                {
-                    user_id: new mongoose.Types.ObjectId(user_id),
-                    status: 'Pending',
-                },
-                { $set: { status: 'Purchased' } }
-            );
+            const productsToUpdate = [];
+
+            for (const cartItem of cartItems) {
+                const product = await ProductModal.findById(cartItem.product_id);
+                if (!product) {
+                    response.success = false;
+                    response.message = `Product with ID ${cartItem.product_id} not found.`;
+                    return response;
+                } else if (product.quantity < cartItem.quantity) {
+                    response.success = false;
+                    response.message = `Insufficient quantity for product ${product.name}. Required: ${cartItem.quantity}, Available: ${product.quantity}.`;
+                    return response;
+                } else {
+                    // Add to the list of products to update later
+                    productsToUpdate.push({
+                        product_id: cartItem.product_id,
+                        newQuantity: product.quantity - cartItem.quantity
+                    });
+                }
+            }
+            console.log("efidjhfasduihdfgakjsfbsdhbff",productsToUpdate)
+            // All checks passed, now update product quantities
+            for (const item of productsToUpdate) {
+                await ProductModal.findByIdAndUpdate(item.product_id, {
+                    quantity: item.newQuantity
+                });
+            }
+            console.log(cart_ids, "------------------------------------------------------------->", cartItems)
+            // const newOrder = new OrdersModel({
+            //     user_id,
+            //     total_price,
+            //     status: "Pending",
+            //     cart_id: cart_ids
+            // });
+            // const myOrder = await newOrder.save();
+            // await CartModel.updateMany(
+            //     {
+            //         user_id: new mongoose.Types.ObjectId(user_id),
+            //         status: 'Pending',
+            //     },
+            //     { $set: { status: 'Purchased' } }
+            // );
+
+
             response.success = true;
             response.message = "Order placed successfully";
-            response.data = newOrder;
+            response.data = "newOrder";
             return response;
         } catch (error) {
             response.success = false;
-            response.message = "An error occurred while placing order";
+            response.message = "An error occurred while placing order" + error;
             return response;
         }
     }
@@ -300,6 +385,24 @@ class UserProducts {
             response.message = error.message;
         }
         return response;
+    }
+    async GetAllOrder(id: string) {
+        try {
+            const orders = await OrdersModel.aggregate([
+                {
+                    $match: {
+                        user_id: new mongoose.Types.ObjectId(id)
+                    }
+                },
+            ]);
+            response.success = true;
+            response.message = "Orders fetched successfully";
+            response.data = orders;
+        } catch (error) {
+            response.success = false;
+            response.message = "An error occurred while fetching orders";
+            return response;
+        }
     }
 }
 export default new UserProducts

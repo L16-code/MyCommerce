@@ -11,9 +11,6 @@ export interface IOrderSchema extends Document {
     createdAt: Date;
     updatedAt: Date;
 }
-// const CartItemSchema: Schema = new Schema({
-//     cartId: { type: Schema.Types.ObjectId, required: true, },
-// });
 const OrderSchema = new Schema({
     user_id: {
         type: Schema.Types.ObjectId,
