@@ -12,7 +12,7 @@ UserProductRouter.delete('/delete-cart-item/:id', verifyToken ,HandleErrors(Dele
 UserProductRouter.get('/get-order/:id', verifyToken,HandleErrors(GetOrder))
 // orders
 UserProductRouter.post('/add-order', verifyToken ,HandleErrors(AddOrder))
-UserProductRouter.get('/get-order', verifyToken ,HandleErrors(GetAllOrder))
+UserProductRouter.get('/get-all-order', verifyToken ,HandleErrors(GetAllOrder))
 // address
 UserProductRouter.post('/add-address', verifyToken ,HandleErrors(AddAddress))
 export default UserProductRouter

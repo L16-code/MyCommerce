@@ -57,7 +57,7 @@ const Home = () => {
                                     <img src={product.image} alt="" className="product-card__image" />
                                     <h2 className="product-card__name">{product.name}</h2>
                                     {/* <p className="product-card__quantity">{product.quantity}</p> */}
-                                    <p className="product-card__price">${product.price.toFixed(2)}</p>
+                                    <p className="product-card__price">₹{product.price.toFixed(2)}</p>
                                     <p className="product-card__description">{product.description}</p>
                                     {
                                         isAuthenticated ?

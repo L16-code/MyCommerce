@@ -284,7 +284,7 @@ class UserProducts {
                     });
                 }
             }
-            console.log("efidjhfasduihdfgakjsfbsdhbff",productsToUpdate)
+            console.log("efidjhfasduihdfgakjsfbsdhbff", productsToUpdate)
             // All checks passed, now update product quantities
             for (const item of productsToUpdate) {
                 await ProductModal.findByIdAndUpdate(item.product_id, {
@@ -292,20 +292,20 @@ class UserProducts {
                 });
             }
             console.log(cart_ids, "------------------------------------------------------------->", cartItems)
-            // const newOrder = new OrdersModel({
-            //     user_id,
-            //     total_price,
-            //     status: "Pending",
-            //     cart_id: cart_ids
-            // });
-            // const myOrder = await newOrder.save();
-            // await CartModel.updateMany(
-            //     {
-            //         user_id: new mongoose.Types.ObjectId(user_id),
-            //         status: 'Pending',
-            //     },
-            //     { $set: { status: 'Purchased' } }
-            // );
+            const newOrder = new OrdersModel({
+                user_id,
+                total_price,
+                status: "Pending",
+                cart_id: cart_ids
+            });
+            const myOrder = await newOrder.save();
+            await CartModel.updateMany(
+                {
+                    user_id: new mongoose.Types.ObjectId(user_id),
+                    status: 'Pending',
+                },
+                { $set: { status: 'Purchased' } }
+            );
 
 
             response.success = true;
@@ -394,15 +394,84 @@ class UserProducts {
                         user_id: new mongoose.Types.ObjectId(id)
                     }
                 },
+                { $unwind: '$cart_id' },
+
+                {
+                    $addFields: {
+                        cart_id: { $toObjectId: '$cart_id' }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'carts',
+                        localField: 'cart_id',
+                        foreignField: '_id',
+                        as: 'cart_items'
+                    }
+                },
+                { $unwind: '$cart_items' },
+                {
+                    $lookup: {
+                        from: 'products',
+                        localField: 'cart_items.product_id',
+                        foreignField: '_id',
+                        as: 'product_details'
+                    }
+                },
+                { $unwind: '$product_details' },
+                {
+                    $lookup: {
+                        from: 'addresses',
+                        localField: 'user_id',
+                        foreignField: 'user_id',
+                        as: 'address_details'
+                    }
+                },
+                { $unwind: '$address_details' },
+                {
+                    $group: {
+                        _id: '$_id',
+                        total_price: { $first: '$total_price' },
+                        address: { $first: '$address_details' },
+                        products: {
+                            $addToSet: {
+                                name: '$product_details.name',
+                                price: '$product_details.price',
+                                total_price: '$cart_items.total_price',
+                                quantity: '$cart_items.quantity'
+                            }
+                        }
+                    }
+                },
+                {
+                    $project: {
+                        total_price: 1,
+                        address: {
+                            pin: '$address.pin',
+                            house_no: '$address.house_no',
+                            city: '$address.city',
+                            state: '$address.state'
+                        },
+                        products: 1
+                    }
+                }
             ]);
-            response.success = true;
-            response.message = "Orders fetched successfully";
-            response.data = orders;
-        } catch (error) {
-            response.success = false;
-            response.message = "An error occurred while fetching orders";
-            return response;
-        }
+            if(orders){
+                response.success = true;
+                response.message = "Orders fetched successfully";
+                response.data = orders;
+            }else{
+                response.success = false;
+                response.message = "No orders found";
+                return response;
+            }
+       
+        return response
+    } catch(error) {
+        response.success = false;
+        response.message = "An error occurred while fetching orders";
+        return response;
     }
+}
 }
 export default new UserProducts

@@ -66,7 +66,7 @@ const Cart = () => {
                                         <img src={item.image} alt={item.name} />
                                         <div className="cart-item-details">
                                             <h2>{item.name}</h2>
-                                            <p>${item.total_price}</p>
+                                            <p>₹{item.total_price}</p>
                                             <div style={{ display: 'flex', alignItems: 'center' }}>
                                                 <button onClick={() => updateCartQuantity(item._id, item.quantity - 1)} style={{ padding:"5px" ,margin:"3px" , backgroundColor:"blue"}}>-</button>
                                                 <p>{item.quantity}</p>
@@ -78,7 +78,7 @@ const Cart = () => {
                                 ))}
                             </div>
                             <div className="cart-summary">
-                                <h2>Total: ${TotalValue.toFixed(2)}</h2>
+                                <h2>Total: ₹{TotalValue.toFixed(2)}</h2>
                                 <button onClick={()=>{navigate(routes.CHECKOUT)}} style={{ backgroundColor: "green", margin: "2rem" }}>Proceed To Checkout</button>
                                 <button onClick={() => { }}>Clear Cart</button>
                             </div>

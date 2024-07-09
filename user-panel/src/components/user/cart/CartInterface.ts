@@ -23,16 +23,22 @@ export interface AddAddressData{
 }
 export interface GetOrderData{
     _id: string;
-    product:ProductArrayOfOrder[];
-    address: string;
+    products:ProductArrayOfOrder[];
+    address: AddressArrayOfOrder;
     total_price: number;
     status: string;
     createdAt: string;
 }
 export interface ProductArrayOfOrder{
-    product_id: string;
+    _id: string;
     quantity: number;
     price: number;
     name: string;
     image: string;
+}
+export interface AddressArrayOfOrder{
+    city: string;
+    state: string;
+    house_no: string;
+    pin: number;
 }
