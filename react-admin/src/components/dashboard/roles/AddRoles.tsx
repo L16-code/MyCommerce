@@ -15,6 +15,7 @@ const permissions: { [key: string]: string[] } = {
     user: ['user-create', 'user-read', 'user-update', 'user-delete'],
     roles: ['roles-create', 'roles-read', 'roles-update', 'roles-delete'],
     products: ['products-create', 'products-read', 'products-update', 'products-delete'],
+    orders:['orders-read', 'orders-update']
 };
 
 const schema = yup.object().shape({
@@ -32,6 +33,8 @@ const schema = yup.object().shape({
         'products-read': yup.boolean(),
         'products-update': yup.boolean(),
         'products-delete': yup.boolean(),
+        'orders-read': yup.boolean(),
+        'orders-update': yup.boolean()
     }),
 });
 

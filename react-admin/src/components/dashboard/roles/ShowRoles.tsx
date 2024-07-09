@@ -93,14 +93,14 @@ const ShowRoles: React.FC = () => {
                                                                             color: "#000",
                                                                             backgroundColor: "green",
                                                                         }}>Edit</button>
-                                                                        <button style={{
+                                                                        {/* <button style={{
                                                                             marginLeft: "5px",
                                                                             padding: "5px",
                                                                             borderRadius: "5px",
                                                                             border: "1px solid #000",
                                                                             color: "#000",
                                                                             backgroundColor: "red",
-                                                                        }}>Delete</button>
+                                                                        }}>Delete</button> */}
                                                                     </td>
                                                                 </tr>
                                                             ))}

@@ -53,6 +53,16 @@ const permissions = {
             name: 'products-delete',
             id: '6684e18fb3a7dc6d3b761e3d'
         }
+    },
+    orders:{
+        VIEW_ORDER: {
+            name: 'orders-read',
+            id: '668d370907aa3715741df7f6'
+        },
+        EDIT_ORDER: {
+            name: 'orders-update',
+            id: '668d371107aa3715741df7f8'
+        }
     }
 };
 
