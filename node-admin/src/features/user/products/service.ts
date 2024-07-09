@@ -284,14 +284,12 @@ class UserProducts {
                     });
                 }
             }
-            console.log("efidjhfasduihdfgakjsfbsdhbff", productsToUpdate)
             // All checks passed, now update product quantities
             for (const item of productsToUpdate) {
                 await ProductModal.findByIdAndUpdate(item.product_id, {
                     quantity: item.newQuantity
                 });
             }
-            console.log(cart_ids, "------------------------------------------------------------->", cartItems)
             const newOrder = new OrdersModel({
                 user_id,
                 total_price,

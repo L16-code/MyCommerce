@@ -43,3 +43,11 @@ export const UserStatusUpdate = async (req:CustomRequest, res:Response) => {
         res.status(400).json(error)
     }
 };
+export const UserEdit = async (req:CustomRequest, res:Response) => {
+    try {
+        const result = await UserService.UserEdit(req.params.id)
+        res.status(201).json(result)
+    } catch (error) {
+        res.status(400).json(error)
+    }
+};

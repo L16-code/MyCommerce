@@ -14,12 +14,11 @@ const ShowUsers = () => {
     const TOKEN = useSelector((state: RootState) => state.root.token);
     const AuthStr = 'Bearer '.concat(TOKEN);
     const statusChange = (data: string) => {
-        console.log(data);
         const check = confirm('Are you sure you want to change status')
         if (check) {
             axios.post('http://localhost:5000/user/user-status-update', {id:data}, { headers: { Authorization: AuthStr } })
                 .then(res => {
-                    console.log(res.data.data)
+                    if(res.data.success)
                     GetUser()
                 })
         }
@@ -28,7 +27,6 @@ const ShowUsers = () => {
         axios.get('http://localhost:5000/user/user-read', { headers: { Authorization: AuthStr } })
             .then(res => {
                 setUsers(res.data.data)
-                console.log(res.data.data)
             })
     }
     useEffect(() => {
@@ -99,16 +97,19 @@ const ShowUsers = () => {
                                                                         border: "1px solid #000",
                                                                         color: "#000",
                                                                         backgroundColor: "green",
-                                                                    }}>Edit</button>
+                                                                    }}
+                                                                    onClick={()=>navigate(routes.USERS_EDIT,{state:{id: user._id}})}
+                                                                    >Edit</button>
 
-                                                                        <button style={{
+                                                                        {/* <button style={{
                                                                             marginLeft: "5px",
                                                                             padding: "5px",
                                                                             borderRadius: "5px",
                                                                             border: "1px solid #000",
                                                                             color: "#000",
                                                                             backgroundColor: "red",
-                                                                        }}>Delete</button></td>
+                                                                        }}>Delete</button> */}
+                                                                        </td>
                                                                 </tr>
                                                             ))}
                                                         </tbody>

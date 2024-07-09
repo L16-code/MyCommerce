@@ -8,6 +8,14 @@ export interface IuserData{
     status:string
     actionType?:string
 }
+export interface IuserEditData{
+    username:string,
+    email:string,
+    dob:string,
+    gender:string,
+    role_id:string,
+    actionType?:string
+}
 export interface IuserLoginData{
     email:string,
     password:string

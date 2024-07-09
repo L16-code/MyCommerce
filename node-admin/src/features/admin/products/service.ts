@@ -68,5 +68,50 @@ class ProductService {
         }
         return response;
     }
+    async EditProduct(id:string){
+        try {
+            const product = await ProductModal.findById(id,{
+                name: 1,
+                price: 1,
+                quantity: 1,
+                category_id: 1,
+                description: 1,
+                image: 1
+            });
+            if (product) {
+                response.success = true;
+                response.message = "Product updated successfully";
+                response.data = product;
+            } else {
+                response.success = false;
+                response.message = "Product can not updated";
+                response.data = '';
+            }
+        } catch (error) {
+            response.success = false;
+            response.message = "An error occurred while updating the product";
+            response.data = '';
+        }
+        return response;
+    }
+    async UpdateProduct(id:string, data:IProductsAdd){
+        try {
+            const result = await ProductModal.findByIdAndUpdate(id, data, { new: true });
+            if (result) {
+                response.success = true;
+                response.message = "Product updated successfully";
+                response.data = '';
+            } else {
+                response.success = false;
+                response.message = "Product can not updated";
+                response.data = '';
+            }
+        } catch (error) {
+            response.success = false;
+            response.message = "An error occurred while updating the product";
+            response.data = '';
+        }
+        return response;
+    }
 }
 export default new ProductService

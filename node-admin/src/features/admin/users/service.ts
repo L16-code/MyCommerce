@@ -1,4 +1,4 @@
-import { IuserData, IuserLoginData } from "./interfaces";
+import { IuserData, IuserEditData, IuserLoginData } from "./interfaces";
 import bcrypt from 'bcrypt';
 import { UserModel } from "./model/userModel";
 import { UserHasRoleModel } from "./model/userHasRoles";
@@ -178,20 +178,18 @@ class UserService {
             return response;
         }
     }
-    async UserUpdate(id: string, data: IuserData) {
+    async UserUpdate(id: string, data: IuserEditData) {
         try {
-            const { username, password, email, dob, gender, role_id,actionType } = data;
-            const hashedPassword = await bcrypt.hash(password, 10);
+            const { username, email, dob, gender, role_id,actionType } = data;
     
             const updatedUser = await UserModel.findOneAndUpdate(
                 { _id: id },
                 {
                     username,
                     email,
-                    password: hashedPassword,
                     dob,
                     gender,
-                    actionType
+                    actionType:"admin"
                 },
                 { new: true } // To return the updated document
             );
@@ -296,6 +294,57 @@ class UserService {
                 response.message = "User status updated successfully";
                 response.data = updatedUser;
             } else {
+                response.message = "User not found";
+            }
+            return response;
+        } catch (error) {
+            response.message = "There is a problem with the server. Please contact the developer.";
+            response.data = error;
+            return response;
+        }
+    }
+    async UserEdit(id:string){
+        try {
+            const userid = new mongoose.Types.ObjectId(id);
+            const user = await UserModel.aggregate([
+                {
+                    $match: {
+                        _id: userid
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userhasroles",
+                        localField: "_id",
+                        foreignField: "user_id",
+                        as: "user_role"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$user_role",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        username: 1,
+                        email: 1,
+                        dob: 1,
+                        gender: 1,
+                        status: 1,
+                        password: 1,
+                        role_id:"$user_role.role_id"
+                    }
+                }
+            ]);
+            if (user) {
+                response.success = true;
+                response.message = "User fetched successfully";
+                response.data = user;
+            } else {
+                response.success=false;
                 response.message = "User not found";
             }
             return response;

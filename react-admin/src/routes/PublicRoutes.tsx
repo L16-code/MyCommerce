@@ -15,6 +15,8 @@ import AddRoles from '../components/dashboard/roles/AddRoles';
 import ShowProductCategory from '../components/dashboard/product-category/ShowProductCategory';
 import ShowProduct from '../components/dashboard/product/ShowProduct';
 import AddProducts from '../components/dashboard/product/AddProducts';
+import EditProducts from '../components/dashboard/product/EditProduct';
+import EditUser from '../components/dashboard/users/EditUser';
 
 const PublicRoutes: React.FC = () => {
     const isAuthenticated = useSelector((state: RootState) => state.root.isAuthenticated);
@@ -53,6 +55,14 @@ const PublicRoutes: React.FC = () => {
                     <Route
                         path={routes.USERS}
                         element={<WithHeader component={ShowUsers} route={routes.USERS} isAuthenticated={isAuthenticated} />}
+                    />
+                </Route>
+                <Route
+                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.users.EDIT_USER.name} />}
+                >
+                    <Route
+                        path={routes.USERS_EDIT}
+                        element={<WithHeader component={EditUser} route={routes.USERS_EDIT} isAuthenticated={isAuthenticated} />}
                     />
                 </Route>
                 {/* END USERS ROUTES */}
@@ -97,6 +107,14 @@ const PublicRoutes: React.FC = () => {
                     <Route
                         path={routes.PRODUCTS_ADD}
                         element={<WithHeader component={AddProducts} route={routes.PRODUCTS_ADD} isAuthenticated={isAuthenticated} />}
+                    />
+                </Route>
+                <Route
+                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.products.EDIT_PRODUCT.name} />}
+                >
+                    <Route
+                        path={routes.PRODUCTS_EDIT}
+                        element={<WithHeader component={EditProducts} route={routes.PRODUCTS_EDIT} isAuthenticated={isAuthenticated} />}
                     />
                 </Route>
                 {/* END PRODUCTS ROUTES */}

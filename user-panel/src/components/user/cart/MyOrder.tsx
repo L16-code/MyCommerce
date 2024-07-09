@@ -24,7 +24,7 @@ const MyOrder = () => {
                     <p style={{ textAlign: 'center' }}>You have no orders.</p>
                 ) : (
                     OrderData.map(order => (
-                        <div key={order._id} style={{ border: '1px solid #ccc', borderRadius: '5px', padding: '15px', marginBottom: '15px' }}>
+                        <div key={order._id} style={{ border: '1px solid #ccc', borderRadius: '5px', padding: '15px', marginBottom: '15px' ,backgroundColor:"white"}}>
                             <h2 style={{ borderBottom: '1px solid #ccc', paddingBottom: '10px', marginBottom: '10px' }}>Order #{order._id}</h2>
                             {order.products.map(item => (
                                 <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #eee' }}>

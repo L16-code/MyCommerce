@@ -5,7 +5,6 @@ export interface RolegetApi{
 export interface postUserData{
     username: string;
     email: string;
-    password: string;
     dob: Date;
     gender: string;
     role_id: string;
