@@ -17,6 +17,9 @@ import ShowProduct from '../components/dashboard/product/ShowProduct';
 import AddProducts from '../components/dashboard/product/AddProducts';
 import EditProducts from '../components/dashboard/product/EditProduct';
 import EditUser from '../components/dashboard/users/EditUser';
+import Orders from '../components/dashboard/orders/Orders';
+import EditRole from '../components/dashboard/roles/EditRole';
+import ShowCustomers from '../components/dashboard/customers/ShowCustomers';
 
 const PublicRoutes: React.FC = () => {
     const isAuthenticated = useSelector((state: RootState) => state.root.isAuthenticated);
@@ -83,6 +86,14 @@ const PublicRoutes: React.FC = () => {
                         element={<WithHeader component={AddRoles} route={routes.ROLES_ADD} isAuthenticated={isAuthenticated} />}
                     />
                 </Route>
+                <Route
+                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.roles.EDIT_ROLE.name} />}
+                >
+                    <Route
+                        path={routes.ROLES_EDIT}
+                        element={<WithHeader component={EditRole} route={routes.ROLES_EDIT} isAuthenticated={isAuthenticated} />}
+                    />
+                </Route>
                 {/* END ROLES ROUTES */}
                 {/* PRODUCTS ROUTES */}
                 <Route
@@ -118,7 +129,26 @@ const PublicRoutes: React.FC = () => {
                     />
                 </Route>
                 {/* END PRODUCTS ROUTES */}
-
+                {/* ORDERS ROUTES */}
+                <Route
+                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.orders.VIEW_ORDER.name} />}
+                >
+                    <Route
+                        path={routes.ORDERS_SHOW}
+                        element={<WithHeader component={Orders} route={routes.ORDERS_SHOW} isAuthenticated={isAuthenticated} />}
+                    />
+                </Route>
+                {/* END ORDERS ROUTES */}
+                {/* CUSTOMERS ROUTES */}
+                <Route
+                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.customer.VIEW_CUSTOMER.name} />}
+                >
+                    <Route
+                        path={routes.CUSTOMERS_SHOW}
+                        element={<WithHeader component={ShowCustomers} route={routes.CUSTOMERS_SHOW} isAuthenticated={isAuthenticated} />}
+                    />
+                </Route>
+                {/* END CUSTOMERS ROUTES */}
             </Routes>
 
 

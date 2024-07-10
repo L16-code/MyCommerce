@@ -2,6 +2,7 @@ export interface AddProduct{
     name: string;
     price: string;
     quantity: number;
+    
     category_id: string;
     description: string;
     image: FileList;

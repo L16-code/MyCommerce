@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -8,15 +8,17 @@ import axios from 'axios';
 import PermissionMapped from '../../../routes/PermissionMapped';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../state_management/store/store';
-import { Bounce, toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useLocation, useNavigate } from 'react-router-dom';
 import routes from '../../../routes/routes';
+
 const permissions: { [key: string]: string[] } = {
     user: ['user-create', 'user-read', 'user-update', 'user-delete'],
     roles: ['roles-create', 'roles-read', 'roles-update', 'roles-delete'],
     products: ['products-create', 'products-read', 'products-update', 'products-delete'],
-    orders:['orders-read', 'orders-update'],
+    orders: ['orders-read', 'orders-update'],
     customers:['customers-read']
+
 };
 
 const schema = yup.object().shape({
@@ -37,6 +39,7 @@ const schema = yup.object().shape({
         'orders-read': yup.boolean(),
         'orders-update': yup.boolean(),
         'customers-read': yup.boolean()
+
     }),
 });
 
@@ -45,7 +48,8 @@ interface FormValues {
     selectedPermissions: { [key: string]: boolean };
 }
 
-const AddRoles: React.FC = () => {
+const EditRole: React.FC = () => {
+    const location = useLocation();
     const navigate = useNavigate();
     const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormValues>({
         resolver: yupResolver(schema),
@@ -62,12 +66,13 @@ const AddRoles: React.FC = () => {
         });
         setValue('selectedPermissions', updatedPermissions);
     };
-    const TOKEN =useSelector((state: RootState) => state.root.token);
+
+    const TOKEN = useSelector((state: RootState) => state.root.token);
+
     const handleSubmitForm: SubmitHandler<FormValues> = (data) => {
-        
         const permissionMap: { [key: string]: string } = PermissionMapped;
         const formData = {
-            name:data.roleName,
+            name: data.roleName,
             permission: Object.entries(data.selectedPermissions)
                 .filter(([key, value]) => value)
                 .map(([key]) => {
@@ -78,39 +83,37 @@ const AddRoles: React.FC = () => {
                     }
                     return permission;
                 }),
-                
         };
-        const AuthStr = 'Bearer '.concat(TOKEN);
-        axios.post('http://localhost:5000/roles/create', formData, { headers: { Authorization: AuthStr }} ).then(res => {
-            if(res.data.success===true) {
-                toast.success('Role Added Successfully'), {
-                    position: "top-center",
-                    autoClose: 1000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                }
-                navigate(routes.ROLES)
-            }else{
-                toast.error('Failed to Add Role'), {
-                    position: "top-center",
-                    autoClose: 1000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                }
-            }
-        })
 
+        const AuthStr = 'Bearer '.concat(TOKEN);
+        axios.put(`http://localhost:5000/roles/update-role/${location.state.id}`, formData, { headers: { Authorization: AuthStr } }).then(res => {
+            if (res.data.success === true) {
+                toast.success('Role Updated Successfully');
+                navigate(routes.ROLES);
+            } else {
+                toast.error('Failed to Update Role');
+            }
+        });
     };
+
+    const getRoleById = () => {
+        axios.get(`http://localhost:5000/roles/get-role/${location.state.id}`, { headers: { Authorization: 'Bearer ' + TOKEN } }).then(res => {
+            if (res.data.success === true) {
+                const roleData = res.data.data[0];
+                const permissionsObject = roleData.permissions.reduce((acc: { [key: string]: boolean }, permission: { name: string }) => {
+                    acc[permission.name] = true;
+                    return acc;
+                }, {});
+
+                setValue('roleName', roleData.name);
+                setValue('selectedPermissions', permissionsObject);
+            }
+        });
+    };
+
+    useEffect(() => {
+        getRoleById();
+    }, []);
 
     return (
         <div className="wrapper">
@@ -119,20 +122,23 @@ const AddRoles: React.FC = () => {
                 <Navbar />
                 <main className="content">
                     <div className="container-fluid p-0">
-                        <h1 className="h3 mb-3">Roles Page</h1>
+                        <h1 className="h3 mb-3">Edit Roles Page</h1>
                         <div className="row">
                             <div className="col-12">
                                 <div className="card">
                                     <div className="card-header">
-                                    <button style={{
-                                                        padding: "5px",
-                                                        borderRadius: "5px",
-                                                        border: "1px solid #000",
-                                                        color: "#000",
-                                                        backgroundColor: "red",
-                                                    }}
-                                                        onClick={() => { navigate(routes.ROLES) }}
-                                                    >Back</button>
+                                        <button
+                                            style={{
+                                                padding: "5px",
+                                                borderRadius: "5px",
+                                                border: "1px solid #000",
+                                                color: "#000",
+                                                backgroundColor: "red",
+                                            }}
+                                            onClick={() => { navigate(routes.ROLES) }}
+                                        >
+                                            Back
+                                        </button>
                                     </div>
                                     <div className="card-body">
                                         <form onSubmit={handleSubmit(handleSubmitForm)}>
@@ -149,8 +155,6 @@ const AddRoles: React.FC = () => {
                                             <div className="form-group mt-3">
                                                 <label>Permissions</label>
                                                 <hr />
-                                                <hr />
-
                                                 {Object.keys(permissions).map(category => (
                                                     <div key={category} className="mt-2">
                                                         <div>
@@ -180,7 +184,7 @@ const AddRoles: React.FC = () => {
                                                 ))}
                                                 <hr />
                                             </div>
-                                            <button type="submit" className="btn btn-primary mt-3">Add Role</button>
+                                            <button type="submit" className="btn btn-primary mt-3">update Changes</button>
                                         </form>
                                     </div>
                                 </div>
@@ -193,4 +197,4 @@ const AddRoles: React.FC = () => {
     );
 }
 
-export default AddRoles;
+export default EditRole;

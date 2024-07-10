@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+import { OrdersModel } from "../../user/products/modal/OrderModel";
 import { IProductsAdd } from "./interfaces";
 import { ProductModal } from "./model";
 
@@ -7,7 +9,7 @@ const response: {
     success: boolean;
 } = { message: "", success: false };
 class ProductService {
-    async CreateProduct(data:IProductsAdd){
+    async CreateProduct(data: IProductsAdd) {
         try {
             const { name, price, quantity, category_id, description, image } = data;
             const product = new ProductModal({ name, price, quantity, category_id, description, image });
@@ -28,7 +30,7 @@ class ProductService {
         }
         return response;
     }
-    async ReadProduct(){
+    async ReadProduct() {
         try {
             const result = await ProductModal.aggregate([
                 {
@@ -47,8 +49,8 @@ class ProductService {
                         quantity: 1,
                         description: 1,
                         image: 1,
-                        status:1,
-                        category:{$first:"$category.name"}
+                        status: 1,
+                        category: { $first: "$category.name" }
                     }
                 }
             ]);
@@ -68,9 +70,9 @@ class ProductService {
         }
         return response;
     }
-    async EditProduct(id:string){
+    async EditProduct(id: string) {
         try {
-            const product = await ProductModal.findById(id,{
+            const product = await ProductModal.findById(id, {
                 name: 1,
                 price: 1,
                 quantity: 1,
@@ -94,7 +96,7 @@ class ProductService {
         }
         return response;
     }
-    async UpdateProduct(id:string, data:IProductsAdd){
+    async UpdateProduct(id: string, data: IProductsAdd) {
         try {
             const result = await ProductModal.findByIdAndUpdate(id, data, { new: true });
             if (result) {
@@ -109,6 +111,106 @@ class ProductService {
         } catch (error) {
             response.success = false;
             response.message = "An error occurred while updating the product";
+            response.data = '';
+        }
+        return response;
+    }
+    async ReadOrder() {
+        try {
+            const orders = await OrdersModel.aggregate([
+                { $unwind: '$cart_id' },
+                {
+                    $addFields: {
+                        cart_id: { $toObjectId: '$cart_id' }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'carts',
+                        localField: 'cart_id',
+                        foreignField: '_id',
+                        as: 'cart_items'
+                    }
+                },
+                { $unwind: '$cart_items' },
+                {
+                    $lookup: {
+                        from: 'products',
+                        localField: 'cart_items.product_id',
+                        foreignField: '_id',
+                        as: 'product_details'
+                    }
+                },
+                { $unwind: '$product_details' },
+                {
+                    $lookup: {
+                        from: 'addresses',
+                        localField: 'user_id',
+                        foreignField: 'user_id',
+                        as: 'address_details'
+                    }
+                },
+                { $unwind: '$address_details' },
+                {
+                    $lookup: {
+                        from: 'users',
+                        localField: 'user_id',
+                        foreignField: '_id',
+                        as: 'users_details'
+                    }
+                },
+                { $unwind: '$users_details' },
+                {
+                    $group: {
+                        _id: '$_id',
+                        total_price: { $first: '$total_price' },
+                        status: { $first: '$status' },
+                        createdAt: { $first: '$createdAt' },
+                        address: { $first: '$address_details' },
+                        users: { $first: '$users_details' },
+                        products: {
+                            $addToSet: {
+                                name: '$product_details.name',
+                                price: '$product_details.price',
+                                total_price: '$cart_items.total_price',
+                                quantity: '$cart_items.quantity'
+                            }
+                        }
+                    }
+                },
+                {
+                    $project: {
+                        total_price: 1,
+                        status: 1,
+                        createdAt: 1,
+                        address: {
+                            pin: '$address.pin',
+                            house_no: '$address.house_no',
+                            city: '$address.city',
+                            state: '$address.state'
+                        },
+                        user_name: '$users.username',
+                        products: 1
+                    }
+                }, {
+                    $sort: {
+                        _id: -1
+                    }
+                }
+            ]);
+            if (orders) {
+                response.success = true;
+                response.message = "Orders fetched successfully";
+                response.data = orders;
+            } else {
+                response.success = false;
+                response.message = "Orders can not fetched";
+                response.data = '';
+            }
+
+        } catch (error) {
+            response.success = false;
+            response.message = "An error occurred while fetching the orders";
             response.data = '';
         }
         return response;

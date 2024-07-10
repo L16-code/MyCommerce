@@ -55,61 +55,6 @@ class UserProducts {
     }
     async AddCart(data: IAddCartData) {
         const { product_id, user_id } = data
-        // const product = await ProductModal.findById(product_id);
-        // if (!product) {
-        //     throw new Error('Product not found');
-        // }
-        // const productPrice = product.price;
-        // const checkProduct = await CartModel.findOne({ product_id, user_id });
-        // if (checkProduct) {
-        //     if (checkProduct.status === 'Pending') {
-        //         // Increment the quantity and update the total price
-        //         checkProduct.quantity += 1;
-        //         checkProduct.total_price = checkProduct.quantity * productPrice;
-        //         await checkProduct.save();
-        //         response.success = true;
-        //         response.message = "Product added to cart successfully";
-        //         response.data = null;
-        //     } else if (checkProduct.status === 'Purchased') {
-        //         // Update the status to '0', set quantity to 1, and update the total price
-        //         const newCart = new CartModel({
-        //             product_id,
-        //             user_id,
-        //             quantity: 1,
-        //             total_price: productPrice,
-        //             status: 'Pending'
-        //         });
-        //         await newCart.save();
-        //         response.success = true;
-        //         response.message = "Product added to cart successfully";
-        //         response.data = null;
-        //     } else if (checkProduct.status === 'deleted') {
-        //         const newCart = new CartModel({
-        //             product_id,
-        //             user_id,
-        //             quantity: 1,
-        //             total_price: productPrice,
-        //             status: 'Pending'
-        //         });
-        //         await newCart.save();
-        //         response.success = true;
-        //         response.message = "Product added to cart successfully";
-        //     }
-        // } else {
-        //     // Create a new cart item
-        //     const newCart = new CartModel({
-        //         product_id,
-        //         user_id,
-        //         quantity: 1,
-        //         total_price: productPrice,
-        //         status: 'Pending'
-        //     });
-        //     await newCart.save();
-        //     response.success = true;
-        //     response.message = "Product added to cart successfully";
-        //     response.data = null;
-        // }
-        // return response
         try {
             const product = await ProductModal.findById(product_id);
             if (!product) {

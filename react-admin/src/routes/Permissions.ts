@@ -63,6 +63,12 @@ const permissions = {
             name: 'orders-update',
             id: '668d371107aa3715741df7f8'
         }
+    },
+    customer:{
+        VIEW_CUSTOMER: {
+            name: 'customers-read',
+            id: '668e51be41687f6f4774b102'
+        }
     }
 };
 

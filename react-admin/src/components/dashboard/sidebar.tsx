@@ -1,6 +1,6 @@
 // import {User} from 'feather-icons'
 import { FaUsers, FaSuitcaseRolling, FaUserClock, FaCartArrowDown } from "react-icons/fa"
-import { FaCartShopping } from "react-icons/fa6";
+import { FaCartShopping, FaPaypal, FaPeopleGroup } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import routes from "../../routes/routes";
 import '../../../public/adminKit/js/app.js'
@@ -13,6 +13,7 @@ interface SidebarProps {
 const sidebar: React.FC<SidebarProps> = () => {
     const navigate = useNavigate()
     const permissions = useSelector((state: RootState) => state.root.permission)
+    const Username = useSelector((state: RootState) => state.root.user?.username);
     let PermissionString = "";
     permissions.forEach((items: any) => {
         items.forEach((item: permissionData) => {
@@ -23,7 +24,7 @@ const sidebar: React.FC<SidebarProps> = () => {
         <nav id="sidebar" className="sidebar js-sidebar">
             <div className="sidebar-content js-simplebar">
                 <a className="sidebar-brand" href="index.html">
-                    <span className="align-middle">AdminKit</span>
+                    <span className="align-middle">{Username}</span>
                 </a>
                 <ul className="sidebar-nav">
                     <li className="sidebar-header">Pages</li>
@@ -77,21 +78,47 @@ const sidebar: React.FC<SidebarProps> = () => {
                     {/* ECOMMERCE MODULES */}
                     {
                         PermissionString.includes("products") &&
-                    <><li className="sidebar-header">Ecommerce</li><li className="sidebar-item " onClick={() => {
-                            navigate(routes.PRODUCT_CATEGORY);
-                        } }>
-                            <a className="sidebar-link">
-                                <i className="align-middle" />{<span>{<FaCartArrowDown />}</span>}
-                                <span className="align-middle">Products-category</span>
-                            </a>
-                        </li><li className="sidebar-item " onClick={() => {
-                            navigate(routes.PRODUCTS);
-                        } }>
+                        <>
+                            <li className="sidebar-header">Ecommerce</li>
+                            <li className="sidebar-item " onClick={() => {
+                                navigate(routes.PRODUCT_CATEGORY);
+                            }}>
+                                <a className="sidebar-link">
+                                    <i className="align-middle" />{<span>{<FaCartArrowDown />}</span>}
+                                    <span className="align-middle">Products-category</span>
+                                </a>
+                            </li>
+                            <li className="sidebar-item " onClick={() => {
+                                navigate(routes.PRODUCTS);
+                            }}>
                                 <a className="sidebar-link">
                                     <i className="align-middle" />{<span>{<FaCartShopping />}</span>}
                                     <span className="align-middle">Products</span>
                                 </a>
-                            </li></>
+                            </li>
+                        </>
+                    }
+                    {
+                        PermissionString.includes("orders") &&
+                        <li className="sidebar-item " onClick={() => {
+                            navigate(routes.ORDERS_SHOW);
+                        }}>
+                            <a className="sidebar-link">
+                                <i className="align-middle" />{<span>{<FaPaypal />}</span>}
+                                <span className="align-middle">Orders</span>
+                            </a>
+                        </li>
+                    }
+                    {
+                        PermissionString.includes("customers") &&
+                        <li className="sidebar-item " onClick={() => {
+                            navigate(routes.CUSTOMERS_SHOW);
+                        }}>
+                            <a className="sidebar-link">
+                                <i className="align-middle" />{<span>{<FaPeopleGroup />}</span>}
+                                <span className="align-middle">Customers</span>
+                            </a>
+                        </li>
                     }
                 </ul>
             </div>

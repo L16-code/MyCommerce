@@ -9,11 +9,13 @@ const routes = {
     USERS_EDIT: '/admin/user_edit',
     ROLES:'/admin/roles',
     ROLES_ADD: '/admin/roles_add',
+    ROLES_EDIT: '/admin/roles_edit',
     PRODUCT_CATEGORY: '/admin/product_category',
     PRODUCTS: '/admin/products',
     PRODUCTS_ADD: '/admin/products_add',
     PRODUCTS_EDIT: '/admin/products_edit',
-
+    ORDERS_SHOW: '/admin/orders',
+    CUSTOMERS_SHOW: '/admin/customers',
 }
 
 
@@ -32,7 +34,10 @@ export const AfterLoginRoutes = [
     routes.PRODUCTS,
     routes.PRODUCTS_ADD,
     routes.PRODUCTS_EDIT,
-    routes.USERS_EDIT
+    routes.USERS_EDIT,
+    routes.ORDERS_SHOW,
+    routes.ROLES_EDIT,
+    routes.CUSTOMERS_SHOW,
 ]
 
 export default routes;

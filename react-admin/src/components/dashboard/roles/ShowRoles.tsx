@@ -92,7 +92,9 @@ const ShowRoles: React.FC = () => {
                                                                             border: "1px solid #000",
                                                                             color: "#000",
                                                                             backgroundColor: "green",
-                                                                        }}>Edit</button>
+                                                                        }}
+                                                                        onClick={()=>navigate(routes.ROLES_EDIT,{state:{id:role._id}})}
+                                                                        >Edit</button>
                                                                         {/* <button style={{
                                                                             marginLeft: "5px",
                                                                             padding: "5px",

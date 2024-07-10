@@ -51,3 +51,13 @@ export const UserEdit = async (req:CustomRequest, res:Response) => {
         res.status(400).json(error)
     }
 };
+// CUSTOMERS CONTROLLER
+
+export const CustomerRead = async (req:Request, res:Response) => {
+    try {
+        const result = await UserService.CustomerRead()
+        res.status(201).json(result)
+    } catch (error) {
+        res.status(400).json(error)
+    }
+};

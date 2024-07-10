@@ -1,12 +1,15 @@
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import '../../../public/adminKit/js/app.js'
 import { logout } from '../../state_management/actions/rootReducer.js';
 import { useNavigate } from 'react-router-dom';
 import routes from '../../routes/routes.js';
+import { RootState } from '../../state_management/store/store.js';
 
 const navbar = () => {
     const disptach=useDispatch();
     const navigate=useNavigate();
+    const Username =useSelector((state: RootState) => state.root.user?.username);
+
     return (
         <nav className="navbar navbar-expand navbar-light navbar-bg">
             <a className="sidebar-toggle js-sidebar-toggle">
@@ -14,7 +17,7 @@ const navbar = () => {
             </a>
             <div className="navbar-collapse collapse">
                 <ul className="navbar-nav navbar-align">
-                    <li className="nav-item dropdown">
+                    {/* <li className="nav-item dropdown">
                         <a
                             className="nav-icon dropdown-toggle"
                             href="#"
@@ -92,8 +95,8 @@ const navbar = () => {
                                 </a>
                             </div>
                         </div>
-                    </li>
-                    <li className="nav-item dropdown">
+                    </li> */}
+                    {/* <li className="nav-item dropdown">
                         <a
                             className="nav-icon dropdown-toggle"
                             href="#"
@@ -191,7 +194,7 @@ const navbar = () => {
                                 </a>
                             </div>
                         </div>
-                    </li>
+                    </li> */}
                     <li className="nav-item dropdown">
                         <a
                             className="nav-icon dropdown-toggle d-inline-block d-sm-none"
@@ -208,9 +211,8 @@ const navbar = () => {
                             <img
                                 src="img/avatars/avatar.jpg"
                                 className="avatar img-fluid rounded me-1"
-                                alt="Charles Hall"
+                                alt={Username}
                             />{" "}
-                            <span className="text-dark">Charles Hall</span>
                         </a>
                         <div className="dropdown-menu dropdown-menu-end">
                             <a className="dropdown-item" href="pages-profile.html">
@@ -219,15 +221,6 @@ const navbar = () => {
                             <a className="dropdown-item" href="#">
                                 <i className="align-middle me-1" data-feather="pie-chart" />{" "}
                                 Analytics
-                            </a>
-                            <div className="dropdown-divider" />
-                            <a className="dropdown-item" href="index.html">
-                                <i className="align-middle me-1" data-feather="settings" /> Settings
-                                &amp; Privacy
-                            </a>
-                            <a className="dropdown-item" href="#">
-                                <i className="align-middle me-1" data-feather="help-circle" /> Help
-                                Center
                             </a>
                             <div className="dropdown-divider" />
                             <a className="dropdown-item" onClick={()=>{

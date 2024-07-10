@@ -13,9 +13,9 @@ const response: {
     success: boolean;
 } = { message: "", success: false };
 class UserService {
-    async UserCreate(userdata: IuserData){
+    async UserCreate(userdata: IuserData) {
         try {
-            const { username, password, email, dob, gender,role_id ,status} = userdata;
+            const { username, password, email, dob, gender, role_id, status } = userdata;
             const existingUser = await UserModel.findOne({ $or: [{ username }, { email }] }); // checks if user already exists or not by email or username beacause both are unique
             if (existingUser) {
                 response.success = false;
@@ -30,14 +30,14 @@ class UserService {
                 dob,
                 gender,
                 status,
-                actionType:'admin'
+                actionType: 'admin'
             });
             const userSaved = await user.save();
             const roleId = new mongoose.Types.ObjectId(role_id);// converting the string into object id
             if (userSaved) {
-                const userhasrole={
-                    role_id:roleId,
-                    user_id:userSaved._id
+                const userhasrole = {
+                    role_id: roleId,
+                    user_id: userSaved._id
                 }
                 await UserHasRoleModel.insertMany(userhasrole)
                 response.success = true;
@@ -55,7 +55,7 @@ class UserService {
             response.data = '';
         }
     }
-    async UserLogin(data:IuserLoginData){
+    async UserLogin(data: IuserLoginData) {
         try {
             const { email, password } = data;
             const user = await UserModel.findOne({ email });
@@ -65,7 +65,7 @@ class UserService {
                 response.data = '';
                 return response;
             }
-            if(user && user.actionType === 'user'){
+            if (user && user.actionType === 'user') {
                 response.success = false;
                 response.message = "User is not authorized to login";
                 response.data = '';
@@ -106,7 +106,7 @@ class UserService {
                         foreignField: "role_id",
                         as: "role_permissions"
                     }
-                },     
+                },
                 {
                     $unwind: {
                         path: "$role_permissions",
@@ -155,7 +155,7 @@ class UserService {
             ]);
             const env = EnvConfig();
             const SecretKey = env.secretKey;
-            const token = jwt.sign({ userEmail: user.email,UserId:user._id ,RoleId: userRole.role_id }, process.env.JWT_SECRET || SecretKey, {
+            const token = jwt.sign({ userEmail: user.email, UserId: user._id, RoleId: userRole.role_id }, process.env.JWT_SECRET || SecretKey, {
                 expiresIn: '1h',
             });
             response.success = true;
@@ -165,23 +165,23 @@ class UserService {
                     _id: user._id,
                     username: user.username,
                     email: user.email,
-                    token:token
+                    token: token
                 },
                 role: rolePermissions[0],
             };
             return response;
-            
+
         } catch (error) {
             response.success = false;
             response.message = "An error occurred during login";
-            response.data ={};
+            response.data = {};
             return response;
         }
     }
     async UserUpdate(id: string, data: IuserEditData) {
         try {
-            const { username, email, dob, gender, role_id,actionType } = data;
-    
+            const { username, email, dob, gender, role_id, actionType } = data;
+
             const updatedUser = await UserModel.findOneAndUpdate(
                 { _id: id },
                 {
@@ -189,13 +189,13 @@ class UserService {
                     email,
                     dob,
                     gender,
-                    actionType:"admin"
+                    actionType: "admin"
                 },
                 { new: true } // To return the updated document
             );
-    
+
             const roleId = new mongoose.Types.ObjectId(role_id); // Converting the string into ObjectId
-    
+
             if (updatedUser) {
                 await UserHasRoleModel.updateOne(
                     { user_id: updatedUser._id },
@@ -218,7 +218,7 @@ class UserService {
             return response;
         }
     }
-    async UserRead(id:string){
+    async UserRead(id: string) {
         try {
             const excludeId = new mongoose.Types.ObjectId('667b9e8904fdce67c119c046');
             const loggedInUserId = new mongoose.Types.ObjectId(id);
@@ -264,8 +264,8 @@ class UserService {
                         dob: 1,
                         gender: 1,
                         status: 1,
-                        role:"$role.name"
-                        
+                        role: "$role.name"
+
                     }
                 }
             ])
@@ -280,7 +280,7 @@ class UserService {
             return response;
         }
     }
-    async UserStatusUpdate(id:string){
+    async UserStatusUpdate(id: string) {
         try {
             const userid = new mongoose.Types.ObjectId(id);
             const user = await UserModel.findById(userid);
@@ -303,7 +303,7 @@ class UserService {
             return response;
         }
     }
-    async UserEdit(id:string){
+    async UserEdit(id: string) {
         try {
             const userid = new mongoose.Types.ObjectId(id);
             const user = await UserModel.aggregate([
@@ -335,7 +335,7 @@ class UserService {
                         gender: 1,
                         status: 1,
                         password: 1,
-                        role_id:"$user_role.role_id"
+                        role_id: "$user_role.role_id"
                     }
                 }
             ]);
@@ -344,11 +344,42 @@ class UserService {
                 response.message = "User fetched successfully";
                 response.data = user;
             } else {
-                response.success=false;
+                response.success = false;
                 response.message = "User not found";
             }
             return response;
         } catch (error) {
+            response.message = "There is a problem with the server. Please contact the developer.";
+            response.data = error;
+            return response;
+        }
+    }
+    // CUSTOMER SERVICES
+    async CustomerRead() {
+        try {
+            const customerServices = await UserModel.aggregate([
+                {
+                    $match: {
+                        actionType: "user"
+                    }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        username: 1,
+                        email: 1,
+                        dob: 1,
+                        gender: 1,
+                        status: 1,
+                    }
+                }
+            ]);
+            response.success = true;
+            response.message = "Customer services fetched successfully";
+            response.data = customerServices;
+            return response;
+        } catch (error) {
+            response.success = false;
             response.message = "There is a problem with the server. Please contact the developer.";
             response.data = error;
             return response;
