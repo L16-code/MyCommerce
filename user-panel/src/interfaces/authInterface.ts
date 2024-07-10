@@ -20,7 +20,6 @@ export interface role{
 }
 export interface ProtectedRoutesProps {
     isAuthenticated: boolean;
-    requiredPermissions: string;
     children?:ReactNode
 }
 export interface TokenPayload {

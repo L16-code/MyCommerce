@@ -17,7 +17,7 @@ const schema = yup.object().shape({
     city: yup.string().required("city is required"),
 });
 const Checkout = () => {
-    const naviagte=useNavigate();
+    const naviagte = useNavigate();
     const user_detail = useSelector((state: RootState) => state.root.user);
     const AuthStr = 'Bearer '.concat(user_detail?.token as string);
     const [checkoutData, setCheckoutData] = useState<GetCheckoutData[]>([]);
@@ -45,27 +45,27 @@ const Checkout = () => {
             if (res.data.success === true) {
                 reset();
                 closeModal();
-                const Order_data={
+                const Order_data = {
                     user_id: user_detail?.id,
                     total_price: checkoutData.reduce((acc, item) => acc + item.total_price, 0),
                 }
                 await axios.post(`http://localhost:5000/add-order`, Order_data, { headers: { Authorization: AuthStr } })
-                .then(res=>{
-                    if(res.data.success === true) {
-                        toast.success('Your Order Has been Placed Successfully', {
-                            position: "top-center",
-                            autoClose: 2000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: false,
-                            draggable: true,
-                            progress: undefined,
-                            theme: "light",
-                        });
-                        naviagte(routes.MYORDERS)
-                    }
-                })
-                ;
+                    .then(res => {
+                        if (res.data.success === true) {
+                            toast.success('Your Order Has been Placed Successfully', {
+                                position: "top-center",
+                                autoClose: 2000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: false,
+                                draggable: true,
+                                progress: undefined,
+                                theme: "light",
+                            });
+                            naviagte(routes.MYORDERS)
+                        }
+                    })
+                    ;
             }
         } catch (err) {
             console.log(err);
@@ -74,20 +74,51 @@ const Checkout = () => {
     return (
         <div style={{ display: 'flex', flexDirection: "column", justifyContent: 'center', alignItems: 'center' }}>
             <h1 style={{ margin: "2rem", fontWeight: "bold" }}>Checkout</h1>
-            <div style={{ width: '50%', padding: '20px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: "aliceblue", display: "flex", flexWrap: "wrap", gap: "2rem", marginTop: "2rem" }}>
-                <div className="cart-items">
-                    {checkoutData.map(item => (
-                        <div key={item._id} className="cart-item" >
-                            <img src={item.image} alt={item.name} />
-                            <div className="cart-item-details">
-                                <h2>{item.name}</h2>
-                                <p>Total Price: ${item.total_price}</p>
-                                <p>Total Quantity: {item.quantity}</p>
+            <div style={{ width: '50%', padding: '20px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: "aliceblue", display: "grid", flexWrap: "wrap", gap: "2rem", marginTop: "2rem" }}>
+                <div style={{ display: "flex", gap: "1rem" }}>
+                    <div className="cart-items">
+                        {checkoutData.map(item => (
+                            <div key={item._id} className="cart-item" >
+                                <img src={item.image} alt={item.name} />
+                                <div className="cart-item-details">
+                                    <h2>{item.name}</h2>
+                                    <p>Total Price: ${item.total_price}</p>
+                                    <p>Total Quantity: {item.quantity}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="cart-items">
+                        <div style={{ display: "grid", justifyContent: "center" }}>
+                            <button onClick={openModal} style={{ backgroundColor: "#f0f8ff", padding: "4px",  }}>Add Address</button>
+                        </div>
+                        <div key={1} className="cart-item" >
+                            <div className="cart-item-details" style={{ display: "flex" }}>
+                                <p>b-55 shakti nagar tonk road jaipur , rajasthan </p>
+                                <input type="checkbox" style={{ marginLeft: "25px" }} />
                             </div>
                         </div>
-                    ))}
+                        <div key={2} className="cart-item" >
+                            <div className="cart-item-details" style={{ display: "flex" }}>
+                                <p>b-55 shakti nagar tonk road jaipur , rajasthan </p>
+                                <input type="checkbox" style={{ marginLeft: "25px" }} />
+                            </div>
+                        </div>
+                        <div key={3} className="cart-item" >
+                            <div className="cart-item-details" style={{ display: "flex" }}>
+                                <p>b-55 shakti nagar tonk road jaipur , rajasthan </p>
+                                <input type="checkbox" style={{ marginLeft: "25px" }} />
+                            </div>
+                        </div>
+                        <div key={4} className="cart-item" >
+                            <div className="cart-item-details" style={{ display: "flex" }}>
+                                <p style={{ justifyContent:"center" }}>b-55 shakti nagar tonk road jaipur , rajasthan b-55 shakti nagar tonk road jaipur , rajasthanb-55 shakti nagar tonk road jaipur , rajasthanb-55 shakti nagar tonk road jaipur , rajasthanb-55 shakti nagar tonk road jaipur , rajasthanb-55 shakti nagar tonk road jaipur , rajasthanb-55 shakti nagar tonk road jaipur , rajasthan </p>
+                                <input type="checkbox"  style={{ marginLeft: "25px" }} />
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div>
+                <div style={{ display: "grid", justifyContent: "center" }}>
                     <h3>Total: ${checkoutData.reduce((acc, item) => acc + item.total_price, 0)}</h3>
                     <button onClick={openModal} style={{ backgroundColor: "green", padding: "4px" }}>Place Order</button>
                 </div>

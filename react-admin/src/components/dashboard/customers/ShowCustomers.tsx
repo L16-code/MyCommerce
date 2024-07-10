@@ -57,15 +57,12 @@ const ShowCustomers = () => {
                                                         </thead>
                                                         <tbody>
                                                             {Customers.map((customer, index) => {
-                                                                const dateString = customer.dob;
-                                                                const indexOfT = dateString.indexOf('T');
-                                                                const dateWithoutTime = dateString.substring(0, indexOfT);
                                                                 return (
                                                                     <tr key={customer._id}>
                                                                         <td>{index + 1}</td>
                                                                         <td>{customer.username}</td>
                                                                         <td>{customer.email}</td>
-                                                                        <td>{dateWithoutTime}</td>
+                                                                        <td>{ customer.dob}</td>
                                                                         <td>{customer.gender}</td>
                                                                         <td>
                                                                             {customer.status === "active" ? (
