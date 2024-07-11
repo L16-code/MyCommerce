@@ -42,3 +42,12 @@ export interface AddressArrayOfOrder{
     house_no: string;
     pin: number;
 }
+export interface GetAddressdData{
+    _id: string;
+    pin: number;
+    state: string;
+    city: string;
+    house_no: string;
+    user_id: string;
+    isDefault: boolean;
+}

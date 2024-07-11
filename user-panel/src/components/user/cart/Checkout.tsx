@@ -2,7 +2,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../state_management/store/store";
 import { useEffect, useState } from "react";
-import { AddAddressData, GetCheckoutData } from "./CartInterface";
+import { AddAddressData, GetAddressdData, GetCheckoutData } from "./CartInterface";
 import Modal from "../../commonComponents/modal";
 import * as yup from 'yup';
 import { useForm } from "react-hook-form";
@@ -10,20 +10,26 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import routes from "../../../routes/routes";
+
 const schema = yup.object().shape({
-    pin: yup.number().required("pin is required"),
+    pin: yup.number().required("Pin is required"),
     house_no: yup.string().required("House Number is required"),
-    state: yup.string().required("state is required"),
-    city: yup.string().required("city is required"),
+    state: yup.string().required("State is required"),
+    city: yup.string().required("City is required"),
 });
+
 const Checkout = () => {
-    const naviagte = useNavigate();
+    const navigate = useNavigate();
     const user_detail = useSelector((state: RootState) => state.root.user);
     const AuthStr = 'Bearer '.concat(user_detail?.token as string);
     const [checkoutData, setCheckoutData] = useState<GetCheckoutData[]>([]);
+    const [addressData, setAddressData] = useState<GetAddressdData[]>([]);
+    const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
     const [showModal, setShowModal] = useState(false);
+
     const openModal = () => setShowModal(true);
     const closeModal = () => setShowModal(false);
+
     const GetCheckout = async () => {
         try {
             const res = await axios.get(`http://localhost:5000/get-order/${user_detail?.id}`, { headers: { Authorization: AuthStr } });
@@ -32,45 +38,73 @@ const Checkout = () => {
             console.error("Error fetching checkout data", error);
         }
     };
+
+    const GetAddress = async () => {
+        try {
+            const res = await axios.get(`http://localhost:5000/get-address`, { headers: { Authorization: AuthStr } });
+            setAddressData(res.data.data);
+            const defaultAddress = res.data.data.find((address: GetAddressdData) => address.isDefault);
+            if (defaultAddress) {
+                setSelectedAddress(defaultAddress._id);
+            }
+        } catch (error) {
+            console.error("Error fetching address data", error);
+        }
+    };
+
     useEffect(() => {
         GetCheckout();
+        GetAddress();
     }, [user_detail]);
+
     const { register, handleSubmit, formState: { errors }, reset } = useForm<AddAddressData>({
         resolver: yupResolver(schema),
-
     });
+
     const onSubmit = async (data: AddAddressData) => {
         try {
             const res = await axios.post(`http://localhost:5000/add-address`, data, { headers: { Authorization: AuthStr } });
             if (res.data.success === true) {
                 reset();
                 closeModal();
-                const Order_data = {
-                    user_id: user_detail?.id,
-                    total_price: checkoutData.reduce((acc, item) => acc + item.total_price, 0),
-                }
-                await axios.post(`http://localhost:5000/add-order`, Order_data, { headers: { Authorization: AuthStr } })
-                    .then(res => {
-                        if (res.data.success === true) {
-                            toast.success('Your Order Has been Placed Successfully', {
-                                position: "top-center",
-                                autoClose: 2000,
-                                hideProgressBar: false,
-                                closeOnClick: true,
-                                pauseOnHover: false,
-                                draggable: true,
-                                progress: undefined,
-                                theme: "light",
-                            });
-                            naviagte(routes.MYORDERS)
-                        }
-                    })
-                    ;
+                GetAddress();
             }
         } catch (err) {
             console.log(err);
         }
-    }
+    };
+
+    const PlaceOrderHandler = async () => {
+        if (!selectedAddress) {
+            toast.error("Please select an address before placing the order");
+            return;
+        }
+
+        try {
+            const res = await axios.post(`http://localhost:5000/add-order`, {
+                user_id: user_detail?.id,
+                address_id: selectedAddress,
+                total_price: checkoutData.reduce((acc, item) => acc + item.total_price, 0)
+            }, { headers: { Authorization: AuthStr } });
+            if (res.data.success === true) {
+                toast.success('Your Order Has been Placed Successfully');
+                navigate(routes.MYORDERS);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const AddressChangeHandler = async (id: string) => {
+        try {
+            await axios.put(`http://localhost:5000/update-address-status/${id}`, {}, { headers: { Authorization: AuthStr } });
+            setSelectedAddress(id);
+            GetAddress();
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
     return (
         <div style={{ display: 'flex', flexDirection: "column", justifyContent: 'center', alignItems: 'center' }}>
             <h1 style={{ margin: "2rem", fontWeight: "bold" }}>Checkout</h1>
@@ -78,7 +112,7 @@ const Checkout = () => {
                 <div style={{ display: "flex", gap: "1rem" }}>
                     <div className="cart-items">
                         {checkoutData.map(item => (
-                            <div key={item._id} className="cart-item" >
+                            <div key={item._id} className="cart-item">
                                 <img src={item.image} alt={item.name} />
                                 <div className="cart-item-details">
                                     <h2>{item.name}</h2>
@@ -90,37 +124,38 @@ const Checkout = () => {
                     </div>
                     <div className="cart-items">
                         <div style={{ display: "grid", justifyContent: "center" }}>
-                            <button onClick={openModal} style={{ backgroundColor: "#f0f8ff", padding: "4px",  }}>Add Address</button>
+                            <button onClick={openModal} style={{ backgroundColor: "#77b9f2", padding: "10px", border: "1px solid #ccc", borderRadius: "5px", cursor: "pointer" }}>Add Address</button>
                         </div>
-                        <div key={1} className="cart-item" >
-                            <div className="cart-item-details" style={{ display: "flex" }}>
-                                <p>b-55 shakti nagar tonk road jaipur , rajasthan </p>
-                                <input type="checkbox" style={{ marginLeft: "25px" }} />
+                        {addressData.map(address => (
+                            <div key={address._id} className="cart-item">
+                                <div className="cart-item-details" style={{ display: "flex", alignItems: "center" }}>
+                                    <div style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        width: "100%",
+                                        cursor: "pointer"
+                                    }} >
+                                        <p>{`${address.house_no}, ${address.city}, ${address.state}, ${address.pin}`}</p>
+                                    </div>
+                                    <div >
+                                        <input
+                                            type="radio"
+                                            name="address"
+                                            value={address._id}
+                                            checked={selectedAddress === address._id}
+                                            onChange={() => AddressChangeHandler(address._id)}
+                                            style={{ marginLeft: "25px" }}
+                                        />
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div key={2} className="cart-item" >
-                            <div className="cart-item-details" style={{ display: "flex" }}>
-                                <p>b-55 shakti nagar tonk road jaipur , rajasthan </p>
-                                <input type="checkbox" style={{ marginLeft: "25px" }} />
-                            </div>
-                        </div>
-                        <div key={3} className="cart-item" >
-                            <div className="cart-item-details" style={{ display: "flex" }}>
-                                <p>b-55 shakti nagar tonk road jaipur , rajasthan </p>
-                                <input type="checkbox" style={{ marginLeft: "25px" }} />
-                            </div>
-                        </div>
-                        <div key={4} className="cart-item" >
-                            <div className="cart-item-details" style={{ display: "flex" }}>
-                                <p style={{ justifyContent:"center" }}>b-55 shakti nagar tonk road jaipur , rajasthan b-55 shakti nagar tonk road jaipur , rajasthanb-55 shakti nagar tonk road jaipur , rajasthanb-55 shakti nagar tonk road jaipur , rajasthanb-55 shakti nagar tonk road jaipur , rajasthanb-55 shakti nagar tonk road jaipur , rajasthanb-55 shakti nagar tonk road jaipur , rajasthan </p>
-                                <input type="checkbox"  style={{ marginLeft: "25px" }} />
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
                 <div style={{ display: "grid", justifyContent: "center" }}>
                     <h3>Total: ${checkoutData.reduce((acc, item) => acc + item.total_price, 0)}</h3>
-                    <button onClick={openModal} style={{ backgroundColor: "green", padding: "4px" }}>Place Order</button>
+                    <button onClick={PlaceOrderHandler} style={{ backgroundColor: "green", padding: "10px", border: "none", borderRadius: "5px", cursor: "pointer" }}>Place Order</button>
                 </div>
             </div>
             <div>
@@ -128,7 +163,7 @@ const Checkout = () => {
                     <h2>Add Address</h2>
                     <form onSubmit={handleSubmit(onSubmit)} style={{ width: '80%', padding: '20px', border: '1px solid #ccc', borderRadius: '5px' }} noValidate>
                         <div style={{ marginBottom: '15px' }}>
-                            <label htmlFor="pin" style={{ display: 'block', marginBottom: '5px' }}>pin</label>
+                            <label htmlFor="pin" style={{ display: 'block', marginBottom: '5px' }}>Pin</label>
                             <input
                                 {...register('pin')}
                                 id="pin"
@@ -138,7 +173,7 @@ const Checkout = () => {
                             {errors.pin && <p style={{ color: 'red', marginTop: '5px' }}>{errors.pin.message}</p>}
                         </div>
                         <div style={{ marginBottom: '15px' }}>
-                            <label htmlFor="state" style={{ display: 'block', marginBottom: '5px' }}>state</label>
+                            <label htmlFor="state" style={{ display: 'block', marginBottom: '5px' }}>State</label>
                             <input
                                 {...register('state')}
                                 id="state"
@@ -147,7 +182,7 @@ const Checkout = () => {
                             {errors.state && <p style={{ color: 'red', marginTop: '5px' }}>{errors.state.message}</p>}
                         </div>
                         <div style={{ marginBottom: '15px' }}>
-                            <label htmlFor="city" style={{ display: 'block', marginBottom: '5px' }}>city</label>
+                            <label htmlFor="city" style={{ display: 'block', marginBottom: '5px' }}>City</label>
                             <input
                                 {...register('city')}
                                 id="city"
@@ -156,7 +191,7 @@ const Checkout = () => {
                             {errors.city && <p style={{ color: 'red', marginTop: '5px' }}>{errors.city.message}</p>}
                         </div>
                         <div style={{ marginBottom: '15px' }}>
-                            <label htmlFor="house_no" style={{ display: 'block', marginBottom: '5px' }}>Address</label>
+                            <label htmlFor="house_no" style={{ display: 'block', marginBottom: '5px' }}>House Number</label>
                             <input
                                 type="text"
                                 {...register('house_no')}
@@ -165,7 +200,7 @@ const Checkout = () => {
                             />
                             {errors.house_no && <p style={{ color: 'red', marginTop: '5px' }}>{errors.house_no.message}</p>}
                         </div>
-                        <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: '#556cd6', color: '#fff', border: 'none', borderRadius: '5px' }}>Purchase</button>
+                        <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: '#556cd6', color: '#fff', border: 'none', borderRadius: '5px' }}>Add Address</button>
                     </form>
                 </Modal>
             </div>

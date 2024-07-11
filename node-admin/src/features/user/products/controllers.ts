@@ -13,6 +13,14 @@ export const GetProducts = async (req:Request, res:Response) => {
         res.status(400).json(error)
     }
 };
+export const GetCategory = async (req:Request, res:Response) => {
+    try {
+        const result = await UserProducts.GetCategory()
+        res.status(201).json(result)
+    } catch (error) {
+        res.status(400).json(error)
+    }
+};
 export const AddCart = async (req:Request, res:Response) => {
     try {
         const { product_id, user_id}=req.body
@@ -76,6 +84,25 @@ export const GetAllOrder = async (req:CustomRequest, res:Response) => {
     try {
         const id=req.UserId
         const result = await UserProducts.GetAllOrder(id as string)
+        res.status(201).json(result)
+    } catch (error) {
+        res.status(400).json(error)
+    }
+};
+export const GetAddress = async (req:CustomRequest, res:Response) => {
+    try {
+        const id=req.UserId
+        const result = await UserProducts.GetAddress(id as string)
+        res.status(201).json(result)
+    } catch (error) {
+        res.status(400).json(error)
+    }
+};
+export const UpdateAddressStatus = async (req:CustomRequest, res:Response) => {
+    try {
+        const user_id=req.UserId;
+        const id = req.params.id;
+        const result = await UserProducts.UpdateAddressStatus(user_id as string, id)
         res.status(201).json(result)
     } catch (error) {
         res.status(400).json(error)

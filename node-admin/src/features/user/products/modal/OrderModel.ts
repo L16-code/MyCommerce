@@ -6,6 +6,7 @@ export interface ICartSchema extends Document {
 export interface IOrderSchema extends Document {
     user_id: ObjectId;
     cart_id: ICartSchema[];
+    address_id: ObjectId;
     total_price: number;
     status: string;
     createdAt: Date;
@@ -13,6 +14,10 @@ export interface IOrderSchema extends Document {
 }
 const OrderSchema = new Schema({
     user_id: {
+        type: Schema.Types.ObjectId,
+        required: true
+    },
+    address_id: {
         type: Schema.Types.ObjectId,
         required: true
     },

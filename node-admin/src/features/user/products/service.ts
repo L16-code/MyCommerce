@@ -6,6 +6,7 @@ import { CartModel } from "./modal/cartModal";
 import { object } from "joi";
 import { AddressModel } from "./modal/addressModal";
 import { OrdersModel } from "./modal/OrderModel";
+import { ProductCategoryModal } from "../../admin/products-category/model";
 const response: {
     message: string;
     data?: unknown;
@@ -50,6 +51,19 @@ class UserProducts {
         } catch (error) {
             response.success = false;
             response.message = "An error occurred while fetching products";
+        }
+        return response;
+    }
+    async GetCategory(){
+        try {
+            const categories = await ProductCategoryModal.find({},{name:1,_id:1});
+            response.message = "Categories fetched successfully";
+            response.data = categories;
+            response.success = true;
+        } catch (error) {
+            response.message = "Failed to fetch categories";
+            response.success = false;
+            response.data = [];
         }
         return response;
     }
@@ -189,7 +203,7 @@ class UserProducts {
     }
     async AddOrder(data: IAddOrder) {
         try {
-            const { user_id, total_price } = data;
+            const { user_id, total_price,address_id } = data;
             const cartItems = await CartModel.aggregate([
                 {
                     $match: {
@@ -237,6 +251,7 @@ class UserProducts {
             }
             const newOrder = new OrdersModel({
                 user_id,
+                address_id,
                 total_price,
                 status: "Pending",
                 cart_id: cart_ids
@@ -306,23 +321,87 @@ class UserProducts {
     }
     async AddAddress(id: string, data: IAddAddress) {
         try {
-            const address = new AddressModel({
-                user_id: id,
-                city: data.city,
-                state: data.state,
-                pin: data.pin,
-                house_no: data.house_no,
-                isDefault: false,
-            })
-            const addressSaved = await address.save();
-            if (!addressSaved) {
-                response.success = false
-                response.message = 'address not saved';
-                return response;
+            const checkUser = await AddressModel.find({ user_id: id })
+            if (checkUser.length === 0) {
+                const address = new AddressModel({
+                    user_id: id,
+                    city: data.city,
+                    state: data.state,
+                    pin: data.pin,
+                    house_no: data.house_no,
+                    isDefault: true,
+                })
+                const addressSaved = await address.save();
+                if (!addressSaved) {
+                    response.success = false
+                    response.message = 'address not saved';
+                    return response;
+                }
+            } else {
+                await AddressModel.updateMany(
+                    { user_id: id, }, {
+                    $set: { isDefault: false }})
+                const Newaddress = new AddressModel({
+                    user_id: id,
+                    city: data.city,
+                    state: data.state,
+                    pin: data.pin,
+                    house_no: data.house_no,
+                    isDefault: true,
+                })
+                const addressSaved = await Newaddress.save();
+                if (!addressSaved) {
+                    response.success = false
+                    response.message = 'address not saved';
+                    return response;
+                }
             }
             response.success = true;
             response.message = "Address added successfully";
             response.data = null;
+        } catch (error: any) {
+            response.success = false;
+            response.message = error.message;
+        }
+        return response;
+    }
+    async UpdateAddressStatus(User_id: string, address_id: string) {
+        try {
+            await AddressModel.updateMany({
+                user_id: User_id,
+            }, {
+                $set: {
+                    isDefault: false
+                }
+            })
+            const deafultAddress = await AddressModel.findByIdAndUpdate(address_id, { isDefault: true })
+            if (!deafultAddress) {
+                response.success = false
+                response.message = 'address not found';
+                return response;
+            }
+            response.success = true;
+            response.message = "Address status updated successfully";
+            response.data = null;
+        } catch (error: any) {
+            response.success = false;
+            response.message = error.message;
+        }
+        return response;
+    }
+    async GetAddress(id: string) {
+        try {
+            const addresses = await AddressModel.find({ user_id: id }, {
+                _id: 1,
+                city: 1,
+                state: 1,
+                pin: 1,
+                house_no: 1,
+                isDefault: 1
+            });
+            response.success = true;
+            response.message = "Addresses fetched successfully";
+            response.data = addresses;
         } catch (error: any) {
             response.success = false;
             response.message = error.message;
@@ -365,8 +444,8 @@ class UserProducts {
                 {
                     $lookup: {
                         from: 'addresses',
-                        localField: 'user_id',
-                        foreignField: 'user_id',
+                        localField: 'address_id',
+                        foreignField: '_id',
                         as: 'address_details'
                     }
                 },
@@ -399,22 +478,22 @@ class UserProducts {
                     }
                 }
             ]);
-            if(orders){
+            if (orders) {
                 response.success = true;
                 response.message = "Orders fetched successfully";
                 response.data = orders;
-            }else{
+            } else {
                 response.success = false;
                 response.message = "No orders found";
                 return response;
             }
-       
-        return response
-    } catch(error) {
-        response.success = false;
-        response.message = "An error occurred while fetching orders";
-        return response;
+
+            return response
+        } catch (error) {
+            response.success = false;
+            response.message = "An error occurred while fetching orders";
+            return response;
+        }
     }
-}
 }
 export default new UserProducts

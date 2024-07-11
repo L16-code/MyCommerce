@@ -11,4 +11,5 @@ export interface IAddAddress{
 export interface IAddOrder{
     user_id: string;
     total_price: number;
+    address_id: string;
 }

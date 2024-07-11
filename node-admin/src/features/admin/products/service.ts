@@ -145,8 +145,8 @@ class ProductService {
                 {
                     $lookup: {
                         from: 'addresses',
-                        localField: 'user_id',
-                        foreignField: 'user_id',
+                        localField: 'address_id',
+                        foreignField: '_id',
                         as: 'address_details'
                     }
                 },

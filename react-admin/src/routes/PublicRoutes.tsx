@@ -27,14 +27,10 @@ const PublicRoutes: React.FC = () => {
     return (
         <div>
             <Routes>
-                <Route
-                    element={<PrivateRoute isAuthenticated={isAuthenticated} requiredPermissions={permissions.users.CREATE_USER.name} />}
-                >
                     <Route
                         path={routes.HOME}
                         element={<WithHeader component={Dashboard} route={routes.HOME} isAuthenticated={isAuthenticated} />}
                     />
-                </Route>
                 <Route
                     path={routes.ROOT}
                     element={<WithHeader component={Login} route={routes.ROOT} isAuthenticated={isAuthenticated} />}

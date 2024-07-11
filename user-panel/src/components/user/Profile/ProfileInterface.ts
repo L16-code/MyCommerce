@@ -14,3 +14,7 @@ export interface ProfileData {
     description: string;
     
   }
+  export interface CategoriesData{
+    _id:string;
+    name: string;
+  }
