@@ -20,8 +20,9 @@ export interface IProfileData {
 export interface QueryParams {
     page: number;
     limit: number;
-    sortBy?: string;
-    order?: string;
+    search?:string;
+    sort?: string;
+    category?: string;
     filter?: string;
 }
 export interface IGoogleCredential {

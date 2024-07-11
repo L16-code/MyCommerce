@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { ObjectId } from "mongoose";
 import { ProductModal } from "../../admin/products/model";
 import { QueryParams } from "../auth/interface";
 import { IAddAddress, IAddCartData, IAddOrder } from "./interface";
@@ -15,14 +15,40 @@ const response: {
 interface IQuantity {
     quantity: number;
 }
+
 class UserProducts {
-    async GetProducts({ page, limit }: QueryParams) {
+    async GetProducts({ page, limit, search, category, sort }: QueryParams) {
         try {
+            console.log({ page, limit, search, category, sort })
             const offset = (page - 1) * limit;
+
+            const matchStage:any= {};
+
+            if (search) {
+                matchStage.name = { $regex: search, $options: 'i' };
+            }
+            if (category) {
+                matchStage.category_id = new mongoose.Types.ObjectId(category);
+            }
+
+            let sortStage= {};
+
+            if (sort === "LowToHigh") {
+                sortStage={ price: 1 };
+            }
+            else if (sort === "HighToLow") {
+                sortStage={ price: -1 };
+            }else{
+                sortStage={ _id: 1 };
+            }
+
             const products = await ProductModal.aggregate([
                 {
+                    $match: matchStage
+                },
+                {
                     $lookup: {
-                        from: "products_catgeories",
+                        from: "products_categories",
                         localField: "category_id",
                         foreignField: "_id",
                         as: "category"
@@ -39,15 +65,17 @@ class UserProducts {
                         category: { $first: "$category.name" }
                     }
                 }
-            ]).skip(offset).limit(limit);
-            const totalUsers = await ProductModal.countDocuments();
+            ]).skip(offset).limit(limit).sort(sortStage);
+            console.log(products)
+            const totalProducts = await ProductModal.countDocuments(matchStage);
+
             return {
                 success: true,
                 message: "Products found",
                 data: products,
-                totalPages: Math.ceil(totalUsers / limit),
+                totalPages: Math.ceil(totalProducts / limit),
                 currentPage: page,
-            }
+            };
         } catch (error) {
             response.success = false;
             response.message = "An error occurred while fetching products";

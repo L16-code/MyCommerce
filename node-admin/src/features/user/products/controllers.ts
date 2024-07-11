@@ -3,12 +3,16 @@ import UserProducts from "./service"
 import { CustomRequest } from "../../../middleware/authMiddleware";
 export const GetProducts = async (req:Request, res:Response) => {
     try {
-        const { page = 1, limit = 10 } = req.query;
+        const { page = 1, limit = 10, search = '', category = '', sort = '' } = req.query;
+        
         const result = await UserProducts.GetProducts({
             page: parseInt(page as string),
-            limit: parseInt(limit as string)
-        })
-        res.status(201).json(result)
+            limit: parseInt(limit as string),
+            search: search.toString(),
+            category: category.toString(),
+            sort: sort.toString()
+        });
+        res.status(200).json(result);
     } catch (error) {
         res.status(400).json(error)
     }
