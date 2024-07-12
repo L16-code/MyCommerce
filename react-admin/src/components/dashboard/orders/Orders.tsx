@@ -16,6 +16,20 @@ const Orders = () => {
     useEffect(() => {
         GetOrders()
     }, [])
+    const updateOrderStatus = async (orderId: string, newStatus: 'Pending' | 'Shipped' | 'Completed' | 'Rejected') => {
+        try {
+            // const AuthStr = 'Bearer '.concat(jwtToken as string);
+            await axios.put(`http://localhost:5000/product/update-orders/${orderId}`, {status:newStatus}, { headers: { Authorization: AuthStr } })
+            setOrders((prevOrders) =>
+                prevOrders.map((order) =>
+                    order._id === orderId ? { ...order, status: newStatus } : order
+                )
+            );
+            GetOrders()
+        } catch (err) {
+            console.error('Failed to update order status', err);
+        }
+    };
     return (
         <div className="wrapper">
             <Sidebar isAuthenticated={true} />
@@ -47,25 +61,45 @@ const Orders = () => {
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            {Orders?.map((order, index) => (
-                                                                <tr key={index}>
-                                                                    <td>{order._id}</td>
-                                                                    <td>{order.user_name}</td>
-                                                                    <td>₹{order.total_price}</td>
-                                                                    <td>{order.products.map((product) => (
-                                                                        <>
-                                                                            <p> <span style={{ fontWeight: "bold" }}> name: </span>{product.name}  <span style={{ fontWeight: "bold" }}> price:₹ </span> {product.price}  <span style={{ fontWeight: "bold" }}> quantity: </span>{product.quantity} <span style={{ fontWeight: "bold" }}> total Price:₹ </span> {product.total_price}</p>
-                                                                        </>
-                                                                    ))}</td>
-                                                                    <td>
-                                                                        <>
-                                                                            <p> {order.address.house_no} , {order.address.city}  ,{order.address.state} <br /> pin: {order.address.pin}</p>
-                                                                        </>
-                                                                    </td>
-                                                                    <td>{order.status}</td>
-                                                                    <td>{order.createdAt}</td>
-                                                                </tr>
-                                                            ))}
+                                                            {Orders?.map((order, index) => {
+                                                                const ts = new Date(order.createdAt);
+                                                                const isValidDate = !isNaN(ts.getTime());
+                                                                if (!isValidDate) {
+                                                                    console.error('Invalid date:', order.createdAt);
+                                                                    return null; // Skip this order
+                                                                }
+                                                                const formattedDate = ts.toLocaleDateString();
+                                                                console.log(formattedDate);
+                                                                return (
+                                                                    <tr key={index}>
+                                                                        <td>{order._id}</td>
+                                                                        <td>{order.user_name}</td>
+                                                                        <td>₹{order.total_price}</td>
+                                                                        <td>{order.products.map((product) => (
+                                                                            <>
+                                                                                <p> <span style={{ fontWeight: "bold" }}> name: </span>{product.name}  <span style={{ fontWeight: "bold" }}> price:₹ </span> {product.price}  <span style={{ fontWeight: "bold" }}> quantity: </span>{product.quantity} <span style={{ fontWeight: "bold" }}> total Price:₹ </span> {product.total_price}</p>
+                                                                            </>
+                                                                        ))}</td>
+                                                                        <td>
+                                                                            <>
+                                                                                <p> {order.address.house_no} , {order.address.city}  ,{order.address.state} <br /> pin: {order.address.pin}</p>
+                                                                            </>
+                                                                        </td>
+                                                                        <td>
+                                                                            <select
+                                                                                value={order.status}
+                                                                                onChange={(e) => updateOrderStatus(order._id, e.target.value as 'Pending' | 'Shipped' | 'Rejected' | 'Completed')}
+                                                                            >
+                                                                                <option value="Pending">Pending</option>
+                                                                                <option value="Shipped">Shipped</option>
+                                                                                <option value="Completed">Completed</option>
+                                                                                <option value="Rejected">Rejected</option>
+                                                                            </select>
+                                                                        </td>
+                                                                        <td>{formattedDate}</td>
+                                                                    </tr>
+                                                                )
+                                                            })}
                                                         </tbody>
                                                     </table>
                                                 </div>

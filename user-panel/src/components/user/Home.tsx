@@ -57,10 +57,10 @@ const Home = () => {
     };
 
     useEffect(() => {
-        if(searchData===''){
+        if (searchData === '') {
             GetProducts();
             GetCategory();
-        }else{
+        } else {
             const delayDebounceFn = setTimeout(() => {
                 GetProducts();
                 GetCategory();
@@ -74,24 +74,74 @@ const Home = () => {
             <div>
                 <div style={{ display: 'flex', flexDirection: "column", justifyContent: 'center', alignItems: 'center' }}>
                     <h1 style={{ margin: "2rem", fontWeight: "bold" }}>Shopping Hub</h1>
-                    <div style={{ width: '80%', padding: '20px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: "aliceblue", display: "grid", flexWrap: "wrap", gap: "1rem", marginTop: "2rem" }}>
-                        <div style={{ display: "block", textAlign: "center", fontSize: "medium", fontWeight: "bold" }}>Filters</div>
-                        <div style={{ display: "flex", gap: "4rem", justifyContent: "center" }}>
-                            <div>
-                                <input type="text" placeholder="search products" style={{ padding: '8px', boxSizing: 'border-box' }} onChange={(e) => setSearchData(e.target.value)} />
-                            </div>
-                            <select name="category" id="category" style={{ padding: '8px', boxSizing: 'border-box' }} onChange={(e) => setSelectedCategory(e.target.value)}>
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '1rem',
+                        width: '80%',
+                        padding: '20px',
+                        border: '1px solid #ccc',
+                        borderRadius: '5px',
+                        backgroundColor: 'aliceblue',
+                        marginTop: '2rem'
+                    }}>
+                        <div style={{
+                            fontSize: '1.5rem',
+                            fontWeight: 'bold',
+                            textAlign: 'center',
+                            marginBottom: '1rem'
+                        }}>Filters</div>
+                        <div style={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            gap: '1rem',
+                            justifyContent: 'center'
+                        }}>
+                            <input
+                                type="text"
+                                placeholder="Search products"
+                                style={{
+                                    padding: '10px',
+                                    border: '1px solid #ccc',
+                                    borderRadius: '5px',
+                                    width: '200px',
+                                    boxSizing: 'border-box'
+                                }}
+                                onChange={(e) => setSearchData(e.target.value)}
+                            />
+                            <select
+                                name="category"
+                                id="category"
+                                style={{
+                                    padding: '10px',
+                                    border: '1px solid #ccc',
+                                    borderRadius: '5px',
+                                    width: '200px',
+                                    boxSizing: 'border-box'
+                                }}
+                                onChange={(e) => setSelectedCategory(e.target.value)}
+                            >
                                 <option value="">All</option>
-                                {
-                                    categoryData.map((category) => (
-                                        <option key={category._id} value={category._id}>{category.name}</option>
-                                    ))
-                                }
+                                {categoryData.map((category) => (
+                                    <option key={category._id} value={category._id}>{category.name}</option>
+                                ))}
                             </select>
-                            <select name="sort" id="sort" style={{ padding: '8px', boxSizing: 'border-box' }} onChange={(e) => setSortOrder(e.target.value)}>
+                            <select
+                                name="sort"
+                                id="sort"
+                                style={{
+                                    padding: '10px',
+                                    border: '1px solid #ccc',
+                                    borderRadius: '5px',
+                                    width: '200px',
+                                    boxSizing: 'border-box'
+                                }}
+                                onChange={(e) => setSortOrder(e.target.value)}
+                            >
                                 <option value="">Sort By</option>
                                 <option value="LowToHigh">Price: Low to High</option>
-                                <option value="HighToLow">Price: High To Low</option>
+                                <option value="HighToLow">Price: High to Low</option>
                             </select>
                         </div>
                     </div>

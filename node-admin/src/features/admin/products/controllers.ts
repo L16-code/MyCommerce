@@ -40,3 +40,11 @@ export const ReadOrder = async (req: Request, res:Response) => {
         res.status(400).json(error)
     }
 };
+export const UpdateOrder = async (req: Request, res:Response) => {
+    try {
+        const result = await ProductService.UpdateOrder(req.params.id,req.body)
+        res.status(201).json(result)
+    } catch (error) {
+        res.status(400).json(error)
+    }
+};

@@ -6,7 +6,6 @@ import axios from "axios";
 import { Bounce, toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from "@react-oauth/google";
-import FacebookLogin, { ReactFacebookLoginInfo } from 'react-facebook-login';
 import { UserLogin } from "./UserInterface";
 import routes from "../../../routes/routes";
 import { login } from "../../../state_management/actions/rootReducer";
@@ -59,13 +58,6 @@ const Login = () => {
             })
         } catch (error) {
             console.error('Google Signup Failed', error);
-        }
-    };
-    const handleFacebookSignup = async (response: ReactFacebookLoginInfo) => {
-        console.log('Facebook Signup Success:', response);
-        try {
-        } catch (error) {
-            console.error('Facebook Signup Failed', error);
         }
     };
     const handleGoogleSignupError = () => {
@@ -137,20 +129,6 @@ const Login = () => {
                         />
                     </div>
                 </GoogleOAuthProvider>
-                <div>
-                    <p></p>
-                    <p>or Sign Up with Facebook</p>
-                    <p></p>
-                    <button style={{ width: '100%', padding: '10px', backgroundColor: '#3b5998', color: '#fff', border: 'none', borderRadius: '5px' }}>
-                        <FacebookLogin
-                            appId="1704215630115943"
-                            autoLoad={false}
-                            fields="name,email,picture"
-                            callback={handleFacebookSignup}
-                            onFailure={() => console.log('Facebook Signup Failed')}
-                        />
-                    </button>
-                </div>
             </form>
         </div>
     )

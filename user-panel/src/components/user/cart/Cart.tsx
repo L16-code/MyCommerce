@@ -80,7 +80,7 @@ const Cart = () => {
                             <div className="cart-summary">
                                 <h2>Total: ₹{TotalValue.toFixed(2)}</h2>
                                 <button onClick={()=>{navigate(routes.CHECKOUT)}} style={{ backgroundColor: "green", margin: "2rem" }}>Proceed To Checkout</button>
-                                <button onClick={() => { }}>Clear Cart</button>
+                                {/* <button onClick={() => { }}>Clear Cart</button> */}
                             </div>
                         </>
                     )}

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import {Chart,ChartType, registerables } from 'chart.js';
+import { Chart, ChartType, registerables } from 'chart.js';
 import Sidebar from "./sidebar";
 import Navbar from "./navbar";
 import Footer from "./footer";
@@ -30,7 +30,11 @@ const Dashboard: React.FC = () => {
                     type: ChartType,
                     data: data,
                     options: {
-                        // Add your chart options here
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
                     }
                 });
             }
@@ -41,7 +45,7 @@ const Dashboard: React.FC = () => {
             labels: ['Label 1', 'Label 2', 'Label 3'],
             datasets: [
                 {
-                    label: 'Dataset 1',
+                    label: 'Line Chart',
                     data: [10, 30, 20],
                     backgroundColor: 'rgba(255, 99, 132, 0.2)',
                     borderColor: 'rgba(255, 99, 132, 1)',
@@ -96,7 +100,7 @@ const Dashboard: React.FC = () => {
 
     return (
         <div className="wrapper">
-            <Sidebar  isAuthenticated={true}/>
+            <Sidebar isAuthenticated={true} />
             <div className="main">
                 <Navbar />
                 <main className="content">

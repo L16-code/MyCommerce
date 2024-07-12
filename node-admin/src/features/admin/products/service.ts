@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { OrdersModel } from "../../user/products/modal/OrderModel";
-import { IProductsAdd } from "./interfaces";
+import { IProductsAdd, IUpdateStatus } from "./interfaces";
 import { ProductModal } from "./model";
 
 const response: {
@@ -211,6 +211,25 @@ class ProductService {
         } catch (error) {
             response.success = false;
             response.message = "An error occurred while fetching the orders";
+            response.data = '';
+        }
+        return response;
+    }
+    async UpdateOrder(id: string, status:IUpdateStatus) {
+        try {
+            const order = await OrdersModel.findByIdAndUpdate(id, status,{ new: true });
+            if (order) {
+                response.success = true;
+                response.message = "Order updated successfully";
+                response.data = {};
+            } else {
+                response.success = false;
+                response.message = "Order can not updated";
+                response.data = '';
+            }
+        } catch (error) {
+            response.success = false;
+            response.message = "An error occurred while updating the order";
             response.data = '';
         }
         return response;

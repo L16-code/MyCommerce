@@ -225,7 +225,8 @@ class UserService {
             const users = await UserModel.aggregate([
                 {
                     $match: {
-                        _id: { $nin: [excludeId, loggedInUserId] }
+                        _id: { $nin: [excludeId, loggedInUserId] },
+                        actionType: "admin"
                     }
                 },
                 {

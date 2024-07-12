@@ -7,3 +7,6 @@ export interface IProductsAdd{
     image: string;
     createdAt: Date;
 }
+export interface IUpdateStatus{
+    status:"Completed"|"Pending" |"Rejected"|"Shipped"
+}

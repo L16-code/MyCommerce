@@ -5,7 +5,6 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Bounce, toast } from "react-toastify";
 import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from "@react-oauth/google";
-import FacebookLogin, { ReactFacebookLoginInfo } from 'react-facebook-login';
 import { useDispatch } from "react-redux";
 import routes from "../../../routes/routes";
 import { UserRegister } from "./UserInterface";
@@ -65,13 +64,6 @@ const Register = () => {
     };
     const handleGoogleSignupError = () => {
         console.error('Google Signup Failed');
-    };
-    const handleFacebookSignup = async (response: ReactFacebookLoginInfo) => {
-        console.log('Facebook Signup Success:', response);
-        try {
-        } catch (error) {
-            console.error('Facebook Signup Failed', error);
-        }
     };
     const { register, handleSubmit, formState: { errors } } = useForm<UserRegister>({
         resolver: yupResolver(schema),
@@ -179,17 +171,6 @@ const Register = () => {
                         />
                     </div>
                 </GoogleOAuthProvider>
-                <div>
-                    <p>or Sign Up with Facebook</p>
-                        <FacebookLogin
-                            appId="1704215630115943"
-                            autoLoad={false}
-                            fields="name,email,picture"
-                            callback={handleFacebookSignup}
-                            onFailure={() => console.log('Facebook Signup Failed')}
-                        />
-
-                </div>
             </form>
         </div>
     )
