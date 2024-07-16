@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import routes from "../../../routes/routes";
 
 const schema = yup.object().shape({
-    pin: yup.number().required("Pin is required"),
+    pin: yup.string().required("Pin is required").max(6,"Pin must be lesser than 5"),
     house_no: yup.string().required("House Number is required"),
     state: yup.string().required("State is required"),
     city: yup.string().required("City is required"),
@@ -104,7 +104,9 @@ const Checkout = () => {
             console.log(err);
         }
     };
-
+    const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.target.value = e.target.value.replace(/[^0-9]/g, '');
+    };
     return (
         <div style={{ display: 'flex', flexDirection: "column", justifyContent: 'center', alignItems: 'center' }}>
             <h1 style={{ margin: "2rem", fontWeight: "bold" }}>Checkout</h1>
@@ -167,7 +169,9 @@ const Checkout = () => {
                             <input
                                 {...register('pin')}
                                 id="pin"
-                                type="number"
+                                type="text"
+                                maxLength={6}
+                                onInput={handleInput}
                                 style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
                             />
                             {errors.pin && <p style={{ color: 'red', marginTop: '5px' }}>{errors.pin.message}</p>}

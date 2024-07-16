@@ -16,10 +16,11 @@ const schema = yup.object().shape({
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
         "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character"
     ),
-    dob: yup.string().required(),
+    dob: yup.date().required().max(new Date(), "Date of Birth cannot be in the future"),
     gender: yup.string().required(),
 })
 const Register = () => {
+    const today = new Date();
     const ClientId = "763033723945-4jf16tnnn3ta5p82k0auh75o1n5o09du.apps.googleusercontent.com";
     const dispatch=useDispatch();
     const handleGoogleSignupSuccess = async (credentialResponse: CredentialResponse) => {
@@ -140,6 +141,7 @@ const Register = () => {
                         type="date"
                         {...register('dob')}
                         id="dob"
+                        max={today.toISOString().split('T')[0]}
                         style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
                     />
                     {errors.dob && <p style={{ color: 'red', marginTop: '5px' }}>{errors.dob.message}</p>}

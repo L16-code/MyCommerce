@@ -17,6 +17,7 @@ const schema = yup.object().shape({
 });
 
 const Profile = () => {
+    const today = new Date();
     const { register, handleSubmit, formState: { errors }, reset } = useForm<ProfileData>({
         resolver: yupResolver(schema),
         defaultValues: {
@@ -156,6 +157,7 @@ const Profile = () => {
                                 type="date"
                                 {...register('dob')}
                                 id="dob"
+                                max={today.toISOString().split('T')[0]}
                                 style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
                             />
                             {errors.dob && <p style={{ color: 'red', marginTop: '5px' }}>{errors.dob.message}</p>}

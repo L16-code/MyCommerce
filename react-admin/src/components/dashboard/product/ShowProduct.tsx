@@ -16,6 +16,13 @@ const ShowProduct = () => {
         axios.get('http://localhost:5000/product/read',{ headers: { Authorization: AuthStr } })
             .then(res => setProducts(res.data.data))
     }
+    const StatusHandler=async(id:string)=>{
+        const isConfirm=confirm('Are you Sure You Want To Change status')
+        if(isConfirm){
+            await axios.post(`http://localhost:5000/product/update-status`, {id:id},{ headers: { Authorization: AuthStr } })
+            GetProducts()
+        }
+    }
     useEffect(() => {
         GetProducts()
     }, [])
@@ -70,10 +77,9 @@ const ShowProduct = () => {
                                                                     <td><img src={product.image} alt={product.name} style={{ width: "100px" }} /></td>
                                                                     <td>{
                                                                             product.status === "active" ?
-                                                                                <span className="badge bg-success">Active</span>
+                                                                                <span className="badge bg-success" onClick={()=>{ StatusHandler(product._id)}} style={{ cursor:"pointer"}}>Active</span>
                                                                                 :
-                                                                                <span className="badge bg-danger">Inactive</span>
-
+                                                                                <span className="badge bg-danger" onClick={()=>{ StatusHandler(product._id)}} style={{ cursor:"pointer"}}>Inactive</span>
                                                                         }
                                                                     </td>
                                                                     <td>
@@ -86,15 +92,6 @@ const ShowProduct = () => {
                                                                     }}
                                                                     onClick={()=>navigate(routes.PRODUCTS_EDIT,{state:{id:product._id}} )}
                                                                     >Edit</button>
-
-                                                                        {/* <button style={{
-                                                                            marginLeft: "5px",
-                                                                            padding: "5px",
-                                                                            borderRadius: "5px",
-                                                                            border: "1px solid #000",
-                                                                            color: "#000",
-                                                                            backgroundColor: "red",
-                                                                        }}>Delete</button> */}
                                                                     </td>
                                                                 </tr>
                                                             ))}

@@ -39,7 +39,14 @@ class RoleService {
     }
     async GetAllRoles() {
         try {
+            const excludeId = new mongoose.Types.ObjectId('667aa4c6d03f6b2d4556f4d0');
+
             const roles = await RoleModel.aggregate([
+                {
+                    $match:{
+                        _id: { $nin:[excludeId] }
+                    }
+                },
                 {
                     $lookup: {
                         from: "rolehaspermissions",
@@ -116,7 +123,7 @@ class RoleService {
                     }
                 },
                 {
-                    $sort:{_id:1}
+                    $sort:{_id:-1}
                 }
             ]);
     

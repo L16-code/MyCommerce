@@ -1,4 +1,4 @@
-import { Navigate, Outlet, useNavigate } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {jwtDecode} from 'jwt-decode';
 import { RootState } from '../state_management/store/store';
@@ -8,7 +8,6 @@ import { useEffect } from 'react';
 
 const PrivateRoutes: React.FC<ProtectedRoutesProps> = ({ isAuthenticated, children, requiredPermissions }) => {
     const dispatch = useDispatch();
-    const navigate=useNavigate();
     const TOKEN = useSelector((state: RootState) => state.root.token);
     const userPermissions = useSelector((state: RootState) => state.root.permission);
     useEffect(() => {

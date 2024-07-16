@@ -32,7 +32,7 @@ class PermissionService {
         try {
             const result = await PermissionModel.find({},{
                 name: 1, _id: 1
-            });
+            }).sort({_id:-1});
             if (result) {
                 response.success = true;
                 response.message = "Permission Fetched successfully";

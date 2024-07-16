@@ -16,7 +16,7 @@ export interface GetCheckoutData{
     quantity: number;
 }
 export interface AddAddressData{
-    pin:number;
+    pin:string;
     state:string;
     city:string;
     house_no:string

@@ -18,8 +18,7 @@ const Orders = () => {
     }, [])
     const updateOrderStatus = async (orderId: string, newStatus: 'Pending' | 'Shipped' | 'Completed' | 'Rejected') => {
         try {
-            // const AuthStr = 'Bearer '.concat(jwtToken as string);
-            await axios.put(`http://localhost:5000/product/update-orders/${orderId}`, {status:newStatus}, { headers: { Authorization: AuthStr } })
+            await axios.put(`http://localhost:5000/product/update-orders/${orderId}`, { status: newStatus }, { headers: { Authorization: AuthStr } })
             setOrders((prevOrders) =>
                 prevOrders.map((order) =>
                     order._id === orderId ? { ...order, status: newStatus } : order
@@ -86,15 +85,35 @@ const Orders = () => {
                                                                             </>
                                                                         </td>
                                                                         <td>
-                                                                            <select
-                                                                                value={order.status}
-                                                                                onChange={(e) => updateOrderStatus(order._id, e.target.value as 'Pending' | 'Shipped' | 'Rejected' | 'Completed')}
-                                                                            >
-                                                                                <option value="Pending">Pending</option>
-                                                                                <option value="Shipped">Shipped</option>
-                                                                                <option value="Completed">Completed</option>
-                                                                                <option value="Rejected">Rejected</option>
-                                                                            </select>
+                                                                            {
+                                                                                order.status === "Completed" || order.status === "Rejected" ? order.status === "Completed" ?
+                                                                                    <span className="badge bg-success">Completed</span>
+                                                                                    :
+                                                                                    <span className="badge bg-danger">Rejected</span>
+                                                                                    :
+                                                                                    <select
+                                                                                        value={order.status}
+                                                                                        onChange={(e) => updateOrderStatus(order._id, e.target.value as 'Pending' | 'Shipped' | 'Rejected' | 'Completed')}
+                                                                                    >
+                                                                                        <>
+                                                                                            {
+                                                                                                order.status === "Shipped" ?
+                                                                                                    <>
+                                                                                                        <option value="Shipped">Shipped</option>
+                                                                                                        <option value="Completed">Completed</option>
+                                                                                                        <option value="Rejected">Rejected</option>
+                                                                                                    </>
+                                                                                                    :
+                                                                                                    <>
+                                                                                                        <option value="Pending">Pending</option>
+                                                                                                        <option value="Shipped">Shipped</option>
+                                                                                                        <option value="Completed">Completed</option>
+                                                                                                        <option value="Rejected">Rejected</option>
+                                                                                                    </>
+                                                                                            }
+                                                                                        </>
+                                                                                    </select>
+                                                                            }
                                                                         </td>
                                                                         <td>{formattedDate}</td>
                                                                     </tr>

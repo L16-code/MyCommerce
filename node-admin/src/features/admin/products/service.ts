@@ -52,6 +52,11 @@ class ProductService {
                         status: 1,
                         category: { $first: "$category.name" }
                     }
+                },
+                {
+                    $sort: {
+                        _id: -1
+                    }
                 }
             ]);
             if (result) {
@@ -112,6 +117,24 @@ class ProductService {
             response.success = false;
             response.message = "An error occurred while updating the product";
             response.data = '';
+        }
+        return response;
+    }
+    async UpdateProductStatus(id: string) {
+        const product_id = new mongoose.Types.ObjectId(id);
+        const product = await ProductModal.findById(product_id);
+        if (product) {
+            const newStatus = product.status === 'active' ? 'inactive' : 'active';
+            const updatedProducts = await ProductModal.findByIdAndUpdate(
+                product_id,
+                { status: newStatus }
+            );
+            response.success = true;
+            response.message = "Products status updated successfully";
+            response.data = updatedProducts;
+        }else{
+            response.message = "Product not found";
+            response.success = false;
         }
         return response;
     }
@@ -215,9 +238,9 @@ class ProductService {
         }
         return response;
     }
-    async UpdateOrder(id: string, status:IUpdateStatus) {
+    async UpdateOrder(id: string, status: IUpdateStatus) {
         try {
-            const order = await OrdersModel.findByIdAndUpdate(id, status,{ new: true });
+            const order = await OrdersModel.findByIdAndUpdate(id, status, { new: true });
             if (order) {
                 response.success = true;
                 response.message = "Order updated successfully";

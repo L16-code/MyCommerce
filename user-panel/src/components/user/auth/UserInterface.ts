@@ -2,7 +2,7 @@ export interface UserRegister{
     username: string;
     password: string;
     email: string;
-    dob: string;
+    dob: Date;
     gender:string;
 }
 export interface UserLogin{

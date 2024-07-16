@@ -22,7 +22,7 @@ class UserProducts {
             console.log({ page, limit, search, category, sort })
             const offset = (page - 1) * limit;
 
-            const matchStage:any= {};
+            const matchStage: any = {};
 
             if (search) {
                 matchStage.name = { $regex: search, $options: 'i' };
@@ -31,20 +31,24 @@ class UserProducts {
                 matchStage.category_id = new mongoose.Types.ObjectId(category);
             }
 
-            let sortStage= {};
+            let sortStage = {};
 
             if (sort === "LowToHigh") {
-                sortStage={ price: 1 };
+                sortStage = { price: 1 };
             }
             else if (sort === "HighToLow") {
-                sortStage={ price: -1 };
-            }else{
-                sortStage={ _id: 1 };
+                sortStage = { price: -1 };
+            } else {
+                sortStage = { _id: 1 };
             }
 
             const products = await ProductModal.aggregate([
                 {
-                    $match: matchStage
+                    $match: {
+                        ...matchStage,
+                        status: 'active'
+                    }
+
                 },
                 {
                     $lookup: {
@@ -82,9 +86,9 @@ class UserProducts {
         }
         return response;
     }
-    async GetCategory(){
+    async GetCategory() {
         try {
-            const categories = await ProductCategoryModal.find({},{name:1,_id:1});
+            const categories = await ProductCategoryModal.find({}, { name: 1, _id: 1 });
             response.message = "Categories fetched successfully";
             response.data = categories;
             response.success = true;
@@ -231,7 +235,7 @@ class UserProducts {
     }
     async AddOrder(data: IAddOrder) {
         try {
-            const { user_id, total_price,address_id } = data;
+            const { user_id, total_price, address_id } = data;
             const cartItems = await CartModel.aggregate([
                 {
                     $match: {
@@ -368,7 +372,8 @@ class UserProducts {
             } else {
                 await AddressModel.updateMany(
                     { user_id: id, }, {
-                    $set: { isDefault: false }})
+                    $set: { isDefault: false }
+                })
                 const Newaddress = new AddressModel({
                     user_id: id,
                     city: data.city,
