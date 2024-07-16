@@ -17,7 +17,7 @@ const permissions: { [key: string]: string[] } = {
     roles: ['roles-create', 'roles-read', 'roles-update', 'roles-delete'],
     products: ['products-create', 'products-read', 'products-update', 'products-delete'],
     orders: ['orders-read', 'orders-update'],
-    customers:['customers-read']
+    customers:['customers-read', 'customers-update']
 
 };
 
@@ -38,7 +38,8 @@ const schema = yup.object().shape({
         'products-delete': yup.boolean(),
         'orders-read': yup.boolean(),
         'orders-update': yup.boolean(),
-        'customers-read': yup.boolean()
+        'customers-read': yup.boolean(),
+        'customers-update': yup.boolean()
 
     }),
 });
@@ -74,7 +75,7 @@ const EditRole: React.FC = () => {
         const formData = {
             name: data.roleName,
             permission: Object.entries(data.selectedPermissions)
-                .filter(([key, value]) => value)
+                .filter(([value]) => value)
                 .map(([key]) => {
                     const permission = permissionMap[key];
                     if (!permission) {

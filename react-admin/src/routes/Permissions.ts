@@ -68,6 +68,10 @@ const permissions = {
         VIEW_CUSTOMER: {
             name: 'customers-read',
             id: '668e51be41687f6f4774b102'
+        },
+        EDIT_CUSTOMER: {
+            name: 'customers-update',
+            id: '66965bfeefecfc41c414cc4a'
         }
     }
 };

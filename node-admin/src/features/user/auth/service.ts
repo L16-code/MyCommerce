@@ -100,6 +100,12 @@ class UserPanelService{
         if (isILogIn(LoginData)) {
             const { email, password } = LoginData;
             const user = await UserModel.findOne({ email });
+            if (user && user.status === 'inactive' && user.actionType === 'admin') {
+                response.success = false;
+                response.message = "User is not valid";
+                response.data = '';
+                return response;
+            }
             if (user) {
                 const validPassword = await bcrypt.compare(password, user.password);
                 if (validPassword) {
@@ -139,6 +145,19 @@ class UserPanelService{
                 const decodedData = jwt.decode(token) as { email: string; given_name: string };
                 const email = decodedData.email
                 const user = await UserModel.findOne({ email });
+
+                if (user && user.status === 'inactive') {
+                    response.success = false;
+                    response.message = "User is inactive";
+                    response.data = '';
+                    return response;
+                }
+                if (user && user.actionType === 'admin') {
+                    response.success = false;
+                    response.message = "User is not authorized";
+                    response.data = '';
+                    return response;
+                }
                 if (user) {
                     const token = jwt.sign({ userEmail: user.email, UserId: user._id }, process.env.JWT_SECRET || SecretKey, {
                         expiresIn: '1h',

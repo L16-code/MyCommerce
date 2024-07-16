@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken';
 import { ObjectId } from "mongoose";
 import EnvConfig from "../../../config/envConfig";
 import { RoleModel } from "../roles/model/roleModel";
+import { OrdersModel } from "../../user/products/modal/OrderModel";
 const response: {
     message: string;
     data?: unknown;
@@ -387,5 +388,47 @@ class UserService {
         }
     }
 
-}
+    async CustomerStatusUpdate(id:string){
+        try {
+            const userId=new mongoose.Types.ObjectId(id); 
+            const OrderCheck = await OrdersModel.aggregate([
+                {
+                    $match: {
+                        user_id: userId,
+                        status: "Pending"
+                    }
+                }
+            ]);
+        
+            if (OrderCheck.length > 0) {
+                response.success = false;
+                response.message = "Cannot update customer status. There are pending orders for this customer.";
+                return response;
+            }
+            
+            const customer = await UserModel.findById(userId);
+            if (customer) {
+                const newStatus = customer.status === 'active' ? 'inactive' : 'active';
+                const updatedCustomer = await UserModel.findByIdAndUpdate(
+                    userId,
+                    { status: newStatus },
+                    { new: true } 
+                );
+                response.success = true;
+                response.message = "Customer status updated successfully";
+                response.data = updatedCustomer;
+            } else {
+                response.success = false;
+                response.message = "Customer not found";
+            }
+            return response;
+        } catch (error) {
+            response.success = false;
+            response.message = "There is a problem with the server. Please contact the developer.";
+            response.data = error;
+            return response;
+        }
+        
+    }
+}   
 export default new UserService

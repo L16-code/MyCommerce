@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../state_management/store/store";
 import { useEffect, useState } from "react";
 import { CustomerRead } from "./customersInterface";
+import { toast } from "react-toastify";
 
 const ShowCustomers = () => {
     const TOKEN = useSelector((state: RootState) => state.root.token);
@@ -25,7 +26,20 @@ const ShowCustomers = () => {
     useEffect(() => {
         ShowCustomersData();
     }, [TOKEN]);
-
+    const statusChangeHandler=async(id:string)=>{
+        const Isconfirm = confirm("Are you sure you want to update customers status?",)
+        if(Isconfirm){
+            await axios.post('http://localhost:5000/user/customers-update-status',{id:id}, { headers: { Authorization: 'Bearer ' + TOKEN } })
+            .then(res=>{
+                if(res.data.success) {
+                    toast.success(res.data.message)
+                    ShowCustomersData();
+                }else{
+                    toast.error(res.data.message)
+                }
+            })
+        }
+    }
     return (
         <div className="wrapper">
             <Sidebar isAuthenticated={true} />
@@ -66,9 +80,13 @@ const ShowCustomers = () => {
                                                                         <td>{customer.gender}</td>
                                                                         <td>
                                                                             {customer.status === "active" ? (
-                                                                                <span className="badge bg-success">Active</span>
+                                                                                <span className="badge bg-success" style={{ cursor:"pointer"}} onClick={()=>{
+                                                                                    statusChangeHandler(customer._id as string)
+                                                                                }}>Active</span>
                                                                             ) : (
-                                                                                <span className="badge bg-danger">Inactive</span>
+                                                                                <span className="badge bg-danger"  style={{ cursor:"pointer"}} onClick={()=>{
+                                                                                    statusChangeHandler(customer._id as string)
+                                                                                }}>Inactive</span>
                                                                             )}
                                                                         </td>
                                                                     </tr>

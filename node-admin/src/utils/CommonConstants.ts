@@ -14,5 +14,6 @@ export const DELETE_PRODUCT_PERMISSIONS = ["products-delete"];
 // ORDERS PERMISSIONS
 export const READ_ORDER_PERMISSIONS = ["orders-read"];
 export const UPDATE_ORDER_PERMISSIONS = ["orders-update"];
-// CUSTOMERS PERMISSIONS
+// CUSTOMERS PERMISSIONS 
 export const READ_CUSTOMER_PERMISSIONS = ["customers-read"];
+export const UPDATE_CUSTOMER_PERMISSIONS = ["customers-update"];
