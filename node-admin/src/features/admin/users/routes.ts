@@ -12,5 +12,6 @@ UserRouter.get('/user-read', verifyToken,checkPermission(GET_USER_PERMISSIONS), 
 UserRouter.post('/user-status-update', verifyToken,checkPermission(UPDATE_USER_PERMISSIONS), HandleErrors(UserStatusUpdate))
 // END USER (CUSTOMERS) ROUTES
 UserRouter.get('/customers-read', verifyToken,checkPermission(READ_CUSTOMER_PERMISSIONS), HandleErrors(CustomerRead))
+// FOR DASHBOARD INTERFACE
 
 export default UserRouter;

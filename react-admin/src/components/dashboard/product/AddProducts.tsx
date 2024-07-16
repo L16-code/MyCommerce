@@ -62,27 +62,9 @@ const AddProducts = () => {
         const res=await axios.post('http://localhost:5000/product/create', formData, { headers: { Authorization: AuthStr } });
         if(res.data.success===true) {
             navigate(routes.PRODUCTS);
-            toast.success('Product Added Successfully', {
-                position: "top-center",
-                autoClose: 1000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
+            toast.success('Product Added Successfully');
         }else{
-            toast.error('Failed to Add Product', {
-                position: "top-center",
-                autoClose: 1000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
+            toast.error('Failed to Add Product');
         }
     }
     return (

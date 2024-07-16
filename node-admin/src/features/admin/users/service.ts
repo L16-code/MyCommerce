@@ -386,5 +386,6 @@ class UserService {
             return response;
         }
     }
+
 }
 export default new UserService

@@ -1,8 +1,17 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Chart, ChartType, registerables } from 'chart.js';
 import Sidebar from "./sidebar";
 import Navbar from "./navbar";
 import Footer from "./footer";
+import { FaUsers, FaTruckMoving } from "react-icons/fa"
+import { FaCartShopping, FaSackDollar } from "react-icons/fa6";
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../state_management/store/store';
+import { GetDashboardData } from '../../interfaces/commonInterfaces';
+import { useNavigate } from 'react-router-dom';
+import routes from '../../routes/routes';
+
 // import Chart from 'chart.js/auto'
 Chart.register(...registerables);
 declare global {
@@ -12,10 +21,14 @@ declare global {
 }
 
 const Dashboard: React.FC = () => {
+    const navigate=useNavigate();
+    const TOKEN = useSelector((state: RootState) => state.root.token);
+    const AuthStr = 'Bearer '.concat(TOKEN);
+    const [DashBoardData, setDashBoardData] = useState<GetDashboardData>();
     const lineChartRef = useRef<HTMLCanvasElement | null>(null);
-    const pieChartRef = useRef<HTMLCanvasElement | null>(null);
-    const barChartRef = useRef<HTMLCanvasElement | null>(null);
-
+    useEffect(() => {
+        GetDashBoardData()
+    }, [])
     useEffect(() => {
         // Function to initialize a chart
         const initializeChart = (canvasRef: React.MutableRefObject<HTMLCanvasElement | null>, ChartType: ChartType, data: any) => {
@@ -30,23 +43,35 @@ const Dashboard: React.FC = () => {
                     type: ChartType,
                     data: data,
                     options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: true
+                                },
+                                beginAtZero: false
+                            },
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
                         plugins: {
                             legend: {
-                                display: false
-                            }
+                                display: true,
+                                position: 'top',
+                            },
                         }
                     }
                 });
             }
         };
 
-        // Example data for charts (replace with your actual data)
         const lineChartData = {
-            labels: ['Label 1', 'Label 2', 'Label 3'],
+            labels: DashBoardData?.getLineChartdata.labels,
             datasets: [
                 {
-                    label: 'Line Chart',
-                    data: [10, 30, 20],
+                    label: 'Most Purchased Products',
+                    data: DashBoardData?.getLineChartdata.datasets,
                     backgroundColor: 'rgba(255, 99, 132, 0.2)',
                     borderColor: 'rgba(255, 99, 132, 1)',
                     borderWidth: 1
@@ -54,50 +79,22 @@ const Dashboard: React.FC = () => {
             ]
         };
 
-        const pieChartData = {
-            labels: ['Chrome', 'Firefox', 'IE'],
-            datasets: [
-                {
-                    label: 'Browser Usage',
-                    data: [4306, 3801, 1689],
-                    backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)'],
-                    borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)'],
-                    borderWidth: 1
-                }
-            ]
-        };
 
-        const barChartData = {
-            labels: ['Label A', 'Label B', 'Label C'],
-            datasets: [
-                {
-                    label: 'Dataset 1',
-                    data: [50, 30, 40],
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }
-            ]
-        };
         // Initialize charts on component mount 
         initializeChart(lineChartRef, 'line', lineChartData);
-        initializeChart(pieChartRef, 'pie', pieChartData);
-        initializeChart(barChartRef, 'bar', barChartData);
 
         // Clean up function to destroy charts on component unmount
         return () => {
             if (lineChartRef.current && lineChartRef.current.chart) {
                 lineChartRef.current.chart.destroy();
             }
-            if (pieChartRef.current && pieChartRef.current.chart) {
-                pieChartRef.current.chart.destroy();
-            }
-            if (barChartRef.current && barChartRef.current.chart) {
-                barChartRef.current.chart.destroy();
-            }
         };
-    }, []);
-
+    }, [DashBoardData]);
+    //  dashboard data api
+    const GetDashBoardData = async () => {
+        const dashboardData = await axios.get('http://localhost:5000/dashboard/get-dashboard-data', { headers: { Authorization: AuthStr } })
+        setDashBoardData(dashboardData.data)
+    }
     return (
         <div className="wrapper">
             <Sidebar isAuthenticated={true} />
@@ -121,7 +118,7 @@ const Dashboard: React.FC = () => {
                                                         </div>
                                                         <div className="col-auto">
                                                             <div className="stat text-primary">
-                                                                <i className="align-middle" data-feather="truck" />
+                                                                <i className="align-middle" />{<span>{<FaTruckMoving />}</span>}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -138,19 +135,26 @@ const Dashboard: React.FC = () => {
                                                 <div className="card-body">
                                                     <div className="row">
                                                         <div className="col mt-0">
-                                                            <h5 className="card-title">Visitors</h5>
+                                                            <h5 className="card-title">Users</h5>
                                                         </div>
                                                         <div className="col-auto">
                                                             <div className="stat text-primary">
-                                                                <i className="align-middle" data-feather="users" />
+                                                                <i className="align-middle" />{<span>{<FaUsers />}</span>}
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <h1 className="mt-1 mb-3">14.212</h1>
+                                                    <h1 className="mt-1 mb-3">{DashBoardData?.getUserCardData.totalUser}</h1>
                                                     <div className="mb-0">
-                                                        <span className="text-success">
-                                                            <i className="mdi mdi-arrow-bottom-right" /> 5.25%
-                                                        </span>
+                                                        {
+                                                            DashBoardData?.getUserCardData.Percentage === 'Increased' ?
+                                                                <span className="text-success">
+                                                                    <i className="mdi mdi-arrow-bottom-right" /> {DashBoardData?.getUserCardData.thisWeekUsersPercentage}%
+                                                                </span>
+                                                                :
+                                                                <span className="text-danger">
+                                                                    <i className="mdi mdi-arrow-bottom-right" /> {DashBoardData?.getUserCardData.thisWeekUsersPercentage}%
+                                                                </span>
+                                                        }
                                                         <span className="text-muted">Since last week</span>
                                                     </div>
                                                 </div>
@@ -165,15 +169,22 @@ const Dashboard: React.FC = () => {
                                                         </div>
                                                         <div className="col-auto">
                                                             <div className="stat text-primary">
-                                                                <i className="align-middle" data-feather="dollar-sign" />
+                                                                <i className="align-middle" />{<span>{<FaSackDollar />}</span>}
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <h1 className="mt-1 mb-3">$21.300</h1>
+                                                    <h1 className="mt-1 mb-3">${DashBoardData?.getEarningcardData.totalEarnings}</h1>
                                                     <div className="mb-0">
-                                                        <span className="text-success">
-                                                            <i className="mdi mdi-arrow-bottom-right" /> 6.65%
-                                                        </span>
+                                                        {
+                                                            DashBoardData?.getEarningcardData.Percentage === 'Increased' ?
+                                                                <span className="text-success">
+                                                                    <i className="mdi mdi-arrow-bottom-right" /> {DashBoardData?.getEarningcardData.thisWeekEarningPercentage.toFixed(2)}%
+                                                                </span>
+                                                                :
+                                                                <span className="text-danger">
+                                                                    <i className="mdi mdi-arrow-bottom-right" /> {DashBoardData?.getEarningcardData.thisWeekEarningPercentage.toFixed(2)}%
+                                                                </span>
+                                                        }
                                                         <span className="text-muted">Since last week</span>
                                                     </div>
                                                 </div>
@@ -186,15 +197,22 @@ const Dashboard: React.FC = () => {
                                                         </div>
                                                         <div className="col-auto">
                                                             <div className="stat text-primary">
-                                                                <i className="align-middle" data-feather="shopping-cart" />
+                                                                <i className="align-middle" />{<span>{<FaCartShopping />}</span>}
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <h1 className="mt-1 mb-3">64</h1>
+                                                    <h1 className="mt-1 mb-3">{DashBoardData?.getOrdercardData.totalOrders}</h1>
                                                     <div className="mb-0">
-                                                        <span className="text-danger">
-                                                            <i className="mdi mdi-arrow-bottom-right" /> -2.25%
-                                                        </span>
+                                                        {
+                                                            DashBoardData?.getOrdercardData.Percentage === 'Increased' ?
+                                                                <span className="text-success">
+                                                                    <i className="mdi mdi-arrow-bottom-right" /> {DashBoardData?.getOrdercardData.thisWeekOrdersPercentage}%
+                                                                </span>
+                                                                :
+                                                                <span className="text-danger">
+                                                                    <i className="mdi mdi-arrow-bottom-right" /> {DashBoardData?.getOrdercardData.thisWeekOrdersPercentage}%
+                                                                </span>
+                                                        }
                                                         <span className="text-muted">Since last week</span>
                                                     </div>
                                                 </div>
@@ -217,83 +235,63 @@ const Dashboard: React.FC = () => {
                             </div>
                         </div>
                         <div className="row">
-                            <div className="col-12 col-md-6 col-xxl-3 d-flex order-2 order-xxl-3">
-                                <div className="card flex-fill w-100">
-                                    <div className="card-header">
-                                        <h5 className="card-title mb-0">Browser Usage</h5>
-                                    </div>
-                                    <div className="card-body d-flex">
-                                        <div className="align-self-center w-100">
-                                            <div className="py-3">
-                                                <div className="chart chart-xs">
-                                                    <canvas id="chartjs-dashboard-pie" ref={pieChartRef} />
-                                                </div>
-                                            </div>
-                                            <table className="table mb-0">
-                                                <tbody>
-                                                    <tr>
-                                                        <td>Chrome</td>
-                                                        <td className="text-end">4306</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Firefox</td>
-                                                        <td className="text-end">3801</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>IE</td>
-                                                        <td className="text-end">1689</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-12 col-md-12 col-xxl-6 d-flex order-3 order-xxl-2">
-                                <div className="card flex-fill w-100">
-                                    <div className="card-header">
-                                        <h5 className="card-title mb-0">Real-Time</h5>
-                                    </div>
-                                    <div className="card-body px-4">
-                                        <div className="chart">
-                                            <canvas id="chartjs-dashboard-bar" ref={barChartRef} />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-12 col-md-6 col-xxl-3 d-flex order-1 order-xxl-1">
+                            <div className="" style={{
+                                maxWidth: "100%"
+                            }}>
                                 <div className="card flex-fill">
                                     <div className="card-header">
-                                        <h5 className="card-title mb-0">Projects</h5>
+                                        <h5 className="card-title mb-0">New Users </h5>
                                     </div>
                                     <div className="table-responsive">
                                         <table className="table table-hover my-0">
                                             <thead>
                                                 <tr>
-                                                    <th>Name</th>
-                                                    <th className="d-none d-xl-table-cell">Start Date</th>
-                                                    <th className="d-none d-xl-table-cell">End Date</th>
-                                                    <th>Status</th>
-                                                    <th className="d-none d-md-table-cell">Assignee</th>
+                                                    <th className="d-none d-xl-table-cell">Id</th>
+                                                    <th className="d-none d-xl-table-cell">Name</th>
+                                                    <th className="d-none d-xl-table-cell">Email</th>
+                                                    <th className="d-none d-xl-table-cell">Dob</th>
+                                                    <th className="d-none d-xl-table-cell">Gender</th>
+                                                    <th className="d-none d-xl-table-cell">Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td>Project Apollo</td>
-                                                    <td className="d-none d-xl-table-cell">01/01/2023</td>
-                                                    <td className="d-none d-xl-table-cell">31/06/2023</td>
-                                                    <td><span className="badge bg-success">Done</span></td>
-                                                    <td className="d-none d-md-table-cell">Vanessa Tucker</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Project Fireball</td>
-                                                    <td className="d-none d-xl-table-cell">01/01/2023</td>
-                                                    <td className="d-none d-xl-table-cell">31/06/2023</td>
-                                                    <td><span className="badge bg-danger">Cancelled</span></td>
-                                                    <td className="d-none d-md-table-cell">William Harris</td>
-                                                </tr>
+                                                {DashBoardData?.getUserdata.map((customer, index) => {
+                                                    return (
+                                                        <tr key={customer._id}>
+                                                            <td>{index + 1}</td>
+                                                            <td>{customer.username}</td>
+                                                            <td>{customer.email}</td>
+                                                            <td>{customer.dob}</td>
+                                                            <td>{customer.gender}</td>
+                                                            <td>
+                                                                {customer.status === "active" ? (
+                                                                    <span className="badge bg-success">Active</span>
+                                                                ) : (
+                                                                    <span className="badge bg-danger">Inactive</span>
+                                                                )}
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
                                             </tbody>
                                         </table>
+                                        <div style={{
+                                            display:"flex",
+                                            justifyContent: "center",
+                                            margin: "20px"
+                                        }}>
+                                            <button style={{
+                                                padding: "5px",
+                                                marginLeft: "10px",
+                                                borderRadius: "5px",
+                                                border: "1px solid #000",
+                                                color: "#000",
+                                                backgroundColor: "green",
+                                                cursor: "pointer",
+                                            }} 
+                                            onClickCapture={()=>{navigate(routes.CUSTOMERS_SHOW)}}
+                                            >View More</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

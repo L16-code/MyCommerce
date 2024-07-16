@@ -64,12 +64,12 @@ const ShowUsers = () => {
                                                     <table className="table table-hover my-0">
                                                         <thead>
                                                             <tr>
-                                                                <th>Name</th>
+                                                                <th className="d-none d-xl-table-cell">Name</th>
                                                                 <th className="d-none d-xl-table-cell">Email</th>
                                                                 <th className="d-none d-xl-table-cell">Dob</th>
-                                                                <th>Gender</th>
-                                                                <th>Role</th>
-                                                                <th>Status</th>
+                                                                <th className="d-none d-xl-table-cell">Gender</th>
+                                                                <th className="d-none d-xl-table-cell">Role</th>
+                                                                <th className="d-none d-xl-table-cell">Status</th>
                                                                 <th className="d-none d-md-table-cell">Action</th>
                                                             </tr>
                                                         </thead>

@@ -15,21 +15,27 @@ const Home = () => {
     const [searchData, setSearchData] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("");
     const [sortOrder, setSortOrder] = useState("");
+    const [noMoreProducts, setNoMoreProducts] = useState(false);
 
     const isAuthenticated = useSelector((state: RootState) => state.root.isAuthenticated);
     const user_detail = useSelector((state: RootState) => state.root.user);
     const AuthStr = 'Bearer '.concat(user_detail?.token as string);
 
-    const GetProducts = async () => {
+    const GetProducts = async (newLimit: number = limit) => {
         const res = await axios.get(`http://localhost:5000/get-product`, {
             params: {
                 page: 1,
-                limit: limit,
+                limit: newLimit,
                 search: searchData,
                 category: selectedCategory,
                 sort: sortOrder
             }
         });
+        if (res.data.data.length < newLimit) {
+            setNoMoreProducts(true);
+        } else {
+            setNoMoreProducts(false);
+        }
         setProductData(res.data.data);
     };
 
@@ -52,21 +58,30 @@ const Home = () => {
     };
 
     const LoadMoreHandler = async () => {
-        setLimit(limit + 4);
-        GetProducts();
+        const newLimit = limit + 4;
+        setLimit(newLimit);
+        const res = await axios.get(`http://localhost:5000/get-product`, {
+            params: {
+                page: 1,
+                limit: newLimit,
+                search: searchData,
+                category: selectedCategory,
+                sort: sortOrder
+            }
+        });
+        if (res.data.data.length <= productData.length) {
+            setNoMoreProducts(true);
+        } else {
+            setProductData(res.data.data);
+        }
     };
 
     useEffect(() => {
-        if (searchData === '') {
+        const delayDebounceFn = setTimeout(() => {
             GetProducts();
             GetCategory();
-        } else {
-            const delayDebounceFn = setTimeout(() => {
-                GetProducts();
-                GetCategory();
-            }, 500);
-            return () => clearTimeout(delayDebounceFn);
-        }
+        }, 500);
+        return () => clearTimeout(delayDebounceFn);
     }, [limit, searchData, selectedCategory, sortOrder]);
 
     return (
@@ -147,32 +162,40 @@ const Home = () => {
                     </div>
                     <div style={{ width: '80%', padding: '20px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: "aliceblue", display: "flex", flexWrap: "wrap", gap: "4rem", marginTop: "2rem" }}>
                         {
-                            productData.map((product) => (
-                                <div className="product-card" key={product._id}>
-                                    <p className="product-card__category">{product.category} <span>(Quantity: {product.quantity})</span></p>
-                                    <img src={product.image} alt="" className="product-card__image" />
-                                    <h2 className="product-card__name">{product.name}</h2>
-                                    <p className="product-card__price">₹{product.price.toFixed(2)}</p>
-                                    <p className="product-card__description">{product.description}</p>
-                                    {
-                                        isAuthenticated ?
-                                            <button className="product-card__button" onClick={addToCartHandler(product._id.toString())}>Add to Cart</button>
-                                            :
-                                            <button className="product-card__button" onClick={() => { navigate(routes.LOGIN) }}>Please Login</button>
-                                    }
-                                </div>
-                            ))
+                            productData.length > 0 ? (
+                                productData.map((product) => (
+                                    <div className="product-card" key={product._id}>
+                                        <p className="product-card__category">{product.category} <span>(Quantity: {product.quantity})</span></p>
+                                        <img src={product.image} alt="" className="product-card__image" />
+                                        <h2 className="product-card__name">{product.name}</h2>
+                                        <p className="product-card__price">₹{product.price.toFixed(2)}</p>
+                                        <p className="product-card__description">{product.description}</p>
+                                        {
+                                            isAuthenticated ?
+                                                <button className="product-card__button" onClick={addToCartHandler(product._id.toString())}>Add to Cart</button>
+                                                :
+                                                <button className="product-card__button" onClick={() => { navigate(routes.LOGIN) }}>Please Login</button>
+                                        }
+                                    </div>
+                                ))
+                            ) : (
+                                <p>No products found</p>
+                            )
                         }
                     </div>
-                    <button onClick={LoadMoreHandler} style={{
-                        marginTop: "20px",
-                        padding: "10px 20px",
-                        borderRadius: "5px",
-                        border: "none",
-                        backgroundColor: "#007bff",
-                        color: "#fff",
-                        cursor: "pointer"
-                    }}>Load More</button>
+                    {
+                        productData.length > 0 && !noMoreProducts && (
+                            <button onClick={LoadMoreHandler} style={{
+                                marginTop: "20px",
+                                padding: "10px 20px",
+                                borderRadius: "5px",
+                                border: "none",
+                                backgroundColor: "#007bff",
+                                color: "#fff",
+                                cursor: "pointer"
+                            }}>Load More</button>
+                        )
+                    }
                 </div>
             </div>
         </>
