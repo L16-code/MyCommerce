@@ -2,7 +2,10 @@ import mongoose from "mongoose";
 import { OrdersModel } from "../../user/products/modal/OrderModel";
 import { IProductsAdd, IUpdateStatus } from "./interfaces";
 import { ProductModal } from "./model";
-
+import { Workbook } from 'exceljs'
+import fs from 'fs';
+import path from "path";
+import { Request, Response } from 'express';
 const response: {
     message: string;
     data?: unknown;
@@ -132,7 +135,7 @@ class ProductService {
             response.success = true;
             response.message = "Products status updated successfully";
             response.data = updatedProducts;
-        }else{
+        } else {
             response.message = "Product not found";
             response.success = false;
         }
@@ -256,6 +259,80 @@ class ProductService {
             response.data = '';
         }
         return response;
+    }
+    async ExportProducts(req: Request, res: Response) {
+        const workbook = new Workbook()
+        const worksheet = workbook.addWorksheet('Products')
+        worksheet.columns = [
+            { header: 'S No.', key: 's_no', width: 15 },
+            { header: 'Name', key: 'name', width: 30 },
+            { header: 'Price', key: 'price', width: 15 },
+            { header: 'Quantity', key: 'quantity', width: 15 },
+            { header: 'Category', key: 'category', width: 30 },
+            { header: 'Description', key: 'description', width: 50 },
+            { header: 'Created At', key: 'createdAt', width: 30 },
+        ]
+        worksheet.getRow(1).eachCell((cell) => {
+            cell.font = { bold: true };
+            cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            cell.border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' },
+            };
+            cell.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFFFE0B2' }, // Light orange color
+            };
+        });
+        const products = await ProductModal.aggregate([
+            {
+                $lookup: {
+                    from: "products_catgeories",
+                    localField: "category_id",
+                    foreignField: "_id",
+                    as: "category"
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    price: 1,
+                    quantity: 1,
+                    description: 1,
+                    status: 1,
+                    category: { $first: "$category.name" },
+                    createdAt: 1
+                }
+            },
+            {
+                $sort: {
+                    _id: -1
+                }
+            }
+        ]);
+        let count = 1;
+        products.forEach((product) => {
+            product.s_no = count++;
+            worksheet.addRow(product)
+        })
+        const filePath = path.join(__dirname, 'products.xlsx');
+        await workbook.xlsx.writeFile(filePath);
+        res.download(filePath, 'products.xlsx', (err: any) => {
+            if (err) {
+                console.error(err);
+                response.success = false;
+                response.message = "Failed to export products";
+            } else {
+                response.success = true;
+                response.message = "Products exported successfully";
+            }
+            fs.unlinkSync(filePath); // Remove the file after sending it
+        });
+        
     }
 }
 export default new ProductService

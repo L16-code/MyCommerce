@@ -100,7 +100,13 @@ class UserPanelService{
         if (isILogIn(LoginData)) {
             const { email, password } = LoginData;
             const user = await UserModel.findOne({ email });
-            if (user && user.status === 'inactive' && user.actionType === 'admin') {
+            if (user && user.status === 'inactive') {
+                response.success = false;
+                response.message = "User is inactive";
+                response.data = '';
+                return response;
+            }
+            if (user && user.status === 'inactive' ) {
                 response.success = false;
                 response.message = "User is not valid";
                 response.data = '';

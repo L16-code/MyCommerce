@@ -56,3 +56,11 @@ export const UpdateProductStatus = async (req: Request, res:Response) => {
         res.status(400).json(error)
     }
 };
+
+export const ExportProducts = async (req: Request, res:Response) => {
+    try {
+        await ProductService.ExportProducts(req,res)
+    } catch (error) {
+        res.status(400).json(error)
+    }
+};

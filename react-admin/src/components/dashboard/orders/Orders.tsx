@@ -68,7 +68,6 @@ const Orders = () => {
                                                                     return null; // Skip this order
                                                                 }
                                                                 const formattedDate = ts.toLocaleDateString();
-                                                                console.log(formattedDate);
                                                                 return (
                                                                     <tr key={index}>
                                                                         <td>{order._id}</td>
