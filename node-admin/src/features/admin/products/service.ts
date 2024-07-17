@@ -6,6 +6,7 @@ import { Workbook } from 'exceljs'
 import fs from 'fs';
 import path from "path";
 import { Request, Response } from 'express';
+import { ProductCategoryModal } from "../products-category/model";
 const response: {
     message: string;
     data?: unknown;
@@ -332,7 +333,86 @@ class ProductService {
             }
             fs.unlinkSync(filePath); // Remove the file after sending it
         });
-        
+
+    }
+    async ExportSampleExcel(req: Request, res: Response) {
+        const workbook = new Workbook()
+        const worksheet = workbook.addWorksheet('Sample')
+        const categories = await ProductCategoryModal.find({}, { _id: 0, name: 1 })
+        const Categories_name: string[] = [];
+        categories.forEach((category) => {
+            Categories_name.push(category.name);
+        })
+        worksheet.columns = [
+            { header: 'Name', key: 'name', width: 30 },
+            { header: 'Price', key: 'price', width: 15 },
+            { header: `Quantity`, key: 'quantity', width: 15 },
+            { header: `Category[${Categories_name}]`, key: 'category', width: 50 },
+            { header: 'Description', key: 'description', width: 50 },
+        ]
+
+        worksheet.getRow(1).eachCell((cell) => {
+            cell.font = { bold: true };
+            cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            cell.border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'dashDot' },
+            },
+                cell.fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: { argb: 'FFB0C4DE' },
+                };
+        })
+        // worksheet.getColumn('price').eachCell((cell, rowNumber) => {
+        //     if (rowNumber > 1) { // Skip the header rows
+        //         cell.dataValidation = {
+        //             type: 'decimal',
+        //             operator: 'greaterThan',
+        //             formulae: ['0'],
+        //             showErrorMessage: true,
+        //             errorTitle: 'Invalid input',
+        //             error: 'Price must be a number greater than 0'
+        //         };
+        //     }
+        // });
+        const filePath = path.join(__dirname, 'products.xlsx');
+        await workbook.xlsx.writeFile(filePath);
+        res.download(filePath, 'products.xlsx', (err: any) => {
+            if (err) {
+                console.error(err);
+                response.success = false;
+                response.message = "Failed to export products";
+            } else {
+                response.success = true;
+                response.message = "Products exported successfully";
+            }
+            fs.unlinkSync(filePath);
+        });
+    }
+    async ImportExcel(data:any){
+        try {
+            const products = data.map((row: any) => {
+                const { name, price, quantity, category, description } = row;
+                return {
+                    name,
+                    price: parseFloat(price),
+                    quantity: parseInt(quantity),
+                    category_id: category,
+                    description,
+                    createdAt: new Date()
+                }
+            })
+            await ProductModal.insertMany(products);
+            response.success = true;
+            response.message = "Products imported successfully";
+        } catch (error) {
+            response.success = false;
+            response.message = "An error occurred while importing the products";
+        }
+        return response;
     }
 }
 export default new ProductService

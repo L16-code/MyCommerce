@@ -64,3 +64,17 @@ export const ExportProducts = async (req: Request, res:Response) => {
         res.status(400).json(error)
     }
 };
+export const ExportSampleExcel = async (req: Request, res:Response) => {
+    try {
+        await ProductService.ExportSampleExcel(req,res)
+    } catch (error) {
+        res.status(400).json(error)
+    }
+};
+export const ImportExcel = async (req: Request, res:Response) => {
+    try {
+        await ProductService.ImportExcel(req.body)
+    } catch (error) {
+        res.status(400).json(error)
+    }
+};

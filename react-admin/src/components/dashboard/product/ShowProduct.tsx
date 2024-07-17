@@ -8,14 +8,25 @@ import { GetProduct } from "./productInterface";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../state_management/store/store";
 import Modal from "../commonComponents/modal";
-import * as XLSX from 'xlsx';
+import * as yup from 'yup';
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { toast } from "react-toastify";
+const schema = yup.object().shape({
+    file: yup.mixed<FileList>().required('Image is required')
+});
+interface AddFile {
+    file: FileList;
+}
 const ShowProduct = () => {
     const TOKEN = useSelector((state: RootState) => state.root.token);
     const AuthStr = 'Bearer '.concat(TOKEN);
     const navigate = useNavigate();
     const [products, setProducts] = useState<GetProduct[]>([]);
     const [showModal, setShowModal] = useState(false);
-
+    const { register, handleSubmit, formState: { errors } } = useForm({
+        resolver: yupResolver(schema),
+    });
     const openModal = () => setShowModal(true);
     const closeModal = () => setShowModal(false);
     const GetProducts = () => {
@@ -46,53 +57,39 @@ const ShowProduct = () => {
         }
     }
     const ImportHandler = async () => {
-        console.log("Import")
-        const headers = ["name", "price", "quantity", "description", "category_id"];
-        const sheetData = [headers];
-        const workbook = XLSX.utils.book_new();
-        const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
-        if (worksheet['!ref']) {
-            console.log("hello")
-            const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
-            for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
-                const cell_address = XLSX.utils.encode_cell({ c: C, r: 0 });
-                if (!worksheet[cell_address]) continue;
-                worksheet[cell_address].s = {
-                    font: {
-                        bold: true
-                    }
-                };
-            }
+        try {
+            const res = await axios.get(`http://localhost:5000/product/export-sample-excel`, {
+                headers: { Authorization: AuthStr },
+                responseType: 'blob'
+            });
+            const url = window.URL.createObjectURL(new Blob([res.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'Addproducts.xlsx');
+            document.body.appendChild(link);
+            link.click();
+            openModal()
+        } catch (error) {
+            console.log(error);
         }
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Products");
-
-        // Generate the Excel file
-        XLSX.writeFile(workbook, 'AddProducts.xlsx');
-        // const csvContent = [headers].map(row => row.join(",")).join("\n");
-        // const blob = new Blob([csvContent], { type: "text/csv" });
-        // const url = window.URL.createObjectURL(blob);
-        // const a = document.createElement("a");
-        // a.href = url;
-        // a.download = "Addproducts.csv";
-        // a.click();
-        // window.URL.revokeObjectURL(url);
-        openModal()
-
-        // const fileInput = document.getElementById('import-file') as HTMLInputElement;
-        // if (!fileInput.files ||!fileInput.files[0]) {
-        //     return;
-        // }
-        // const formData = new FormData();
-        // formData.append('file', fileInput.files[0]);
-        // try {
-        //     await axios.post(`http://localhost:5000/product/import-products`, formData, {
-        //         headers: { Authorization: AuthStr },
-        //         'Content-Type': 'application/json'
-        //     });
-        //     GetProducts()
-        // } catch (err) {
-        //     console.log(err);
-        // }
+    }
+    const onSubmit = async (data: AddFile) => {
+        const formData = new FormData();
+        formData.append('file', data.file[0]);
+        try {
+            await axios.post(`http://localhost:5000/product/import-products`, formData, { headers: { Authorization: AuthStr } })
+                .then(res => {
+                    if (res.data.success === true) {
+                        toast.success('Products Imported Successfully')
+                        closeModal()
+                        GetProducts()
+                    } else {
+                        toast.error(res.data.message)
+                    }
+                })
+        } catch (error) {
+            console.log(error);
+        }
     }
     useEffect(() => {
         GetProducts()
@@ -196,16 +193,16 @@ const ShowProduct = () => {
                     </div>
                     <Modal show={showModal} onClose={closeModal}>
                         <h2>Add Csv</h2>
-                        <form style={{ width: '80%', padding: '20px', border: '1px solid #ccc', borderRadius: '5px' }} noValidate>
+                        <form onSubmit={handleSubmit(onSubmit)} style={{ width: '80%', padding: '20px', border: '1px solid #ccc', borderRadius: '5px' }} noValidate>
                             <div style={{ marginBottom: '15px' }}>
                                 <label htmlFor="state" style={{ display: 'block', marginBottom: '5px' }}>File</label>
                                 <input
                                     type="file"
-                                    // {...register('state')}
-                                    id="state"
+                                    {...register('file')}
+                                    id="file"
                                     style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
                                 />
-                                {/* {errors.state && <p style={{ color: 'red', marginTop: '5px' }}>{errors.state.message}</p>} */}
+                                {errors.file && <p style={{ color: 'red', marginTop: '5px' }}>{errors.file.message}</p>}
                             </div>
                             <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: '#556cd6', color: '#fff', border: 'none', borderRadius: '5px' }}>Submit</button>
                         </form>
