@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { OrdersModel } from "../../user/products/modal/OrderModel";
-import { IProductsAdd, IUpdateStatus } from "./interfaces";
+import { IProductsAdd, IUpdateStatus, ProductData } from "./interfaces";
 import { ProductModal } from "./model";
 import { Workbook } from 'exceljs'
 import fs from 'fs';
@@ -392,23 +392,44 @@ class ProductService {
             fs.unlinkSync(filePath);
         });
     }
-    async ImportExcel(data:any){
+    async ImportExcel(data: ProductData[]) {
         try {
-            const products = data.map((row: any) => {
+            const categories = await ProductCategoryModal.find({});
+        
+            // Create a mapping of category names to IDs
+            const categoryMap: { [key: string]: string } = {};
+            categories.forEach((category) => {
+                categoryMap[category.name] = category._id.toString();
+            });
+    
+            // Transform incoming data to replace category names with IDs
+            const products = data.map((row) => {
                 const { name, price, quantity, category, description } = row;
+    
+                // Get category ID from categoryMap
+                const category_id = categoryMap[category];
+                if (!category_id) {
+                    throw new Error(`Category "${category}" not found in the database.`);
+                }
+    
                 return {
                     name,
-                    price: parseFloat(price),
-                    quantity: parseInt(quantity),
-                    category_id: category,
+                    price: parseFloat(price.toString()),
+                    quantity: parseInt(quantity.toString(), 10),
+                    image:"",
+                    category_id,
                     description,
                     createdAt: new Date()
-                }
-            })
+                };
+            });
+    
+            // Insert transformed data into the database
             await ProductModal.insertMany(products);
+    
             response.success = true;
             response.message = "Products imported successfully";
         } catch (error) {
+            console.error(error);
             response.success = false;
             response.message = "An error occurred while importing the products";
         }

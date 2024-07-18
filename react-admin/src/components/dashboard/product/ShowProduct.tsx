@@ -13,7 +13,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
 const schema = yup.object().shape({
-    file: yup.mixed<FileList>().required('Image is required')
+    file: yup.mixed<FileList>().required('File is required')
 });
 interface AddFile {
     file: FileList;
@@ -76,9 +76,14 @@ const ShowProduct = () => {
     const onSubmit = async (data: AddFile) => {
         const formData = new FormData();
         formData.append('file', data.file[0]);
+        console.log(data.file[0]);
         try {
-            await axios.post(`http://localhost:5000/product/import-products`, formData, { headers: { Authorization: AuthStr } })
-                .then(res => {
+            await axios.post(`http://localhost:5000/product/import-products`, formData, {
+                headers: {
+                    Authorization: AuthStr,
+                    'Content-Type': 'multipart/form-data'
+                },
+            }).then(res => {
                     if (res.data.success === true) {
                         toast.success('Products Imported Successfully')
                         closeModal()
