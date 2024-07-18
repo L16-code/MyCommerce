@@ -99,6 +99,60 @@ class UserProducts {
         }
         return response;
     }
+    async GetProductsCart(user_id:string){
+        try {
+            console.log(user_id)
+            const id=new mongoose.Types.ObjectId(user_id);
+            // const cartItems = await CartModel.find({ user_id:id, status: 'Pending' }, { product_id: 1, quantity: 1, total_price: 1,});
+            const cartItems =await CartModel.aggregate([
+                {
+                    $match: {
+                        user_id: id,
+                        status: 'Pending'
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "products",
+                        localField: "product_id",
+                        foreignField: "_id",
+                        as: "product"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$product",
+                        preserveNullAndEmptyArrays: false
+                    }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        product_id: 1,
+                        quantity: 1,
+                        total_price: 1,
+                        product_quantity:"$product.quantity",
+                    }
+                }
+            ])
+            if(!cartItems){
+                response.message = 'No cart items found';
+                return response;
+            }
+            let totalPrice = 0;
+            cartItems.forEach(item => {
+                totalPrice += item.total_price;
+            });
+            response.success = true;
+            response.message = "Cart items fetched successfully";
+            response.data = cartItems;
+        } catch (error) {
+            response.message = "Failed to fetch cart items";
+            response.success = false;
+            response.data = [];
+        }
+        return response;
+    }
     async AddCart(data: IAddCartData) {
         const { product_id, user_id } = data
         try {

@@ -76,7 +76,7 @@ const ShowProduct = () => {
     const onSubmit = async (data: AddFile) => {
         const formData = new FormData();
         formData.append('file', data.file[0]);
-        console.log(data.file[0]);
+        // console.log(data.file[0]);
         try {
             await axios.post(`http://localhost:5000/product/import-products`, formData, {
                 headers: {

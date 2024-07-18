@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { CategoriesData, ProductsData } from "./Profile/ProfileInterface";
+import { CartItemData, CategoriesData, ProductsData } from "./Profile/ProfileInterface";
 import { useSelector } from "react-redux";
 import { RootState } from "../../state_management/store/store";
 import { toast } from "react-toastify";
@@ -16,7 +16,7 @@ const Home = () => {
     const [selectedCategory, setSelectedCategory] = useState("");
     const [sortOrder, setSortOrder] = useState("");
     const [noMoreProducts, setNoMoreProducts] = useState(false);
-
+    const [CartItem, setCartItem] = useState<CartItemData[]>([]);
     const isAuthenticated = useSelector((state: RootState) => state.root.isAuthenticated);
     const user_detail = useSelector((state: RootState) => state.root.user);
     const AuthStr = 'Bearer '.concat(user_detail?.token as string);
@@ -52,6 +52,7 @@ const Home = () => {
             };
             await axios.post('http://localhost:5000/addCart', AddCartData, { headers: { Authorization: AuthStr } });
             toast.success('🦄 The Product Has Been Added Into The Cart');
+            GetCartItem();
         } else {
             navigate(routes.LOGIN);
         }
@@ -76,65 +77,52 @@ const Home = () => {
         }
     };
 
+    const GetCartItem = async () => {
+        await axios.get(`http://localhost:5000/get-product-cart`, { headers: { Authorization: AuthStr } }).then(res => {
+            setCartItem(res.data.data);
+        })
+    }
+
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
             GetProducts();
             GetCategory();
+            GetCartItem();
         }, 500);
         return () => clearTimeout(delayDebounceFn);
     }, [limit, searchData, selectedCategory, sortOrder]);
-
+    useEffect(() => {
+    }, [CartItem]);
     return (
         <>
             <div>
                 <div style={{ display: 'flex', flexDirection: "column", justifyContent: 'center', alignItems: 'center' }}>
                     <h1 style={{ margin: "2rem", fontWeight: "bold" }}>Shopping Hub</h1>
                     <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: '1rem',
-                        width: '80%',
-                        padding: '20px',
-                        border: '1px solid #ccc',
-                        borderRadius: '5px',
-                        backgroundColor: 'aliceblue',
-                        marginTop: '2rem'
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', width: '80%',
+                        padding: '20px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: 'aliceblue', marginTop: '2rem'
                     }}>
                         <div style={{
-                            fontSize: '1.5rem',
-                            fontWeight: 'bold',
-                            textAlign: 'center',
-                            marginBottom: '1rem'
+                            fontSize: '1.5rem', fontWeight: 'bold',
+                            textAlign: 'center', marginBottom: '1rem'
                         }}>Filters</div>
                         <div style={{
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                            gap: '1rem',
-                            justifyContent: 'center'
+                            display: 'flex', flexWrap: 'wrap',
+                            gap: '1rem', justifyContent: 'center'
                         }}>
                             <input
                                 type="text"
                                 placeholder="Search products"
                                 style={{
-                                    padding: '10px',
-                                    border: '1px solid #ccc',
-                                    borderRadius: '5px',
-                                    width: '200px',
-                                    boxSizing: 'border-box'
+                                    padding: '10px', border: '1px solid #ccc',
+                                    borderRadius: '5px', width: '200px', boxSizing: 'border-box'
                                 }}
                                 onChange={(e) => setSearchData(e.target.value)}
                             />
                             <select
                                 name="category"
                                 id="category"
-                                style={{
-                                    padding: '10px',
-                                    border: '1px solid #ccc',
-                                    borderRadius: '5px',
-                                    width: '200px',
-                                    boxSizing: 'border-box'
-                                }}
+                                style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px', width: '200px', boxSizing: 'border-box' }}
                                 onChange={(e) => setSelectedCategory(e.target.value)}
                             >
                                 <option value="">All</option>
@@ -172,7 +160,10 @@ const Home = () => {
                                         <p className="product-card__description">{product.description}</p>
                                         {
                                             isAuthenticated ?
-                                                <button className="product-card__button" onClick={addToCartHandler(product._id.toString())}>Add to Cart</button>
+                                                CartItem.find((item) => item.product_id === product._id) ?
+                                                    <button className="product-card__button" onClick={() => navigate(routes.CART)}>View Cart</button>
+                                                    :
+                                                    <button className="product-card__button" onClick={addToCartHandler(product._id.toString())}>Add to Cart</button>
                                                 :
                                                 <button className="product-card__button" onClick={() => { navigate(routes.LOGIN) }}>Please Login</button>
                                         }

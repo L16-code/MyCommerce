@@ -25,6 +25,16 @@ export const GetCategory = async (req:Request, res:Response) => {
         res.status(400).json(error)
     }
 };
+export const GetProductsCart = async (req:CustomRequest, res:Response) => {
+    try {
+        const User_id=req.UserId;
+        const result = await UserProducts.GetProductsCart(User_id as string) 
+        res.status(201).json(result)
+    } catch (error) {
+        res.status(400).json(error)
+    }
+};
+
 export const AddCart = async (req:Request, res:Response) => {
     try {
         const { product_id, user_id}=req.body

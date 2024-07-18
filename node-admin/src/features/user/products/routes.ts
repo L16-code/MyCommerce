@@ -1,6 +1,6 @@
 import  express from "express"
 import HandleErrors from "../../../middleware/handleErrors"
-import { AddAddress, AddCart, AddOrder, DeleteCart, GetAddress, GetAllOrder, GetCart, GetCategory, GetOrder, GetProducts, UpdateAddressStatus, UpdateCart } from "./controllers"
+import { AddAddress, AddCart, AddOrder, DeleteCart, GetAddress, GetAllOrder, GetCart, GetCategory, GetOrder, GetProducts, GetProductsCart, UpdateAddressStatus, UpdateCart } from "./controllers"
 import { verifyToken } from "../../../middleware/authMiddleware"
 const UserProductRouter=express.Router()
 
@@ -8,6 +8,7 @@ const UserProductRouter=express.Router()
 // home page
 UserProductRouter.get('/get-product', HandleErrors(GetProducts))
 UserProductRouter.get('/get-category', HandleErrors(GetCategory))
+UserProductRouter.get('/get-product-cart', verifyToken,HandleErrors(GetProductsCart))
 
 // cart
 UserProductRouter.post('/addCart', verifyToken ,HandleErrors(AddCart))

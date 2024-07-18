@@ -27,31 +27,11 @@ const Login = () => {
         try {
             axios.post('http://localhost:5000/login', { token: credentialResponse.credential }).then(res => {
                 if (res.data.success === true) {
-                    toast.success('LoggIn Successfull'), {
-                        position: "top-center",
-                        autoClose: 2000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: false,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "light",
-                        transition: Bounce,
-                    }
+                    toast.success('LoggIn Successfull')
                     dispatch(login(res.data.data.user))
                     navigate(routes.HOME)
                 } else {
-                    toast.error(res.data.message), {
-                        position: "top-center",
-                        autoClose: 2000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: false,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "light",
-                        transition: Bounce,
-                    }
+                    toast.error(res.data.message)
                 }
             }).catch(err => {
                 console.log(err);

@@ -18,3 +18,10 @@ export interface ProfileData {
     _id:string;
     name: string;
   }
+  export interface CartItemData{
+    _id: string;
+    product_id: string;
+    quantity: number;
+    total_price: number;
+    product_quantity: number;
+  }
