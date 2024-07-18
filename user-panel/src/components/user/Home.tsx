@@ -153,17 +153,20 @@ const Home = () => {
                             productData.length > 0 ? (
                                 productData.map((product) => (
                                     <div className="product-card" key={product._id}>
-                                        <p className="product-card__category">{product.category} <span>(Quantity: {product.quantity})</span></p>
+                                        
                                         <img src={product.image} alt="" className="product-card__image" />
                                         <h2 className="product-card__name">{product.name}</h2>
                                         <p className="product-card__price">₹{product.price.toFixed(2)}</p>
                                         <p className="product-card__description">{product.description}</p>
                                         {
                                             isAuthenticated ?
-                                                CartItem.find((item) => item.product_id === product._id) ?
-                                                    <button className="product-card__button" onClick={() => navigate(routes.CART)}>View Cart</button>
+                                                product.quantity <= 0 ?
+                                                    <button className="product-card__button" style={{backgroundColor:"red"}} disabled>Out of Stock</button>
                                                     :
-                                                    <button className="product-card__button" onClick={addToCartHandler(product._id.toString())}>Add to Cart</button>
+                                                    CartItem.find((item) => item.product_id === product._id) ?
+                                                        <button className="product-card__button"  style={{backgroundColor:"green"}} onClick={() => navigate(routes.CART)}>View Cart</button>
+                                                        :
+                                                        <button className="product-card__button" onClick={addToCartHandler(product._id.toString())}>Add to Cart</button>
                                                 :
                                                 <button className="product-card__button" onClick={() => { navigate(routes.LOGIN) }}>Please Login</button>
                                         }

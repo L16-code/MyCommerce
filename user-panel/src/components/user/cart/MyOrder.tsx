@@ -10,7 +10,7 @@ const MyOrder = () => {
     const [OrderData, setOrderData] = useState<GetOrderData[]>([]);
     const GetMyOrder = async () => {
         await axios.get(`http://localhost:5000/get-all-order`, { headers: { Authorization: AuthStr } })
-            .then(res => { setOrderData(res.data.data); console.log(res.data.data) })
+            .then(res => { setOrderData(res.data.data);})
     }
     useEffect(() => {
         GetMyOrder()

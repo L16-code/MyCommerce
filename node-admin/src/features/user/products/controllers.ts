@@ -1,6 +1,7 @@
 import {Request,Response} from "express";
 import UserProducts from "./service"
 import { CustomRequest } from "../../../middleware/authMiddleware";
+// HOME PAGE
 export const GetProducts = async (req:Request, res:Response) => {
     try {
         const { page = 1, limit = 10, search = '', category = '', sort = '' } = req.query;
@@ -35,6 +36,7 @@ export const GetProductsCart = async (req:CustomRequest, res:Response) => {
     }
 };
 
+//  CART
 export const AddCart = async (req:Request, res:Response) => {
     try {
         const { product_id, user_id}=req.body
@@ -69,6 +71,15 @@ export const DeleteCart = async (req:Request, res:Response) => {
         res.status(400).json(error)
     }
 };
+export const EmptyCart = async (req:Request, res:Response) => {
+    try {
+        const result = await UserProducts.EmptyCart(req.params.id)
+        res.status(201).json(result)
+    } catch (error) {
+        res.status(400).json(error)
+    }
+};
+// CHECKOUT
 export const AddOrder = async (req:Request, res:Response) => {
     try {
         const result = await UserProducts.AddOrder(req.body)
@@ -77,6 +88,7 @@ export const AddOrder = async (req:Request, res:Response) => {
         res.status(400).json(error)
     }
 };
+// ORDERS
 export const GetOrder = async (req:Request, res:Response) => {
     try {
         const result = await UserProducts.GetOrder(req.params.id)

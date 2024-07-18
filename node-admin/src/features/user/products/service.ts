@@ -99,12 +99,12 @@ class UserProducts {
         }
         return response;
     }
-    async GetProductsCart(user_id:string){
+    async GetProductsCart(user_id: string) {
         try {
             console.log(user_id)
-            const id=new mongoose.Types.ObjectId(user_id);
+            const id = new mongoose.Types.ObjectId(user_id);
             // const cartItems = await CartModel.find({ user_id:id, status: 'Pending' }, { product_id: 1, quantity: 1, total_price: 1,});
-            const cartItems =await CartModel.aggregate([
+            const cartItems = await CartModel.aggregate([
                 {
                     $match: {
                         user_id: id,
@@ -131,11 +131,11 @@ class UserProducts {
                         product_id: 1,
                         quantity: 1,
                         total_price: 1,
-                        product_quantity:"$product.quantity",
+                        product_quantity: "$product.quantity",
                     }
                 }
             ])
-            if(!cartItems){
+            if (!cartItems) {
                 response.message = 'No cart items found';
                 return response;
             }
@@ -286,6 +286,28 @@ class UserProducts {
             response.message = error.message;
         }
         return response;
+    }
+    async EmptyCart(id: string) {
+        try {
+            console.log(id);
+            const user_id = new mongoose.Types.ObjectId(id);
+            await CartModel.updateMany({
+                user_id: user_id,
+                status: 'Pending'
+            },
+                {
+                    $set: {
+                        status: 'deleted'
+                    }
+                }
+            );
+            response.success = true;
+            response.message = "Cart emptied successfully";
+            response.data = null;
+        } catch (error: any) {
+            response.success = false;
+            response.message = error.message;
+        }
     }
     async AddOrder(data: IAddOrder) {
         try {

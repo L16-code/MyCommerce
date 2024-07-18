@@ -91,7 +91,7 @@ const Checkout = () => {
                 navigate(routes.MYORDERS);
             }
         } catch (err) {
-            console.log(err);
+            console.error(err);
         }
     };
 
@@ -101,7 +101,7 @@ const Checkout = () => {
             setSelectedAddress(id);
             GetAddress();
         } catch (err) {
-            console.log(err);
+            console.error(err);
         }
     };
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {

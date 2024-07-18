@@ -54,7 +54,13 @@ const Cart = () => {
             GetCartItem();
         }
     };
-
+    const ClearCartHandler=async()=>{
+        const check = confirm('Are you sure you want to clear the cart?');
+        if (check) {
+            await axios.delete(`http://localhost:5000/empty-cart/${user_detail?.id}`, { headers: { Authorization: AuthStr } })
+            GetCartItem();
+        }
+    }
     let TotalValue = CartData.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
     return (
@@ -81,7 +87,7 @@ const Cart = () => {
                                                 <p>{item.quantity}</p>
                                                 {
                                                     CartItem.find((value) => value._id === item._id) ?
-                                                        CartItem.find((quant) => quant.product_quantity === item.quantity) ?
+                                                        CartItem.find((quant) => quant.product_quantity <= item.quantity) ?
                                                             <p style={{ color: "red", margin: "3px", }}> Out Of Stock</p>
                                                             :
                                                             <button onClick={() => updateCartQuantity(item._id, item.quantity + 1)} style={{ padding: "5px", margin: "3px", backgroundColor: "blue" }}>+</button>
@@ -97,7 +103,7 @@ const Cart = () => {
                             <div className="cart-summary">
                                 <h2>Total: ₹{TotalValue.toFixed(2)}</h2>
                                 <button onClick={() => { navigate(routes.CHECKOUT) }} style={{ backgroundColor: "green", margin: "2rem" }}>Proceed To Checkout</button>
-                                {/* <button onClick={() => { }}>Clear Cart</button> */}
+                                <button onClick={() => ClearCartHandler() }>Clear Cart</button>
                             </div>
                         </>
                     )}

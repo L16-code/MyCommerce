@@ -1,6 +1,6 @@
 import  express from "express"
 import HandleErrors from "../../../middleware/handleErrors"
-import { AddAddress, AddCart, AddOrder, DeleteCart, GetAddress, GetAllOrder, GetCart, GetCategory, GetOrder, GetProducts, GetProductsCart, UpdateAddressStatus, UpdateCart } from "./controllers"
+import { AddAddress, AddCart, AddOrder, DeleteCart, EmptyCart, GetAddress, GetAllOrder, GetCart, GetCategory, GetOrder, GetProducts, GetProductsCart, UpdateAddressStatus, UpdateCart } from "./controllers"
 import { verifyToken } from "../../../middleware/authMiddleware"
 const UserProductRouter=express.Router()
 
@@ -15,6 +15,7 @@ UserProductRouter.post('/addCart', verifyToken ,HandleErrors(AddCart))
 UserProductRouter.get('/GetCart/:id', verifyToken ,HandleErrors(GetCart))
 UserProductRouter.put('/update-cart/:id', verifyToken ,HandleErrors(UpdateCart))
 UserProductRouter.delete('/delete-cart-item/:id', verifyToken ,HandleErrors(DeleteCart))
+UserProductRouter.delete('/empty-cart/:id', verifyToken ,HandleErrors(EmptyCart))
 
 // chechout
 UserProductRouter.get('/get-order/:id', verifyToken,HandleErrors(GetOrder))
