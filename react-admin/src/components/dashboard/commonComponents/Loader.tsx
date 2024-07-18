@@ -1,4 +1,4 @@
-import gif from '../../assets/Spinner@1x-1.0s-200px-200px.gif';
+import gif from '../../../assets/Spinner@1x-1.0s-200px-200px.gif';
 
 const Loader = () => {
     return (

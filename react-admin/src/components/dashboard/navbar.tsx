@@ -12,7 +12,7 @@ const navbar = () => {
 
     return (
         <nav className="navbar navbar-expand navbar-light navbar-bg">
-            <a className="sidebar-toggle js-sidebar-toggle">
+            <a className="sidebar-toggle js-sidebar-toggle" onClick={()=>console.log("navv")}>
                 <i className="hamburger align-self-center" />
             </a>
             <div className="navbar-collapse collapse">

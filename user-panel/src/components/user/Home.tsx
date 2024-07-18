@@ -6,7 +6,7 @@ import { RootState } from "../../state_management/store/store";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import routes from "../../routes/routes";
-
+import Loader from "../commonComponents/Loader";
 const Home = () => {
     const navigate = useNavigate();
     const [productData, setProductData] = useState<ProductsData[]>([]);
@@ -17,26 +17,32 @@ const Home = () => {
     const [sortOrder, setSortOrder] = useState("");
     const [noMoreProducts, setNoMoreProducts] = useState(false);
     const [CartItem, setCartItem] = useState<CartItemData[]>([]);
+    const [loading, setLoading] = useState(true);
     const isAuthenticated = useSelector((state: RootState) => state.root.isAuthenticated);
     const user_detail = useSelector((state: RootState) => state.root.user);
     const AuthStr = 'Bearer '.concat(user_detail?.token as string);
 
     const GetProducts = async (newLimit: number = limit) => {
-        const res = await axios.get(`http://localhost:5000/get-product`, {
-            params: {
-                page: 1,
-                limit: newLimit,
-                search: searchData,
-                category: selectedCategory,
-                sort: sortOrder
+        setLoading(true);  // Set loading to true before fetching data
+        try {
+            const res = await axios.get(`http://localhost:5000/get-product`, {
+                params: {
+                    page: 1,
+                    limit: newLimit,
+                    search: searchData,
+                    category: selectedCategory,
+                    sort: sortOrder
+                }
+            });
+            if (res.data.data.length < newLimit) {
+                setNoMoreProducts(true);
+            } else {
+                setNoMoreProducts(false);
             }
-        });
-        if (res.data.data.length < newLimit) {
-            setNoMoreProducts(true);
-        } else {
-            setNoMoreProducts(false);
+            setProductData(res.data.data);
+        } finally {
+            setLoading(false);  // Set loading to false after data is fetched
         }
-        setProductData(res.data.data);
     };
 
     const GetCategory = async () => {
@@ -93,6 +99,9 @@ const Home = () => {
     }, [limit, searchData, selectedCategory, sortOrder]);
     useEffect(() => {
     }, [CartItem]);
+    // if (loading) {  // Render the loader while loading is true
+    //     return <Loader />;
+    // }
     return (
         <>
             <div>
@@ -148,12 +157,14 @@ const Home = () => {
                             </select>
                         </div>
                     </div>
-                    <div style={{ width: '80%', padding: '20px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: "aliceblue", display: "flex", flexWrap: "wrap", gap: "4rem", marginTop: "2rem" }}>
+                    <div style={{ width: '80%', padding: '20px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: "aliceblue", display: "flex", flexWrap: "wrap", gap: "4rem", marginTop: "2rem",  justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
                         {
+                            loading ? (
+                                <Loader />
+                            ) : 
                             productData.length > 0 ? (
                                 productData.map((product) => (
                                     <div className="product-card" key={product._id}>
-                                        
                                         <img src={product.image} alt="" className="product-card__image" />
                                         <h2 className="product-card__name">{product.name}</h2>
                                         <p className="product-card__price">₹{product.price.toFixed(2)}</p>
@@ -161,10 +172,10 @@ const Home = () => {
                                         {
                                             isAuthenticated ?
                                                 product.quantity <= 0 ?
-                                                    <button className="product-card__button" style={{backgroundColor:"red"}} disabled>Out of Stock</button>
+                                                    <button className="product-card__button" style={{ backgroundColor: "red" }} disabled>Out of Stock</button>
                                                     :
                                                     CartItem.find((item) => item.product_id === product._id) ?
-                                                        <button className="product-card__button"  style={{backgroundColor:"green"}} onClick={() => navigate(routes.CART)}>View Cart</button>
+                                                        <button className="product-card__button" style={{ backgroundColor: "green" }} onClick={() => navigate(routes.CART)}>View Cart</button>
                                                         :
                                                         <button className="product-card__button" onClick={addToCartHandler(product._id.toString())}>Add to Cart</button>
                                                 :

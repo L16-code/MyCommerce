@@ -12,6 +12,8 @@ import * as yup from 'yup';
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
+import Loader from "../commonComponents/Loader";
+
 const schema = yup.object().shape({
     file: yup.mixed<FileList>().required('File is required')
 });
@@ -23,6 +25,7 @@ const ShowProduct = () => {
     const AuthStr = 'Bearer '.concat(TOKEN);
     const navigate = useNavigate();
     const [products, setProducts] = useState<GetProduct[]>([]);
+    const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(schema),
@@ -30,8 +33,14 @@ const ShowProduct = () => {
     const openModal = () => setShowModal(true);
     const closeModal = () => setShowModal(false);
     const GetProducts = () => {
-        axios.get('http://localhost:5000/product/read', { headers: { Authorization: AuthStr } })
-            .then(res => setProducts(res.data.data))
+        setLoading(true);
+        try {
+            axios.get('http://localhost:5000/product/read', { headers: { Authorization: AuthStr } })
+                .then(res => setProducts(res.data.data))
+
+        } finally {
+            setLoading(false);
+        }
     }
     const StatusHandler = async (id: string) => {
         const isConfirm = confirm('Are you Sure You Want To Change status')
@@ -76,7 +85,6 @@ const ShowProduct = () => {
     const onSubmit = async (data: AddFile) => {
         const formData = new FormData();
         formData.append('file', data.file[0]);
-        // console.log(data.file[0]);
         try {
             await axios.post(`http://localhost:5000/product/import-products`, formData, {
                 headers: {
@@ -84,14 +92,14 @@ const ShowProduct = () => {
                     'Content-Type': 'multipart/form-data'
                 },
             }).then(res => {
-                    if (res.data.success === true) {
-                        toast.success('Products Imported Successfully')
-                        closeModal()
-                        GetProducts()
-                    } else {
-                        toast.error(res.data.message)
-                    }
-                })
+                if (res.data.success === true) {
+                    toast.success('Products Imported Successfully')
+                    closeModal()
+                    GetProducts()
+                } else {
+                    toast.error(res.data.message)
+                }
+            })
         } catch (error) {
             console.log(error);
         }
@@ -159,33 +167,41 @@ const ShowProduct = () => {
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            {products.map((product) => (
-                                                                <tr key={product._id}>
-                                                                    <td>{product.name}</td>
-                                                                    <td>{product.category}</td>
-                                                                    <td>{product.price}</td>
-                                                                    <td>{product.quantity}</td>
-                                                                    <td><img src={product.image} alt={product.name} style={{ width: "100px" }} /></td>
-                                                                    <td>{
-                                                                        product.status === "active" ?
-                                                                            <span className="badge bg-success" onClick={() => { StatusHandler(product._id) }} style={{ cursor: "pointer" }}>Active</span>
-                                                                            :
-                                                                            <span className="badge bg-danger" onClick={() => { StatusHandler(product._id) }} style={{ cursor: "pointer" }}>Inactive</span>
-                                                                    }
+                                                            {loading ? (
+                                                                <tr>
+                                                                    <td  style={{ textAlign: 'center' }}>
+                                                                        <Loader />
                                                                     </td>
-                                                                    <td>
-                                                                        <button style={{
-                                                                            padding: "5px",
-                                                                            borderRadius: "5px",
-                                                                            border: "1px solid #000",
-                                                                            color: "#000",
-                                                                            backgroundColor: "green",
-                                                                        }}
-                                                                            onClick={() => navigate(routes.PRODUCTS_EDIT, { state: { id: product._id } })}
-                                                                        >Edit</button>
-                                                                    </td>
-                                                                </tr>
-                                                            ))}
+                                                                </tr>)
+                                                                : (
+                                                                    products.map((product) => (
+                                                                        <tr key={product._id}>
+                                                                            <td>{product.name}</td>
+                                                                            <td>{product.category}</td>
+                                                                            <td>{product.price}</td>
+                                                                            <td>{product.quantity}</td>
+                                                                            <td><img src={product.image} alt={product.name} style={{ width: "100px" }} /></td>
+                                                                            <td>{
+                                                                                product.status === "active" ?
+                                                                                    <span className="badge bg-success" onClick={() => { StatusHandler(product._id) }} style={{ cursor: "pointer" }}>Active</span>
+                                                                                    :
+                                                                                    <span className="badge bg-danger" onClick={() => { StatusHandler(product._id) }} style={{ cursor: "pointer" }}>Inactive</span>
+                                                                            }
+                                                                            </td>
+                                                                            <td>
+                                                                                <button style={{
+                                                                                    padding: "5px",
+                                                                                    borderRadius: "5px",
+                                                                                    border: "1px solid #000",
+                                                                                    color: "#000",
+                                                                                    backgroundColor: "green",
+                                                                                }}
+                                                                                    onClick={() => navigate(routes.PRODUCTS_EDIT, { state: { id: product._id } })}
+                                                                                >Edit</button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))
+                                                                )}
                                                         </tbody>
                                                     </table>
                                                 </div>
