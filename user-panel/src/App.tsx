@@ -16,7 +16,7 @@ function App() {
   //   const ip = await axios.get('https://ipapi.co/json')
   //   setIp(ip.data);
   //   console.log(ip.data);
-  // }
+  // } 
   return (
     <PublicRoutes />
   )

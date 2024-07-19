@@ -76,7 +76,6 @@ export const ExportSampleExcel = async (req: Request, res:Response) => {
 };
 export const ImportExcel = async (req: Request, res:Response) => {
     try {
-        console.log(req.file)
         if (!req.file) {
             return res.status(400).json({ success: false, message: "No file uploaded" });
         }

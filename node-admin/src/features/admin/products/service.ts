@@ -347,7 +347,7 @@ class ProductService {
             { header: 'Name', key: 'name', width: 30 },
             { header: 'Price', key: 'price', width: 15 },
             { header: `Quantity`, key: 'quantity', width: 15 },
-            { header: `Category[${Categories_name}]`, key: 'category', width: 50 },
+            { header: `Category[${Categories_name}]`, key: 'category', width: 70 },
             { header: 'Description', key: 'description', width: 50 },
         ]
 
@@ -393,46 +393,66 @@ class ProductService {
         });
     }
     async ImportExcel(data: ProductData[]) {
+        const problematicRows: number[] = [];
         try {
             const categories = await ProductCategoryModal.find({});
-        
-            // Create a mapping of category names to IDs
             const categoryMap: { [key: string]: string } = {};
             categories.forEach((category) => {
                 categoryMap[category.name] = category._id.toString();
             });
     
-            // Transform incoming data to replace category names with IDs
-            const products = data.map((row) => {
+            const validateNumber = (value: string | number, fieldName: string, rowIndex: number) => {
+                if (isNaN(Number(value))) {
+                    problematicRows.push(rowIndex);
+                    return null;
+                }
+                return Number(value);
+            };
+            const products = [];
+            for (let i = 0; i < data.length; i++) {
+                const row = data[i];
                 const { name, price, quantity, category, description } = row;
-    
-                // Get category ID from categoryMap
-                const category_id = categoryMap[category];
-                if (!category_id) {
-                    throw new Error(`Category "${category}" not found in the database.`);
+                const validatedPrice = validateNumber(price, 'Price', i + 1);
+                const validatedQuantity = validateNumber(quantity, 'Quantity', i + 1);
+                    if (validatedPrice === null || validatedQuantity === null) {
+                    continue;
                 }
     
-                return {
+                let category_id = categoryMap[category];
+                if (!category_id) {
+                    const newCategory = await ProductCategoryModal.create({ name: category });
+                    category_id = newCategory._id.toString();
+                    categoryMap[category] = category_id;
+                }
+    
+                products.push({
                     name,
-                    price: parseFloat(price.toString()),
-                    quantity: parseInt(quantity.toString(), 10),
-                    image:"",
+                    price: validatedPrice,
+                    quantity: validatedQuantity,
+                    image: "",
                     category_id,
                     description,
                     createdAt: new Date()
-                };
-            });
+                });
+            }
     
-            // Insert transformed data into the database
-            await ProductModal.insertMany(products);
+            if (products.length > 0) {
+                await ProductModal.insertMany(products);
+            }
     
-            response.success = true;
-            response.message = "Products imported successfully";
+            if (problematicRows.length > 0) {
+                response.success = false;
+                response.message = "There were problems with some rows."+problematicRows+"others rows were successfully created."; ;
+            } else {
+                response.success = true;
+                response.message = "Products imported successfully.";
+            }
         } catch (error) {
             console.error(error);
             response.success = false;
-            response.message = "An error occurred while importing the products";
+            response.message = `An error occurred while importing the products: ${error}`;
         }
+    
         return response;
     }
 }
