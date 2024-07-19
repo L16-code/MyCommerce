@@ -20,6 +20,7 @@ import EditUser from '../components/dashboard/users/EditUser';
 import Orders from '../components/dashboard/orders/Orders';
 import EditRole from '../components/dashboard/roles/EditRole';
 import ShowCustomers from '../components/dashboard/customers/ShowCustomers';
+import Profile from '../components/dashboard/Profile';
 
 const PublicRoutes: React.FC = () => {
     const isAuthenticated = useSelector((state: RootState) => state.root.isAuthenticated);
@@ -27,10 +28,10 @@ const PublicRoutes: React.FC = () => {
     return (
         <div>
             <Routes>
-                    <Route
-                        path={routes.HOME}
-                        element={<WithHeader component={Dashboard} route={routes.HOME} isAuthenticated={isAuthenticated} />}
-                    />
+                <Route
+                    path={routes.HOME}
+                    element={<WithHeader component={Dashboard} route={routes.HOME} isAuthenticated={isAuthenticated} />}
+                />
                 <Route
                     path={routes.ROOT}
                     element={<WithHeader component={Login} route={routes.ROOT} isAuthenticated={isAuthenticated} />}
@@ -38,6 +39,10 @@ const PublicRoutes: React.FC = () => {
                 <Route
                     path={routes.LOGIN}
                     element={<WithHeader component={Login} route={routes.LOGIN} isAuthenticated={isAuthenticated} />}
+                />
+                <Route
+                    path={routes.MYPROFILE}
+                    element={<WithHeader component={Profile} route={routes.MYPROFILE} isAuthenticated={isAuthenticated} />}
                 />
                 {/* USERS ROUTES */}
                 <Route

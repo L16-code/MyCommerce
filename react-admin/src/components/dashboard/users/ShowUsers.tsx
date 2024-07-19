@@ -2,13 +2,14 @@ import Sidebar from "../sidebar";
 import Navbar from "../navbar";
 import { useNavigate } from "react-router-dom";
 import routes from "../../../routes/routes";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../state_management/store/store";
 import { GetUserData } from "./UserInterface";
 
 const ShowUsers = () => {
+    const sidebarRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate()
     const [users, setUsers] = useState<GetUserData[]>([]); // Define state with user type
     const TOKEN = useSelector((state: RootState) => state.root.token);
@@ -34,9 +35,9 @@ const ShowUsers = () => {
     }, [])
     return (
         <div className="wrapper">
-            <Sidebar isAuthenticated={true} />
+            <Sidebar isAuthenticated={true} sidebarRef={sidebarRef}/>
             <div className="main">
-                <Navbar />
+                <Navbar sidebarRef={sidebarRef}/>
                 <main className="content">
                     <div className="container-fluid p-0">
                         <h1 className="h3 mb-3">Users Page</h1>

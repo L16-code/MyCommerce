@@ -3,7 +3,7 @@ import Navbar from "../navbar";
 import { useNavigate } from "react-router-dom";
 import routes from "../../../routes/routes";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GetProduct } from "./productInterface";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../state_management/store/store";
@@ -21,6 +21,7 @@ interface AddFile {
     file: FileList;
 }
 const ShowProduct = () => {
+    const sidebarRef = useRef<HTMLDivElement>(null);
     const TOKEN = useSelector((state: RootState) => state.root.token);
     const AuthStr = 'Bearer '.concat(TOKEN);
     const navigate = useNavigate();
@@ -109,9 +110,9 @@ const ShowProduct = () => {
     }, [])
     return (
         <div className="wrapper">
-            <Sidebar isAuthenticated={true} />
+            <Sidebar isAuthenticated={true} sidebarRef={sidebarRef} />
             <div className="main">
-                <Navbar />
+                <Navbar sidebarRef={sidebarRef}/>
                 <main className="content">
                     <div className="container-fluid p-0">
                         <h1 className="h3 mb-3">Product  Page</h1>
@@ -158,11 +159,11 @@ const ShowProduct = () => {
                                                         <thead>
                                                             <tr>
                                                                 <th className="d-none d-xl-table-cell">Name</th>
-                                                                <th className="d-none d-xl-table-cell">category</th>
-                                                                <th className="d-none d-xl-table-cell">price</th>
-                                                                <th className="d-none d-xl-table-cell">quantity</th>
-                                                                <th className="d-none d-xl-table-cell">image</th>
-                                                                <th className="d-none d-xl-table-cell">status</th>
+                                                                <th className="d-none d-xl-table-cell">Category</th>
+                                                                <th className="d-none d-xl-table-cell">Price</th>
+                                                                <th className="d-none d-xl-table-cell">Quantity</th>
+                                                                <th className="d-none d-xl-table-cell">Image</th>
+                                                                <th className="d-none d-xl-table-cell">Status</th>
                                                                 <th className="d-none d-md-table-cell">Action</th>
                                                             </tr>
                                                         </thead>

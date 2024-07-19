@@ -135,7 +135,7 @@ class ProductService {
             );
             response.success = true;
             response.message = "Products status updated successfully";
-            response.data = updatedProducts;
+            response.data = null;
         } else {
             response.message = "Product not found";
             response.success = false;

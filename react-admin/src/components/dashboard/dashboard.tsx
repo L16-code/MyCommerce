@@ -21,6 +21,7 @@ declare global {
 }
 
 const Dashboard: React.FC = () => {
+    const sidebarRef = useRef<HTMLDivElement>(null);
     const navigate=useNavigate();
     const TOKEN = useSelector((state: RootState) => state.root.token);
     const AuthStr = 'Bearer '.concat(TOKEN);
@@ -97,9 +98,9 @@ const Dashboard: React.FC = () => {
     }
     return (
         <div className="wrapper">
-            <Sidebar isAuthenticated={true} />
+            <Sidebar isAuthenticated={true} sidebarRef={sidebarRef} />
             <div className="main">
-                <Navbar />
+                <Navbar sidebarRef={sidebarRef} />
                 <main className="content">
                     <div className="container-fluid p-0">
                         <h1 className="h3 mb-3">

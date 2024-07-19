@@ -181,7 +181,7 @@ class UserService {
     }
     async UserUpdate(id: string, data: IuserEditData) {
         try {
-            const { username, email, dob, gender, role_id, actionType } = data;
+            const { username, email, dob, gender, role_id } = data;
 
             const updatedUser = await UserModel.findOneAndUpdate(
                 { _id: id },
@@ -274,6 +274,64 @@ class UserService {
             response.success = true;
             response.message = "Users fetched successfully";
             response.data = users;
+            return response;
+        } catch (error) {
+            response.success = false;
+            response.message = "There is a problem with the server. Please contact the developer.";
+            response.data = error;
+            return response;
+        }
+    }
+    async UserProfile(id: string) {
+        try {
+            const userid = new mongoose.Types.ObjectId(id);
+            const user_data = await UserModel.aggregate([
+                {
+                    $match: {
+                        _id: userid
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userhasroles",
+                        localField: "_id",
+                        foreignField: "user_id",
+                        as: "user_role"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$user_role",
+                        includeArrayIndex: 'string',
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "roles",
+                        localField: "user_role.role_id",
+                        foreignField: "_id",
+                        as: "role"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$role",
+                        includeArrayIndex: 'string',
+                    }
+                },
+                {
+                    $project: {
+                        username: 1,
+                        dob: 1,
+                        gender: 1,
+                        role: "$role.name",
+                        email: 1
+                    }
+                }
+            ])
+            response.success = true;
+            response.message = "User profile fetched successfully";
+            response.data = user_data;
             return response;
         } catch (error) {
             response.success = false;
@@ -388,9 +446,9 @@ class UserService {
         }
     }
 
-    async CustomerStatusUpdate(id:string){
+    async CustomerStatusUpdate(id: string) {
         try {
-            const userId=new mongoose.Types.ObjectId(id); 
+            const userId = new mongoose.Types.ObjectId(id);
             const OrderCheck = await OrdersModel.aggregate([
                 {
                     $match: {
@@ -399,20 +457,20 @@ class UserService {
                     }
                 }
             ]);
-        
+
             if (OrderCheck.length > 0) {
                 response.success = false;
                 response.message = "Cannot update customer status. There are pending orders for this customer.";
                 return response;
             }
-            
+
             const customer = await UserModel.findById(userId);
             if (customer) {
                 const newStatus = customer.status === 'active' ? 'inactive' : 'active';
                 const updatedCustomer = await UserModel.findByIdAndUpdate(
                     userId,
                     { status: newStatus },
-                    { new: true } 
+                    { new: true }
                 );
                 response.success = true;
                 response.message = "Customer status updated successfully";
@@ -428,7 +486,7 @@ class UserService {
             response.data = error;
             return response;
         }
-        
+
     }
-}   
+}
 export default new UserService

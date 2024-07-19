@@ -4,15 +4,21 @@ import { logout } from '../../state_management/actions/rootReducer.js';
 import { useNavigate } from 'react-router-dom';
 import routes from '../../routes/routes.js';
 import { RootState } from '../../state_management/store/store.js';
+import { FaChartPie ,FaUser } from "react-icons/fa"
 
-const navbar = () => {
-    const disptach=useDispatch();
-    const navigate=useNavigate();
-    const Username =useSelector((state: RootState) => state.root.user?.username);
+// import { useEffect, useRef } from 'react';
+
+const navbar = ({ sidebarRef }: { sidebarRef: React.RefObject<HTMLDivElement> }) => {
+    const disptach = useDispatch();
+    const navigate = useNavigate();
+    const Username = useSelector((state: RootState) => state.root.user?.username);
+    // const sidebarRef = useRef<HTMLDivElement>(null);
 
     return (
         <nav className="navbar navbar-expand navbar-light navbar-bg">
-            <a className="sidebar-toggle js-sidebar-toggle" onClick={()=>console.log("navv")}>
+            <a className="sidebar-toggle js-sidebar-toggle" onClick={() => { if (sidebarRef.current) {
+                    sidebarRef.current.classList.toggle('collapsed');
+                } }}>
                 <i className="hamburger align-self-center" />
             </a>
             <div className="navbar-collapse collapse">
@@ -208,24 +214,21 @@ const navbar = () => {
                             href="#"
                             data-bs-toggle="dropdown"
                         >
-                            <img
-                                src="img/avatars/avatar.jpg"
-                                className="avatar img-fluid rounded me-1"
-                                alt={Username}
-                            />{" "}
+                            {Username}
                         </a>
+                        {/* <span className="indicator">4</span> */}
                         <div className="dropdown-menu dropdown-menu-end">
-                            <a className="dropdown-item" href="pages-profile.html">
-                                <i className="align-middle me-1" data-feather="user" /> Profile
+                            <a className="dropdown-item" onClick={()=>navigate(routes.MYPROFILE)}>
+                                <i className="align-middle me-1"/>{<span>{<FaUser />}</span>} Profile
                             </a>
-                            <a className="dropdown-item" href="#">
-                                <i className="align-middle me-1" data-feather="pie-chart" />{" "}
-                                Analytics
+                            <a className="dropdown-item" onClick={()=>navigate(routes.HOME)}>
+                                <i className="align-middle me-1"/>{<span>{<FaChartPie />}</span>} Analytics
                             </a>
                             <div className="dropdown-divider" />
-                            <a className="dropdown-item" onClick={()=>{
-                                disptach(logout()) 
-                                navigate(routes.LOGIN)}}>
+                            <a className="dropdown-item" onClick={() => {
+                                disptach(logout())
+                                navigate(routes.LOGIN)
+                            }}>
                                 Log out
                             </a>
                         </div>

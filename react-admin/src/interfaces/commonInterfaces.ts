@@ -32,3 +32,12 @@ export interface getUserdata{
     gender:string,
     status:string
 }
+
+export interface GetProfileData{
+    _id: string,
+    username: string,
+    email: string,
+    dob: string,
+    gender: string,
+    role:string
+}

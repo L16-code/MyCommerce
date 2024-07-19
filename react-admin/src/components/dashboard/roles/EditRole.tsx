@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -50,6 +50,7 @@ interface FormValues {
 }
 
 const EditRole: React.FC = () => {
+    const sidebarRef = useRef<HTMLDivElement>(null);
     const location = useLocation();
     const navigate = useNavigate();
     const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormValues>({
@@ -118,9 +119,9 @@ const EditRole: React.FC = () => {
 
     return (
         <div className="wrapper">
-            <Sidebar isAuthenticated={true} />
+            <Sidebar isAuthenticated={true} sidebarRef={sidebarRef}/>
             <div className="main">
-                <Navbar />
+                <Navbar sidebarRef={sidebarRef}/>
                 <main className="content">
                     <div className="container-fluid p-0">
                         <h1 className="h3 mb-3">Edit Roles Page</h1>

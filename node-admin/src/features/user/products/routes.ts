@@ -2,18 +2,20 @@ import  express from "express"
 import HandleErrors from "../../../middleware/handleErrors"
 import { AddAddress, AddCart, AddOrder, DeleteCart, EmptyCart, GetAddress, GetAllOrder, GetCart, GetCategory, GetOrder, GetProducts, GetProductsCart, UpdateAddressStatus, UpdateCart } from "./controllers"
 import { verifyToken } from "../../../middleware/authMiddleware"
+import { validateRequest } from "../../../middleware/ValidationSchema"
+import { AddCartSchema, querySchema, UpdateCartSchema } from "./validations"
 const UserProductRouter=express.Router()
 
 
 // home page
-UserProductRouter.get('/get-product', HandleErrors(GetProducts))
+UserProductRouter.get('/get-product',validateRequest(querySchema,"query"), HandleErrors(GetProducts))
 UserProductRouter.get('/get-category', HandleErrors(GetCategory))
 UserProductRouter.get('/get-product-cart', verifyToken,HandleErrors(GetProductsCart))
 
 // cart
-UserProductRouter.post('/addCart', verifyToken ,HandleErrors(AddCart))
+UserProductRouter.post('/addCart',validateRequest(AddCartSchema), verifyToken ,HandleErrors(AddCart))
 UserProductRouter.get('/GetCart/:id', verifyToken ,HandleErrors(GetCart))
-UserProductRouter.put('/update-cart/:id', verifyToken ,HandleErrors(UpdateCart))
+UserProductRouter.put('/update-cart/:id',validateRequest(UpdateCartSchema), verifyToken ,HandleErrors(UpdateCart))
 UserProductRouter.delete('/delete-cart-item/:id', verifyToken ,HandleErrors(DeleteCart))
 UserProductRouter.delete('/empty-cart/:id', verifyToken ,HandleErrors(EmptyCart))
 

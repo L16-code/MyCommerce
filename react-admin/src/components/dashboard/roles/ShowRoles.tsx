@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Sidebar from "../sidebar";
 import Navbar from "../navbar";
 import axios from "axios";
@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import routes from '../../../routes/routes.js';
 
 const ShowRoles: React.FC = () => {
+    const sidebarRef = useRef<HTMLDivElement>(null);
     const navigate =useNavigate();
     const [roles, setRoles] = useState<Role[]>([]); // Define state with Role type
 
@@ -31,9 +32,9 @@ const ShowRoles: React.FC = () => {
 
     return (
         <div className="wrapper">
-            <Sidebar isAuthenticated={true} />
+            <Sidebar isAuthenticated={true} sidebarRef={sidebarRef}/>
             <div className="main">
-                <Navbar />
+                <Navbar sidebarRef={sidebarRef}/>
                 <main className="content">
                     <div className="container-fluid p-0">
                         <h1 className="h3 mb-3">Roles Page</h1>

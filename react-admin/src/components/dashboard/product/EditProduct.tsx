@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from 'yup';
 import { EditProduct } from "./productInterface";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CategoryName } from "../product-category/ProductCategoryInterface";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -23,6 +23,7 @@ const schema = yup.object().shape({
 });
 
 const EditProducts = () => {
+    const sidebarRef = useRef<HTMLDivElement>(null);
     const location = useLocation();
     const navigate = useNavigate();
     const TOKEN = useSelector((state: RootState) => state.root.token);
@@ -111,9 +112,9 @@ const EditProducts = () => {
 
     return (
         <div className="wrapper">
-            <Sidebar isAuthenticated={true} />
+            <Sidebar isAuthenticated={true} sidebarRef={sidebarRef}/>
             <div className="main">
-                <Navbar />
+                <Navbar sidebarRef={sidebarRef}/>
                 <main className="content">
                     <div className="container-fluid p-0">
                         <h1 className="h3 mb-3">Edit Product Page</h1>

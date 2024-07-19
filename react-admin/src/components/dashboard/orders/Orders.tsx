@@ -3,9 +3,10 @@ import Navbar from "../navbar";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../state_management/store/store";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { OrderRead } from "./orderInterface";
 const Orders = () => {
+    const sidebarRef = useRef<HTMLDivElement>(null);
     const TOKEN = useSelector((state: RootState) => state.root.token);
     const AuthStr = 'Bearer '.concat(TOKEN);
     const [Orders, setOrders] = useState<OrderRead[]>([]);
@@ -31,9 +32,9 @@ const Orders = () => {
     };
     return (
         <div className="wrapper">
-            <Sidebar isAuthenticated={true} />
+            <Sidebar isAuthenticated={true} sidebarRef={sidebarRef} />
             <div className="main">
-                <Navbar />
+                <Navbar sidebarRef={sidebarRef} />
                 <main className="content">
                     <div className="container-fluid p-0">
                         <h1 className="h3 mb-3">Order  Page</h1>
@@ -55,7 +56,7 @@ const Orders = () => {
                                                                 <th className="d-none d-xl-table-cell">Total price</th>
                                                                 <th className="d-none d-xl-table-cell">Products</th>
                                                                 <th className="d-none d-xl-table-cell">Address</th>
-                                                                <th className="d-none d-xl-table-cell">status</th>
+                                                                <th className="d-none d-xl-table-cell">Status</th>
                                                                 <th className="d-none d-xl-table-cell">Order At</th>
                                                             </tr>
                                                         </thead>

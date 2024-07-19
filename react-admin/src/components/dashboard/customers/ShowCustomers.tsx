@@ -3,11 +3,12 @@ import Navbar from "../navbar";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../state_management/store/store";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CustomerRead } from "./customersInterface";
 import { toast } from "react-toastify";
 
 const ShowCustomers = () => {
+    const sidebarRef = useRef<HTMLDivElement>(null);
     const TOKEN = useSelector((state: RootState) => state.root.token);
     const [Customers, setCustomers] = useState<CustomerRead[]>([]);
 
@@ -42,9 +43,9 @@ const ShowCustomers = () => {
     }
     return (
         <div className="wrapper">
-            <Sidebar isAuthenticated={true} />
+            <Sidebar isAuthenticated={true} sidebarRef={sidebarRef} />
             <div className="main">
-                <Navbar />
+                <Navbar sidebarRef={sidebarRef} />
                 <main className="content">
                     <div className="container-fluid p-0">
                         <h1 className="h3 mb-3">Customers Page</h1>

@@ -26,6 +26,15 @@ export const UserUpdate = async (req:Request, res:Response) => {
         res.status(400).json(error)
     }
 };
+export const UserProfile = async (req:CustomRequest, res:Response) => {
+    try {
+        const id=req.UserId
+        const result = await UserService.UserProfile(id as string)
+        res.status(201).json(result)
+    } catch (error) {
+        res.status(400).json(error)
+    }
+};
 export const UserRead = async (req:CustomRequest, res:Response) => {
     try {
         const id=req.UserId

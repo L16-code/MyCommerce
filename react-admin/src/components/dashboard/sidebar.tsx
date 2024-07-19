@@ -9,8 +9,9 @@ import { RootState } from "../../state_management/store/store.js";
 import { permissionData } from "../../interfaces/authInterface.js";
 interface SidebarProps {
     isAuthenticated: boolean;
+    sidebarRef: React.RefObject<HTMLDivElement>;
 }
-const sidebar: React.FC<SidebarProps> = () => {
+const sidebar: React.FC<SidebarProps> = ({ sidebarRef }) => {
     const navigate = useNavigate()
     const permissions = useSelector((state: RootState) => state.root.permission)
     const Username = useSelector((state: RootState) => state.root.user?.username);
@@ -21,7 +22,7 @@ const sidebar: React.FC<SidebarProps> = () => {
         });
     });
     return (
-        <nav id="sidebar" className="sidebar js-sidebar">
+        <nav id="sidebar" className="sidebar js-sidebar " ref={sidebarRef}>
             <div className="sidebar-content js-simplebar">
                 <a className="sidebar-brand" href="index.html">
                     <span className="align-middle">{Username}</span>
@@ -33,7 +34,7 @@ const sidebar: React.FC<SidebarProps> = () => {
                     }}>
                         <a className="sidebar-link" >
                             <i className="align-middle" />{<span>{<FaUserClock />}</span>}
-                            <span className="align-middle">Dashboard</span>
+                            <span className="align-middle">Dashboard </span>
                         </a>
                     </li>
 

@@ -17,3 +17,7 @@ export const UPDATE_ORDER_PERMISSIONS = ["orders-update"];
 // CUSTOMERS PERMISSIONS 
 export const READ_CUSTOMER_PERMISSIONS = ["customers-read"];
 export const UPDATE_CUSTOMER_PERMISSIONS = ["customers-update"];
+
+
+//  SOME JOI CONSTANTS
+export const PASSWORD_REGEX=/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/

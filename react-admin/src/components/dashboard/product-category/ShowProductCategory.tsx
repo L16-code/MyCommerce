@@ -5,7 +5,7 @@ import { RootState } from "../../../state_management/store/store";
 import axios from "axios";
 import Modal from "../commonComponents/modal";
 import { AddCategory, CategoryName } from "./ProductCategoryInterface";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as yup from 'yup';
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -16,6 +16,7 @@ const schema = yup.object().shape({
 });
 
 const ShowProductCategory = () => {
+    const sidebarRef = useRef<HTMLDivElement>(null);
     const { register, handleSubmit, formState: { errors }, reset } = useForm<AddCategory>({
         resolver: yupResolver(schema),
         defaultValues: {
@@ -130,9 +131,9 @@ const ShowProductCategory = () => {
 
     return (
         <div className="wrapper">
-            <Sidebar isAuthenticated={true} />
+            <Sidebar isAuthenticated={true} sidebarRef={sidebarRef}/>
             <div className="main">
-                <Navbar />
+                <Navbar sidebarRef={sidebarRef}/>
                 <main className="content">
                     <div className="container-fluid p-0">
                         <h1 className="h3 mb-3">Product Category Page</h1>
