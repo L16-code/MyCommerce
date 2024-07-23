@@ -17,7 +17,7 @@ import Loader from "../commonComponents/Loader";
 const schema = yup.object().shape({
     file: yup.mixed<FileList>().required('File is required')
 });
-interface AddFile {
+export interface AddFile {
     file: FileList;
 }
 const ShowProduct = () => {

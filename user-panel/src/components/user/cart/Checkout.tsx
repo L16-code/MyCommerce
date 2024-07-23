@@ -26,7 +26,6 @@ const Checkout = () => {
     const [addressData, setAddressData] = useState<GetAddressdData[]>([]);
     const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
     const [showModal, setShowModal] = useState(false);
-
     const openModal = () => setShowModal(true);
     const closeModal = () => setShowModal(false);
 
@@ -79,7 +78,6 @@ const Checkout = () => {
             toast.error("Please select an address before placing the order");
             return;
         }
-
         try {
             const res = await axios.post(`http://localhost:5000/add-order`, {
                 user_id: user_detail?.id,
@@ -156,7 +154,8 @@ const Checkout = () => {
                     </div>
                 </div>
                 <div style={{ display: "grid", justifyContent: "center" }}>
-                    <h3>Total: ${checkoutData.reduce((acc, item) => acc + item.total_price, 0)}</h3>
+                    <h4  style={{ color:"red"}}>delivery charge:₹300</h4>
+                    <h3>Total: ₹{checkoutData.reduce((acc, item) => acc + item.total_price, 0)}</h3>
                     <button onClick={PlaceOrderHandler} style={{ backgroundColor: "green", padding: "10px", border: "none", borderRadius: "5px", cursor: "pointer" }}>Place Order</button>
                 </div>
             </div>

@@ -1,5 +1,5 @@
 // import {User} from 'feather-icons'
-import { FaUsers, FaSuitcaseRolling, FaUserClock, FaCartArrowDown } from "react-icons/fa"
+import { FaUsers, FaSuitcaseRolling, FaUserClock, FaCartArrowDown,FaMapPin  } from "react-icons/fa"
 import { FaCartShopping, FaPaypal, FaPeopleGroup } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import routes from "../../routes/routes";
@@ -98,6 +98,17 @@ const sidebar: React.FC<SidebarProps> = ({ sidebarRef }) => {
                                 </a>
                             </li>
                         </>
+                    }
+                    {
+                        PermissionString.includes("orders") &&
+                        <li className="sidebar-item " onClick={() => {
+                            navigate(routes.PIN);
+                        }}>
+                            <a className="sidebar-link">
+                                <i className="align-middle" />{<span>{<FaMapPin  />}</span>}
+                                <span className="align-middle">Pins</span>
+                            </a>
+                        </li>
                     }
                     {
                         PermissionString.includes("orders") &&

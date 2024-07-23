@@ -21,6 +21,7 @@ import Orders from '../components/dashboard/orders/Orders';
 import EditRole from '../components/dashboard/roles/EditRole';
 import ShowCustomers from '../components/dashboard/customers/ShowCustomers';
 import Profile from '../components/dashboard/Profile';
+import Pin from '../components/dashboard/pin/Pin';
 
 const PublicRoutes: React.FC = () => {
     const isAuthenticated = useSelector((state: RootState) => state.root.isAuthenticated);
@@ -43,6 +44,10 @@ const PublicRoutes: React.FC = () => {
                 <Route
                     path={routes.MYPROFILE}
                     element={<WithHeader component={Profile} route={routes.MYPROFILE} isAuthenticated={isAuthenticated} />}
+                />
+                <Route
+                    path={routes.PIN}
+                    element={<WithHeader component={Pin} route={routes.PIN} isAuthenticated={isAuthenticated} />}
                 />
                 {/* USERS ROUTES */}
                 <Route

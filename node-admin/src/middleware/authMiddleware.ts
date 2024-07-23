@@ -59,7 +59,7 @@ const checkPermission = (requiredPermissions: string[]) => {
             const rolePermissions = await RoleModel.aggregate([
                 {
                     $match: {
-                        _id: userRole.role_id
+                        _id: userRole.role_id,
                     }
                 },
                 {

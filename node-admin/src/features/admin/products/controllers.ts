@@ -80,7 +80,6 @@ export const ImportExcel = async (req: Request, res:Response) => {
             return res.status(400).json({ success: false, message: "No file uploaded" });
         }
         const file = req.file;
-        console.log("File received:", file);
 
         const workbook = new ExcelJS.Workbook();
         try {

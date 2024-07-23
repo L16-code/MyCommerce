@@ -64,32 +64,14 @@ const ShowProductCategory = () => {
         try {
             const res = await axios.post("http://localhost:5000/product-category/create", data, { headers: { Authorization: AuthStr } });
             if (res.data.success === true) {
-                toast.success('Category Added Successfully', {
-                    position: "top-center",
-                    autoClose: 1000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                });
+                toast.success('Category Added Successfully');
                 reset();
                 closeModal();
                 GetCategoryData();
             }
         } catch (err) {
             console.log(err);
-            toast.error('Category Add Failed', {
-                position: "top-center",
-                autoClose: 1000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
+            toast.error('Category Add Failed');
         }
     };
 
@@ -97,31 +79,13 @@ const ShowProductCategory = () => {
         try {
             const res = await axios.put(`http://localhost:5000/product-category/update/${EditCategory._id}`, data, { headers: { Authorization: AuthStr } });
             if (res.data.success === true) {
-                toast.success('Category Updated Successfully', {
-                    position: "top-center",
-                    autoClose: 1000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                });
+                toast.success('Category Updated Successfully');
                 closeEditModal();
                 GetCategoryData();
             }
         } catch (err) {
             console.log(err);
-            toast.error('Category Update Failed', {
-                position: "top-center",
-                autoClose: 1000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
+            toast.error('Category Update Failed');
         }
     };
 

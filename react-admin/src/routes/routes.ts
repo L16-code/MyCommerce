@@ -16,6 +16,7 @@ const routes = {
     PRODUCTS_EDIT: '/admin/products-edit',
     ORDERS_SHOW: '/admin/orders',
     CUSTOMERS_SHOW: '/admin/customers',
+    PIN:'/admin/pin',
 }
 
 
@@ -38,6 +39,7 @@ export const AfterLoginRoutes = [
     routes.ORDERS_SHOW,
     routes.ROLES_EDIT,
     routes.CUSTOMERS_SHOW,
+    routes.PIN,
 ]
 
 export default routes;
