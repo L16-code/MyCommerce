@@ -1,4 +1,5 @@
 import axios from "axios";
+import { FaSearch } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { CartItemData, CategoriesData, ProductsData } from "./Profile/ProfileInterface";
 import { useSelector } from "react-redux";
@@ -18,6 +19,7 @@ const Home = () => {
     const [noMoreProducts, setNoMoreProducts] = useState(false);
     const [CartItem, setCartItem] = useState<CartItemData[]>([]);
     const [loading, setLoading] = useState(true);
+    const [PinValue, setPinValue] = useState('');
     const isAuthenticated = useSelector((state: RootState) => state.root.isAuthenticated);
     const user_detail = useSelector((state: RootState) => state.root.user);
     const AuthStr = 'Bearer '.concat(user_detail?.token as string);
@@ -89,6 +91,19 @@ const Home = () => {
         })
     }
 
+    const PincheckHandler = () => {
+        if(PinValue.length ===0){
+            toast.error('Please Enter Pin');
+            return;
+        }
+        axios.post('http://localhost:5000/check-pin', { pin: PinValue }, { headers: { Authorization: AuthStr } })
+            .then(res => { if(res.data.success==true){
+                toast.success('Pin Matched Successfully');
+            }else{
+                toast.error('Pin Not Matched');
+            }})
+    }
+
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
             GetProducts();
@@ -97,11 +112,9 @@ const Home = () => {
         }, 500);
         return () => clearTimeout(delayDebounceFn);
     }, [limit, searchData, selectedCategory, sortOrder]);
+
     useEffect(() => {
     }, [CartItem]);
-    // if (loading) {  // Render the loader while loading is true
-    //     return <Loader />;
-    // }
     return (
         <>
             <div>
@@ -155,37 +168,57 @@ const Home = () => {
                                 <option value="LowToHigh">Price: Low to High</option>
                                 <option value="HighToLow">Price: High to Low</option>
                             </select>
+                            <div>
+                                <input type="text"
+                                    placeholder="Check Pin"
+                                    style={{
+                                        padding: '10px', border: '1px solid #ccc',
+                                        borderRadius: '5px', width: '200px', boxSizing: 'border-box'
+                                    }}
+                                    onChange={(e) => { setPinValue(e.target.value) }}
+                                />
+                                <span style={{
+                                    padding: "10px",
+                                    border: '1px solid #ccc',
+                                    marginLeft: "10px",
+                                    cursor: "pointer"
+                                }}
+                                    onClick={ PincheckHandler }
+                                >
+                                    <FaSearch />
+                                </span>
+                            </div>
                         </div>
                     </div>
-                    <div style={{ width: '80%', padding: '20px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: "aliceblue", display: "flex", flexWrap: "wrap", gap: "4rem", marginTop: "2rem",  justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
+                    <div style={{ width: '80%', padding: '20px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: "aliceblue", display: "flex", flexWrap: "wrap", gap: "4rem", marginTop: "2rem", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
                         {
                             loading ? (
                                 <Loader />
-                            ) : 
-                            productData.length > 0 ? (
-                                productData.map((product) => (
-                                    <div className="product-card" key={product._id}>
-                                        <img src={product.image} alt="" className="product-card__image" />
-                                        <h2 className="product-card__name">{product.name}</h2>
-                                        <p className="product-card__price">₹{product.price.toFixed(2)}</p>
-                                        <p className="product-card__description">{product.description}</p>
-                                        {
-                                            isAuthenticated ?
-                                                product.quantity <= 0 ?
-                                                    <button className="product-card__button" style={{ backgroundColor: "red" }} disabled>Out of Stock</button>
-                                                    :
-                                                    CartItem.find((item) => item.product_id === product._id) ?
-                                                        <button className="product-card__button" style={{ backgroundColor: "green" }} onClick={() => navigate(routes.CART)}>View Cart</button>
+                            ) :
+                                productData.length > 0 ? (
+                                    productData.map((product) => (
+                                        <div className="product-card" key={product._id}>
+                                            <img src={product.image} alt="" className="product-card__image" />
+                                            <h2 className="product-card__name">{product.name}</h2>
+                                            <p className="product-card__price">₹{product.price.toFixed(2)}</p>
+                                            <p className="product-card__description">{product.description}</p>
+                                            {
+                                                isAuthenticated ?
+                                                    product.quantity <= 0 ?
+                                                        <button className="product-card__button" style={{ backgroundColor: "red" }} disabled>Out of Stock</button>
                                                         :
-                                                        <button className="product-card__button" onClick={addToCartHandler(product._id.toString())}>Add to Cart</button>
-                                                :
-                                                <button className="product-card__button" onClick={() => { navigate(routes.LOGIN) }}>Please Login</button>
-                                        }
-                                    </div>
-                                ))
-                            ) : (
-                                <p>No products found</p>
-                            )
+                                                        CartItem.find((item) => item.product_id === product._id) ?
+                                                            <button className="product-card__button" style={{ backgroundColor: "green" }} onClick={() => navigate(routes.CART)}>View Cart</button>
+                                                            :
+                                                            <button className="product-card__button" onClick={addToCartHandler(product._id.toString())}>Add to Cart</button>
+                                                    :
+                                                    <button className="product-card__button" onClick={() => { navigate(routes.LOGIN) }}>Please Login</button>
+                                            }
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>No products found</p>
+                                )
                         }
                     </div>
                     {

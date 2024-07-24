@@ -42,6 +42,13 @@ export interface AddressArrayOfOrder{
     house_no: string;
     pin: number;
 }
+export interface AddressDataWithPinPrice{
+    addresses:GetAddressdData[];
+    pinPrice: number;
+}
+// export interface PinsPrice{
+//     price:number;
+// }
 export interface GetAddressdData{
     _id: string;
     pin: number;

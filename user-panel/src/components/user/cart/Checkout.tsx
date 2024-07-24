@@ -2,7 +2,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../state_management/store/store";
 import { useEffect, useState } from "react";
-import { AddAddressData, GetAddressdData, GetCheckoutData } from "./CartInterface";
+import { AddAddressData, AddressDataWithPinPrice, GetAddressdData, GetCheckoutData, } from "./CartInterface";
 import Modal from "../../commonComponents/modal";
 import * as yup from 'yup';
 import { useForm } from "react-hook-form";
@@ -23,9 +23,10 @@ const Checkout = () => {
     const user_detail = useSelector((state: RootState) => state.root.user);
     const AuthStr = 'Bearer '.concat(user_detail?.token as string);
     const [checkoutData, setCheckoutData] = useState<GetCheckoutData[]>([]);
-    const [addressData, setAddressData] = useState<GetAddressdData[]>([]);
+    const [addressData, setAddressData] = useState<AddressDataWithPinPrice>();
     const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
     const [showModal, setShowModal] = useState(false);
+    const [DeliveryPrice, setDeliveryPrice] = useState<0>(0);
     const openModal = () => setShowModal(true);
     const closeModal = () => setShowModal(false);
 
@@ -42,7 +43,8 @@ const Checkout = () => {
         try {
             const res = await axios.get(`http://localhost:5000/get-address`, { headers: { Authorization: AuthStr } });
             setAddressData(res.data.data);
-            const defaultAddress = res.data.data.find((address: GetAddressdData) => address.isDefault);
+            setDeliveryPrice(res.data.data.pinPrice)
+            const defaultAddress = res.data.data.addresses.find((address: GetAddressdData) => address.isDefault);
             if (defaultAddress) {
                 setSelectedAddress(defaultAddress._id);
             }
@@ -87,6 +89,8 @@ const Checkout = () => {
             if (res.data.success === true) {
                 toast.success('Your Order Has been Placed Successfully');
                 navigate(routes.MYORDERS);
+            }else{
+                toast.error(res.data.message);
             }
         } catch (err) {
             console.error(err);
@@ -102,9 +106,11 @@ const Checkout = () => {
             console.error(err);
         }
     };
+
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.target.value = e.target.value.replace(/[^0-9]/g, '');
     };
+
     return (
         <div style={{ display: 'flex', flexDirection: "column", justifyContent: 'center', alignItems: 'center' }}>
             <h1 style={{ margin: "2rem", fontWeight: "bold" }}>Checkout</h1>
@@ -126,7 +132,7 @@ const Checkout = () => {
                         <div style={{ display: "grid", justifyContent: "center" }}>
                             <button onClick={openModal} style={{ backgroundColor: "#77b9f2", padding: "10px", border: "1px solid #ccc", borderRadius: "5px", cursor: "pointer" }}>Add Address</button>
                         </div>
-                        {addressData.map(address => (
+                        {addressData?.addresses.map(address => (
                             <div key={address._id} className="cart-item">
                                 <div className="cart-item-details" style={{ display: "flex", alignItems: "center" }}>
                                     <div style={{
@@ -154,8 +160,8 @@ const Checkout = () => {
                     </div>
                 </div>
                 <div style={{ display: "grid", justifyContent: "center" }}>
-                    <h4  style={{ color:"red"}}>delivery charge:₹300</h4>
-                    <h3>Total: ₹{checkoutData.reduce((acc, item) => acc + item.total_price, 0)}</h3>
+                    <h4  style={{ color:"red"}}>delivery charge:₹{DeliveryPrice}</h4>
+                    <h3>Total: ₹{checkoutData.reduce((acc, item) => acc + item.total_price+DeliveryPrice, 0)}</h3>
                     <button onClick={PlaceOrderHandler} style={{ backgroundColor: "green", padding: "10px", border: "none", borderRadius: "5px", cursor: "pointer" }}>Place Order</button>
                 </div>
             </div>

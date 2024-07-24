@@ -7,6 +7,7 @@ import { object } from "joi";
 import { AddressModel } from "./modal/addressModal";
 import { OrdersModel } from "./modal/OrderModel";
 import { ProductCategoryModal } from "../../admin/products-category/model";
+import { PinModal } from "../../admin/pin/model";
 const response: {
     message: string;
     data?: unknown;
@@ -15,7 +16,9 @@ const response: {
 interface IQuantity {
     quantity: number;
 }
-
+interface pinval{
+    pin: number;
+}
 class UserProducts {
     async GetProducts({ page, limit, search, category, sort }: QueryParams) {
         try {
@@ -150,6 +153,26 @@ class UserProducts {
             response.message = "Failed to fetch cart items";
             response.success = false;
             response.data = [];
+        }
+        return response;
+    }
+    async CheckPin(pinval:pinval){
+        try {
+            console.log(pinval.pin);
+            const pinData = await PinModal.aggregate([
+                { $match: { pin: Number(pinval.pin) } }
+            ])
+            console.log(pinData)
+            if (pinData.length===0) {
+                response.success=false
+                response.message = 'Pin not found';
+                return response;
+            }
+            response.success = true;
+            response.message = "Pin verified successfully";
+        } catch (error) {
+            response.message = "Failed to verify pin";
+            response.success = false;
         }
         return response;
     }
@@ -312,6 +335,20 @@ class UserProducts {
     async AddOrder(data: IAddOrder) {
         try {
             const { user_id, total_price, address_id } = data;
+            const GetAddressPin=await AddressModel.findById(new mongoose.Types.ObjectId(address_id))
+            if(!GetAddressPin){
+                response.success = false;
+                response.message = 'Invalid address';
+                response.data = null;
+                return response;
+            }
+            const checkPin=await PinModal.find({pin: GetAddressPin.pin})
+            if(checkPin.length === 0){
+                response.success = false;
+                response.message = 'cannot order on this address. please go to home page and check the availability of the products at your PIN ';
+                response.data = null;
+                return response;
+            }
             const cartItems = await CartModel.aggregate([
                 {
                     $match: {
@@ -500,6 +537,11 @@ class UserProducts {
     }
     async GetAddress(id: string) {
         try {
+            const adddress_default=await AddressModel.find({ user_id: id, isDefault:1 });
+            const pinPrice=await PinModal.aggregate([
+                { $match: { pin: adddress_default[0].pin } },
+                { $project: { price: 1 } }
+            ])
             const addresses = await AddressModel.find({ user_id: id }, {
                 _id: 1,
                 city: 1,
@@ -508,9 +550,22 @@ class UserProducts {
                 house_no: 1,
                 isDefault: 1
             });
-            response.success = true;
-            response.message = "Addresses fetched successfully";
-            response.data = addresses;
+            if(pinPrice.length > 0) {
+                response.success = true;
+                response.message = "Addresses fetched successfully";
+                response.data = {
+                    addresses,
+                    pinPrice: pinPrice[0].price
+                };
+            }else{
+                response.success = true;
+                response.message = "Addresses fetched successfully";
+                response.data = {
+                    addresses,
+                    pinPrice: 0
+                };
+            }
+            
         } catch (error: any) {
             response.success = false;
             response.message = error.message;
