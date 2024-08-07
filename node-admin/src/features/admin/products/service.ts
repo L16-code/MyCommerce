@@ -343,6 +343,26 @@ class ProductService {
         categories.forEach((category) => {
             Categories_name.push(category.name);
         })
+        const categoriesString = Categories_name.join(',');
+        const formattedString = [`"${categoriesString}"`];
+        console.log(formattedString)
+        for (let i = 2; i <= 50; i++) {
+            worksheet.getCell(`D${i}`).dataValidation = {
+                type: 'list',
+                allowBlank: true,
+                formulae: formattedString, // Adjust the range based on category count
+            };
+
+            worksheet.getCell(`B${i}`).dataValidation = {
+                type: 'whole',
+                operator: 'greaterThan',
+                showErrorMessage: true,
+                formulae: [0],
+                errorStyle: 'error',
+                errorTitle: 'Positive',
+                error: 'The value must be positive',
+            };
+        }
         worksheet.columns = [
             { header: 'Name', key: 'name', width: 30 },
             { header: 'Price', key: 'price', width: 15 },
@@ -392,6 +412,7 @@ class ProductService {
             fs.unlinkSync(filePath);
         });
     }
+
     async ImportExcel(data: ProductData[]) {
         const problematicRows: number[] = [];
         try {
@@ -400,7 +421,7 @@ class ProductService {
             categories.forEach((category) => {
                 categoryMap[category.name] = category._id.toString();
             });
-    
+
             const validateNumber = (value: string | number, fieldName: string, rowIndex: number) => {
                 if (isNaN(Number(value))) {
                     problematicRows.push(rowIndex);
@@ -414,17 +435,17 @@ class ProductService {
                 const { name, price, quantity, category, description } = row;
                 const validatedPrice = validateNumber(price, 'Price', i + 1);
                 const validatedQuantity = validateNumber(quantity, 'Quantity', i + 1);
-                    if (validatedPrice === null || validatedQuantity === null) {
+                if (validatedPrice === null || validatedQuantity === null) {
                     continue;
                 }
-    
+
                 let category_id = categoryMap[category];
                 if (!category_id) {
                     const newCategory = await ProductCategoryModal.create({ name: category });
                     category_id = newCategory._id.toString();
                     categoryMap[category] = category_id;
                 }
-    
+
                 products.push({
                     name,
                     price: validatedPrice,
@@ -435,14 +456,14 @@ class ProductService {
                     createdAt: new Date()
                 });
             }
-    
+
             if (products.length > 0) {
                 await ProductModal.insertMany(products);
             }
-    
+
             if (problematicRows.length > 0) {
                 response.success = false;
-                response.message = "There were problems with some rows."+problematicRows+"others rows were successfully created."; ;
+                response.message = "There were problems with some rows." + problematicRows + "others rows were successfully created.";;
             } else {
                 response.success = true;
                 response.message = "Products imported successfully.";
@@ -452,7 +473,7 @@ class ProductService {
             response.success = false;
             response.message = `An error occurred while importing the products: ${error}`;
         }
-    
+
         return response;
     }
 }
